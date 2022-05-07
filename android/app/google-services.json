@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "578583198489",
+    "project_id": "mek-gasol",
+    "storage_bucket": "mek-gasol.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:578583198489:android:11aee0ca123a5d58112388",
+        "android_client_info": {
+          "package_name": "mek.gasol.mek_gasol"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "578583198489-0il322pkvs39tmc9k8fipepnm3nkn0ea.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAC1FnDJ3c5Jo2jqAOFmZdy2vBHXs1tP1o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "578583198489-0il322pkvs39tmc9k8fipepnm3nkn0ea.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
