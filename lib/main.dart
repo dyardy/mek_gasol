@@ -1,13 +1,32 @@
+import 'package:bloc/bloc.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mek_gasol/features/players/triggers/players_trigger.dart';
 import 'package:mek_gasol/firebase_options.dart';
+import 'package:mek_gasol/presentation/features/player.dart';
+import 'package:mek_gasol/shared/app_list_tile.dart';
+import 'package:mek_gasol/shared/hub.dart';
 
-void main() async {
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+void main() {
+  BlocOverrides.runZoned(() async {
+    WidgetsFlutterBinding.ensureInitialized();
 
-  runApp(const MyApp());
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+
+    runApp(const ProviderScope(
+      observers: [_ProviderObserver()],
+      child: MyApp(),
+    ));
+  }, blocObserver: _BlocObserver());
+}
+
+class PlayersBloc {
+  static final all = StreamProvider((ref) {
+    return ref.watch(PlayersTrigger.instance).watchAll();
+  });
 }
 
 class MyApp extends StatelessWidget {
@@ -15,59 +34,85 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+    return CupertinoApp(
+      navigatorKey: Hub.navigatorKey,
+      title: 'Mek Gasol',
+      theme: const CupertinoThemeData(
+        primaryColor: CupertinoColors.systemOrange,
+        primaryContrastingColor: CupertinoColors.systemYellow,
+        brightness: Brightness.dark,
+        // textTheme: CupertinoTextThemeData(
+        //   primaryColor: CupertinoColors.systemYellow,
+        // ),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
-
-  final String title;
+class MyHomePage extends ConsumerWidget {
+  const MyHomePage({Key? key}) : super(key: key);
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final playersState = ref.watch(PlayersBloc.all);
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+    final playersView = playersState.when(loading: () {
+      return const CupertinoActivityIndicator();
+    }, error: (error, _) {
+      return const SizedBox.shrink();
+    }, data: (players) {
+      return ListView.builder(
+        itemCount: players.length,
+        itemBuilder: (context, index) {
+          final player = players[index];
 
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
+          return AppListTile(
+            onTap: () => Hub.push(PlayerScreen(player: player)),
+            title: Text(player.username),
+          );
+        },
+      );
     });
-  }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
+    return CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar(
+        trailing: CupertinoButton(
+          onPressed: () => Hub.push(const PlayerScreen(player: null)),
+          child: const Icon(CupertinoIcons.add),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+      child: SafeArea(
+        child: playersView,
       ),
     );
+  }
+}
+
+class _BlocObserver extends BlocObserver {
+  @override
+  void onError(BlocBase bloc, Object error, StackTrace stackTrace) {
+    super.onError(bloc, error, stackTrace);
+    debugPrint('bloc:${bloc.runtimeType}:$bloc\n$error\n$stackTrace');
+  }
+}
+
+class _ProviderObserver extends ProviderObserver {
+  const _ProviderObserver();
+
+  @override
+  void didUpdateProvider(
+      ProviderBase provider, Object? previousValue, Object? newValue, ProviderContainer container) {
+    super.didUpdateProvider(provider, previousValue, newValue, container);
+    if (newValue is AsyncError) {
+      debugPrint('riverpod:$provider\n${newValue.error}\n${newValue.stackTrace}');
+    }
+  }
+
+  @override
+  void providerDidFail(
+      ProviderBase provider, Object error, StackTrace stackTrace, ProviderContainer container) {
+    super.providerDidFail(provider, error, stackTrace, container);
+    debugPrint('riverpod:$provider\n$error\n$stackTrace');
   }
 }
