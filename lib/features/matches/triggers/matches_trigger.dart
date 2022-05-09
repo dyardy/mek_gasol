@@ -45,7 +45,7 @@ class MatchesTrigger {
   Stream<BuiltList<MatchDvo>> watchAll() {
     final playersStream = _ref.watch(PlayersRepo.instance).watchAll();
 
-    final matchesQuery = _collection.orderBy(MatchDto.createdAtKey);
+    final matchesQuery = _collection.orderBy(MatchDto.createdAtKey, descending: true);
     final matchesStream = matchesQuery.snapshots().map((snapshot) {
       return snapshot.docs.map((e) => e.data()).toBuiltList();
     });

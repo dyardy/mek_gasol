@@ -37,6 +37,7 @@ class FieldBlocState<TValue> extends FieldBlocStateBase<TValue> with _$FieldBloc
   final TValue initialValue;
   @override
   final TValue value;
+  @override
   final bool isChanged;
   final Object? error;
 
