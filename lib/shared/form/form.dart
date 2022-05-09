@@ -51,7 +51,7 @@ class _TextFieldBuilderState extends ConsumerState<TextFieldBuilder> {
       builder: (context, state, _) {
         final field = CupertinoTextField(
           controller: _controller,
-          onChanged: (value) => widget.fieldBloc.updateValue(value),
+          onChanged: widget.fieldBloc.updateValue,
         );
 
         final error = state.error;

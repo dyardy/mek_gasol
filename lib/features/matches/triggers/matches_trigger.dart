@@ -44,9 +44,12 @@ class MatchesTrigger {
 
   Stream<BuiltList<MatchDvo>> watchAll() {
     final playersStream = _ref.watch(PlayersRepo.instance).watchAll();
-    final matchesStream = _collection.snapshots().map((snapshot) {
+
+    final matchesQuery = _collection.orderBy(MatchDto.createdAtKey);
+    final matchesStream = matchesQuery.snapshots().map((snapshot) {
       return snapshot.docs.map((e) => e.data()).toBuiltList();
     });
+
     return Rx.combineLatest2<BuiltList<PlayerDvo>, BuiltList<MatchDto>, BuiltList<MatchDvo>>(
         playersStream, matchesStream, (players, matches) {
       return matches.map((match) {

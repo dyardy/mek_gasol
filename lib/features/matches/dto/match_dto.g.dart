@@ -44,7 +44,8 @@ mixin _$MatchDto {
 
 MatchDto _$MatchDtoFromJson(Map json) => MatchDto(
       id: json['id'] as String,
-      createdAt: DateTime.parse(json['createdAt'] as String),
+      createdAt:
+          const TimestampJsonConvert().fromJson(json['createdAt'] as Timestamp),
       leftPlayerIds: ((json['leftPlayerIds'] as List).map((e) => e as String))
           .toBuiltList(),
       rightPlayerIds: ((json['rightPlayerIds'] as List).map((e) => e as String))
@@ -55,7 +56,7 @@ MatchDto _$MatchDtoFromJson(Map json) => MatchDto(
 
 Map<String, dynamic> _$MatchDtoToJson(MatchDto instance) => <String, dynamic>{
       'id': instance.id,
-      'createdAt': instance.createdAt.toIso8601String(),
+      'createdAt': const TimestampJsonConvert().toJson(instance.createdAt),
       'leftPlayerIds': instance.leftPlayerIds.toList(),
       'rightPlayerIds': instance.rightPlayerIds.toList(),
       'leftPoints': instance.leftPoints,

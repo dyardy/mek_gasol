@@ -29,6 +29,13 @@
             {
               "client_id": "578583198489-0il322pkvs39tmc9k8fipepnm3nkn0ea.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "578583198489-4mpldnqbk0mjbq9fvkc3petogifq414d.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "mek.gasol.mekGasol"
+              }
             }
           ]
         }
