@@ -1,6 +1,9 @@
+import 'package:built_collection/built_collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:mek_gasol/features/matches/triggers/matches_trigger.dart';
+import 'package:mek_gasol/features/players/dvo/player_dvo.dart';
 import 'package:mek_gasol/presentation/features/match.dart';
 import 'package:mek_gasol/shared/app_list_tile.dart';
 import 'package:mek_gasol/shared/hub.dart';
@@ -29,8 +32,16 @@ class MatchesScreen extends StatelessWidget {
             itemBuilder: (context, index) {
               final match = matches[index];
 
+              String buildUsernames(BuiltList<PlayerDvo> players) {
+                return players.map((e) => e.username).join(',');
+              }
+
               return AppListTile(
-                title: Text('${match.createdAt}'),
+                onTap: () => Hub.push(MatchScreen(match: match)),
+                title: Text(
+                    '${buildUsernames(match.leftPlayers)} vs ${buildUsernames(match.rightPlayers)}'),
+                subtitle: Text(DateFormat.yMd().add_Hm().format(match.createdAt)),
+                trailing: Text('${match.leftPoints} - ${match.rightPoints}'),
               );
             },
           );
@@ -40,6 +51,7 @@ class MatchesScreen extends StatelessWidget {
 
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
+        middle: const Text('Matches'),
         trailing: CupertinoButton(
           padding: EdgeInsets.zero,
           onPressed: () => Hub.push(const MatchScreen(match: null)),

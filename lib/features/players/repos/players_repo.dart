@@ -15,27 +15,23 @@ class PlayersRepo {
 
   PlayersRepo(this._ref);
 
-  CollectionReference<PlayerDvo> get _players {
-    return _firestore.collection('players').withConverter<PlayerDvo>(fromFirestore: (snapshot, _) {
-      return PlayerDvo.fromJson({...snapshot.data()!, 'id': snapshot.id});
-    }, toFirestore: (snapshot, _) {
-      return {...snapshot.toJson()}..remove('id');
-    });
+  CollectionReference<PlayerDvo> get _collection {
+    return _firestore.collection('players').withJsonConverter(PlayerDvo.fromJson);
   }
 
   Future<BuiltList<PlayerDvo>> readAll() async {
-    final snapshot = await _players.get();
+    final snapshot = await _collection.get();
     return snapshot.docs.map((e) => e.data()).toBuiltList();
   }
 
   Stream<BuiltList<PlayerDvo>> watchAll() {
-    return _players.snapshots().map((snapshot) {
+    return _collection.snapshots().map((snapshot) {
       return snapshot.docs.map((e) => e.data()).toBuiltList();
     });
   }
 
   Future<PlayerDvo> save({String? playerId, required String username}) async {
-    final doc = _players.doc(playerId);
+    final doc = _collection.doc(playerId);
     final player = PlayerDvo(
       id: doc.id,
       username: username,
@@ -44,7 +40,7 @@ class PlayersRepo {
     return player;
   }
 
-  Future<void> delete(PlayerDvo player) async {
-    await _players.doc(player.id).delete();
+  Future<void> delete(String playerId) async {
+    await _collection.doc(playerId).delete();
   }
 }

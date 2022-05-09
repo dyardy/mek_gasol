@@ -38,6 +38,7 @@ class PlayersScreen extends ConsumerWidget {
 
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
+        middle: const Text('Players'),
         trailing: CupertinoButton(
           padding: EdgeInsets.zero,
           onPressed: () => Hub.push(const PlayerScreen(player: null)),

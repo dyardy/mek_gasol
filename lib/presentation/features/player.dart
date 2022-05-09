@@ -97,6 +97,7 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen> {
           final canDelete = ref.watch(PlayerBloc.delete.select((state) => !state.isMutating));
 
           return CupertinoButton(
+            padding: EdgeInsets.zero,
             onPressed:
                 canDelete ? () => ref.read(PlayerBloc.delete.bloc).maybeMutate(player) : null,
             child: const Text('Delete'),
@@ -126,11 +127,19 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen> {
       child: SafeArea(
         child: Column(
           children: [
-            CupertinoTextField(
-              controller: _usernameController,
-              placeholder: 'Username',
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    CupertinoTextField(
+                      controller: _usernameController,
+                      placeholder: 'Username',
+                    ),
+                  ],
+                ),
+              ),
             ),
-            const Spacer(),
             buttonBar,
           ],
         ),

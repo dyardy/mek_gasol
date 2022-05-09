@@ -20,11 +20,7 @@ class MatchesTrigger {
   MatchesTrigger(this._ref);
 
   CollectionReference<MatchDto> get _collection {
-    return _firestore.collection('matches').withConverter<MatchDto>(fromFirestore: (snapshot, _) {
-      return MatchDto.fromJson({...snapshot.data()!, 'id': snapshot.id});
-    }, toFirestore: (snapshot, _) {
-      return {...snapshot.toJson()}..remove('id');
-    });
+    return _firestore.collection('matches').withJsonConverter(MatchDto.fromJson);
   }
 
   Future<void> save({

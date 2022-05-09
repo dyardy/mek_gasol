@@ -1,7 +1,6 @@
 import 'package:built_collection/built_collection.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mek_gasol/features/players/dvo/player_dvo.dart';
-import 'package:mek_gasol/shared/providers.dart';
+import 'package:mek_gasol/features/players/repos/players_repo.dart';
 import 'package:riverpod/riverpod.dart';
 
 class PlayersTrigger {
@@ -11,40 +10,22 @@ class PlayersTrigger {
 
   final Ref _ref;
 
-  FirebaseFirestore get _firestore => _ref.read(Providers.firestore);
+  PlayersRepo get _playersRepo => _ref.read(PlayersRepo.instance);
 
   PlayersTrigger(this._ref);
 
-  CollectionReference<PlayerDvo> get _players {
-    return _firestore.collection('players').withConverter<PlayerDvo>(fromFirestore: (snapshot, _) {
-      return PlayerDvo.fromJson({...snapshot.data()!, 'id': snapshot.id});
-    }, toFirestore: (snapshot, _) {
-      return {...snapshot.toJson()}..remove('id');
-    });
-  }
+  Future<BuiltList<PlayerDvo>> readAll() async => await _playersRepo.readAll();
 
-  Future<BuiltList<PlayerDvo>> readAll() async {
-    final snapshot = await _players.get();
-    return snapshot.docs.map((e) => e.data()).toBuiltList();
-  }
+  Stream<BuiltList<PlayerDvo>> watchAll() => _playersRepo.watchAll();
 
-  Stream<BuiltList<PlayerDvo>> watchAll() {
-    return _players.snapshots().map((snapshot) {
-      return snapshot.docs.map((e) => e.data()).toBuiltList();
-    });
-  }
-
-  Future<PlayerDvo> save({String? playerId, required String username}) async {
-    final doc = _players.doc(playerId);
-    final player = PlayerDvo(
-      id: doc.id,
+  Future<PlayerDvo> save({required String? playerId, required String username}) async {
+    return await _playersRepo.save(
+      playerId: playerId,
       username: username,
     );
-    doc.set(player);
-    return player;
   }
 
   Future<void> delete(PlayerDvo player) async {
-    await _players.doc(player.id).delete();
+    await _playersRepo.delete(player.id);
   }
 }

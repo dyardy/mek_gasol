@@ -37,6 +37,10 @@ class MatchFormBloc extends ListFieldBloc<dynamic> {
   );
 
   MatchFormBloc({required this.match}) {
+    teamsFB.updateValue({
+      Team.left: match?.leftPlayers.asList() ?? const [],
+      Team.right: match?.rightPlayers.asList() ?? const [],
+    });
     leftPointsFB.updateValue(match?.leftPoints ?? 0);
     rightPointsFB.updateValue(match?.rightPoints ?? 0);
 
@@ -47,6 +51,7 @@ class MatchFormBloc extends ListFieldBloc<dynamic> {
     final leftCount = values[Team.left]?.length ?? 0;
     final rightCount = values[Team.right]?.length ?? 0;
 
+    if (leftCount < 1 && rightCount < 1) return 'Missing Left and Right';
     if (leftCount < 1) return 'Missing Left';
     if (rightCount < 1) return 'Missing Right';
 
@@ -65,19 +70,13 @@ class MatchBloc {
       final formBloc = ref.read(form(match).bloc);
       final teams = formBloc.teamsFB.state.value;
 
-      try {
-        print('Rung');
-        ref.read(MatchesTrigger.instance).save(
-              matchId: formBloc.match?.id,
-              leftPlayers: teams[Team.left]!.toBuiltList(),
-              rightPlayers: teams[Team.right]!.toBuiltList(),
-              leftPoints: formBloc.leftPointsFB.state.value,
-              rightPoint: formBloc.rightPointsFB.state.value,
-            );
-      } catch (error, stackTrace) {
-        print(error);
-        print(stackTrace);
-      }
+      ref.read(MatchesTrigger.instance).save(
+            matchId: formBloc.match?.id,
+            leftPlayers: teams[Team.left]!.toBuiltList(),
+            rightPlayers: teams[Team.right]!.toBuiltList(),
+            leftPoints: formBloc.leftPointsFB.state.value,
+            rightPoint: formBloc.rightPointsFB.state.value,
+          );
     });
   });
 }
@@ -120,34 +119,35 @@ class MatchScreen extends ConsumerWidget {
             final leftTeam = state.value[Team.left] ?? [];
             final rightTeam = state.value[Team.right] ?? [];
 
-            final teams = Column(
+            final teams = Row(
               children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        children: [
-                          const Text('Left Team'),
-                          ...leftTeam.map((e) {
-                            return Text(e.username);
-                          }),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      child: Column(
-                        children: [
-                          const Text('Right Team'),
-                          ...rightTeam.map((e) {
-                            return Text(e.username);
-                          }),
-                        ],
-                      ),
-                    )
-                  ],
+                Expanded(
+                  child: Column(
+                    children: [
+                      const Text('Left Team'),
+                      ...leftTeam.map((e) {
+                        return Text(e.username);
+                      }),
+                    ],
+                  ),
                 ),
-                if (leftTeam.isEmpty || rightTeam.isEmpty) const Text('Invalid'),
+                Expanded(
+                  child: Column(
+                    children: [
+                      const Text('Right Team'),
+                      ...rightTeam.map((e) {
+                        return Text(e.username);
+                      }),
+                    ],
+                  ),
+                )
               ],
+            );
+
+            final error = state.error;
+            final teamsWithError = CupertinoFormRow(
+              error: error != null ? Text('$error') : null,
+              child: teams,
             );
 
             return GestureDetector(
@@ -156,7 +156,7 @@ class MatchScreen extends ConsumerWidget {
                 if (teams == null) return;
                 formBloc.teamsFB.updateValue(teams);
               },
-              child: teams,
+              child: teamsWithError,
             );
           },
         ),
@@ -185,7 +185,9 @@ class MatchScreen extends ConsumerWidget {
     );
 
     return CupertinoPageScaffold(
-      navigationBar: const CupertinoNavigationBar(),
+      navigationBar: const CupertinoNavigationBar(
+        middle: Text('Match'),
+      ),
       child: SafeArea(
         child: Column(
           children: [
