@@ -2,10 +2,9 @@ import 'package:bloc/bloc.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mek_gasol/features/players/triggers/players_trigger.dart';
 import 'package:mek_gasol/firebase_options.dart';
-import 'package:mek_gasol/presentation/features/player.dart';
-import 'package:mek_gasol/shared/app_list_tile.dart';
+import 'package:mek_gasol/presentation/features/matches.dart';
+import 'package:mek_gasol/presentation/features/players.dart';
 import 'package:mek_gasol/shared/hub.dart';
 
 void main() {
@@ -21,12 +20,6 @@ void main() {
       child: MyApp(),
     ));
   }, blocObserver: _BlocObserver());
-}
-
-class PlayersBloc {
-  static final all = StreamProvider((ref) {
-    return ref.watch(PlayersTrigger.instance).watchAll();
-  });
 }
 
 class MyApp extends StatelessWidget {
@@ -45,45 +38,22 @@ class MyApp extends StatelessWidget {
         //   primaryColor: CupertinoColors.systemYellow,
         // ),
       ),
-      home: const MyHomePage(),
-    );
-  }
-}
-
-class MyHomePage extends ConsumerWidget {
-  const MyHomePage({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final playersState = ref.watch(PlayersBloc.all);
-
-    final playersView = playersState.when(loading: () {
-      return const CupertinoActivityIndicator();
-    }, error: (error, _) {
-      return const SizedBox.shrink();
-    }, data: (players) {
-      return ListView.builder(
-        itemCount: players.length,
-        itemBuilder: (context, index) {
-          final player = players[index];
-
-          return AppListTile(
-            onTap: () => Hub.push(PlayerScreen(player: player)),
-            title: Text(player.username),
-          );
-        },
-      );
-    });
-
-    return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
-        trailing: CupertinoButton(
-          onPressed: () => Hub.push(const PlayerScreen(player: null)),
-          child: const Icon(CupertinoIcons.add),
+      home: CupertinoTabScaffold(
+        tabBar: CupertinoTabBar(
+          items: const [
+            BottomNavigationBarItem(icon: Icon(CupertinoIcons.doc)),
+            BottomNavigationBarItem(icon: Icon(CupertinoIcons.map)),
+          ],
         ),
-      ),
-      child: SafeArea(
-        child: playersView,
+        tabBuilder: (context, index) {
+          switch (index) {
+            case 0:
+              return const MatchesScreen();
+            case 1:
+              return const PlayersScreen();
+          }
+          throw 'Not supported tab: $index';
+        },
       ),
     );
   }

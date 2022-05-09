@@ -239,6 +239,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0"
+  fluent_ui:
+    dependency: "direct main"
+    description:
+      name: fluent_ui
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.11.1"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -251,6 +258,11 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.4"
+  flutter_localizations:
+    dependency: transitive
+    description: flutter
+    source: sdk
+    version: "0.0.0"
   flutter_riverpod:
     dependency: "direct main"
     description:
@@ -303,6 +315,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.0.0"
+  intl:
+    dependency: transitive
+    description:
+      name: intl
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.17.0"
   io:
     dependency: transitive
     description:
@@ -325,12 +344,47 @@ packages:
     source: hosted
     version: "4.5.0"
   json_serializable:
-    dependency: "direct dev"
+    dependency: transitive
     description:
       name: json_serializable
       url: "https://pub.dartlang.org"
     source: hosted
     version: "6.2.0"
+  json_serializable_built_typehelpers:
+    dependency: transitive
+    description:
+      name: json_serializable_built_typehelpers
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.1.0"
+  json_serializable_immutable_collections:
+    dependency: "direct dev"
+    description:
+      name: json_serializable_immutable_collections
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.10.1"
+  json_serializable_kt_typehelpers:
+    dependency: transitive
+    description:
+      name: json_serializable_kt_typehelpers
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.1.0"
+  json_serializable_type_helper_utils:
+    dependency: transitive
+    description:
+      name: json_serializable_type_helper_utils
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "5.1.0"
+  kt_dart:
+    dependency: transitive
+    description:
+      name: kt_dart
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.9.1"
   lints:
     dependency: transitive
     description:
@@ -429,6 +483,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.2.0"
+  recase:
+    dependency: transitive
+    description:
+      name: recase
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.0.0"
   riverbloc:
     dependency: transitive
     description:
@@ -451,12 +512,19 @@ packages:
     source: hosted
     version: "0.1.0-dev.1"
   rxdart:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: rxdart
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.27.3"
+  scroll_pos:
+    dependency: transitive
+    description:
+      name: scroll_pos
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.0"
   shelf:
     dependency: transitive
     description:
@@ -590,4 +658,4 @@ packages:
     version: "3.1.0"
 sdks:
   dart: ">=2.16.2 <3.0.0"
-  flutter: ">=1.17.0"
+  flutter: ">=2.8.0"

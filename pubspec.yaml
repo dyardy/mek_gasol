@@ -15,6 +15,7 @@ dependencies:
   json_annotation: ^4.5.0
 
   built_collection: ^5.1.1
+  rxdart: ^0.27.3
   riverpod: ^2.0.0-dev.5
   rivertion: ^0.1.0-dev.1
 
@@ -22,6 +23,8 @@ dependencies:
 
   firebase_core: ^1.16.0
   cloud_firestore: ^3.1.14
+
+  fluent_ui: ^3.11.1
 
 dev_dependencies:
   flutter_test:
@@ -34,7 +37,8 @@ dev_dependencies:
   # flutter packages pub run build_runner watch --delete-conflicting-outputs
   build_runner: ^2.1.7
   mek_data_class_generator: ^0.1.0
-  json_serializable: ^6.2.0
+  # json_serializable: ^6.2.0
+  json_serializable_immutable_collections:
 
 flutter:
   # To add assets to your application, add an assets section, like this:

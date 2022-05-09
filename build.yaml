@@ -1,7 +1,8 @@
 targets:
   $default:
     builders:
-      json_serializable:
+      json_serializable_immutable_collections:
+        # configure your options here, same as json_serializable
         options:
           any_map: true
           checked: false
@@ -14,3 +15,9 @@ targets:
           generic_argument_factories: false
           ignore_unannotated: false
           include_if_null: true
+      json_serializable:json_serializable:
+        generate_for:
+          # exclude everything to avoid conflicts, this library uses a custom builder
+          include:
+          exclude:
+            - '**'

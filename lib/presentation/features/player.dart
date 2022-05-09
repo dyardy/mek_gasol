@@ -99,7 +99,7 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen> {
           return CupertinoButton(
             onPressed:
                 canDelete ? () => ref.read(PlayerBloc.delete.bloc).maybeMutate(player) : null,
-            child: const Icon(CupertinoIcons.delete),
+            child: const Text('Delete'),
           );
         },
       );
@@ -112,7 +112,7 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen> {
           width: double.infinity,
           child: CupertinoButton(
             onPressed: canSave ? save : null,
-            child: Text('Save'),
+            child: const Text('Save'),
           ),
         );
       },
