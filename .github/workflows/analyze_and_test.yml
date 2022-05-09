@@ -7,6 +7,10 @@ on:
     types: [ synchronize ]
     paths: [ '**.dart' ]
 
+defaults:
+  run:
+    working-directory: app
+
 jobs:
   test:
     # The type of machine to run the job on. [windows,macos, ubuntu , self-hosted]
