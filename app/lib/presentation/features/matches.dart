@@ -39,9 +39,24 @@ class MatchesScreen extends StatelessWidget {
 
               return AppListTile(
                 onTap: () => Hub.push(MatchScreen(match: match)),
-                title: Text(
-                    '${buildUsernames(match.leftPlayers)} vs ${buildUsernames(match.rightPlayers)}'),
-                subtitle: Text(DateFormat.yMd().add_Hm().format(match.createdAt)),
+                title: RichText(
+                  text: TextSpan(children: [
+                    TextSpan(
+                      text: buildUsernames(match.leftPlayers),
+                      style: TextStyle(color: Colors.red),
+                    ),
+                    const TextSpan(
+                      text: ' vs ',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    TextSpan(
+                      text: buildUsernames(match.rightPlayers),
+                      style: TextStyle(color: Colors.blue),
+                    )
+                  ]),
+                ),
+                subtitle:
+                Text(DateFormat.yMd().add_Hm().format(match.createdAt)),
                 trailing: Text('${match.leftPoints} - ${match.rightPoints}'),
               );
             },
