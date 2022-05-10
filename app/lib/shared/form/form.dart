@@ -2,15 +2,22 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mek_gasol/shared/form/form_blocs.dart';
 
 class TextFieldBuilder extends ConsumerStatefulWidget {
   final FieldBloc<String> fieldBloc;
+  final TextFieldType type;
+  final String? placeholderText;
+  final Widget? helper;
 
   const TextFieldBuilder({
     Key? key,
     required this.fieldBloc,
+    this.type = const TextFieldType(),
+    this.placeholderText,
+    this.helper,
   }) : super(key: key);
 
   @override
@@ -46,22 +53,63 @@ class _TextFieldBuilderState extends ConsumerState<TextFieldBuilder> {
     return CubitConsumer<FieldBlocState<String>>(
       bloc: widget.fieldBloc,
       listener: (context, state) {
+        if (_controller.text == state.value) return;
         _controller.text = state.value;
       },
       builder: (context, state, _) {
         final field = CupertinoTextField(
           controller: _controller,
-          onChanged: widget.fieldBloc.updateValue,
+          placeholder: widget.placeholderText,
+          onChanged: widget.fieldBloc.changeValue,
+          keyboardType: widget.type.getKeyboardType(),
+          inputFormatters: widget.type.getInputFormatters(),
         );
 
         final error = state.error;
 
         return CupertinoFormRow(
+          helper: widget.helper,
           error: error != null ? Text('$error') : null,
           child: field,
         );
       },
     );
+  }
+}
+
+class TextFieldType {
+  const TextFieldType();
+
+  const factory TextFieldType.numeric({bool signed, bool decimal}) = _NumericTextFieldType;
+
+  TextInputType? getKeyboardType() => null;
+
+  List<TextInputFormatter> getInputFormatters() => const [];
+}
+
+class _NumericTextFieldType extends TextFieldType {
+  final bool signed;
+  final bool decimal;
+
+  const _NumericTextFieldType({
+    this.signed = false,
+    this.decimal = false,
+  });
+
+  @override
+  TextInputType? getKeyboardType() {
+    return TextInputType.numberWithOptions(signed: signed, decimal: decimal);
+  }
+
+  @override
+  List<TextInputFormatter> getInputFormatters() {
+    final b = StringBuffer('[');
+    b.write('0-9');
+    if (signed) b.write('-');
+    if (decimal) b.write('.,');
+    b.write(']');
+
+    return [FilteringTextInputFormatter.allow(RegExp(b.toString()))];
   }
 }
 

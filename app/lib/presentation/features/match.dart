@@ -1,5 +1,6 @@
 import 'package:built_collection/built_collection.dart';
 import 'package:collection/collection.dart';
+import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mek_gasol/features/matches/dvo/match_dvo.dart';
@@ -107,11 +108,27 @@ class MatchScreen extends ConsumerWidget {
 
     final form = Column(
       children: [
-        TextFieldBuilder(
-          fieldBloc: formBloc.leftPointsFB.fieldBloc,
+        Row(
+          children: const [
+            Expanded(child: Text('Left Team', textAlign: TextAlign.center)),
+            Expanded(child: Text('Right Team', textAlign: TextAlign.center)),
+          ],
         ),
-        TextFieldBuilder(
-          fieldBloc: formBloc.rightPointsFB.fieldBloc,
+        Row(
+          children: [
+            Expanded(
+              child: TextFieldBuilder(
+                fieldBloc: formBloc.leftPointsFB.fieldBloc,
+                type: const TextFieldType.numeric(),
+              ),
+            ),
+            Expanded(
+              child: TextFieldBuilder(
+                fieldBloc: formBloc.rightPointsFB.fieldBloc,
+                type: const TextFieldType.numeric(),
+              ),
+            ),
+          ],
         ),
         CubitConsumer<FieldBlocState<Map<Team, List<PlayerDvo>>>>(
           bloc: formBloc.teamsFB,
@@ -123,22 +140,16 @@ class MatchScreen extends ConsumerWidget {
               children: [
                 Expanded(
                   child: Column(
-                    children: [
-                      const Text('Left Team'),
-                      ...leftTeam.map((e) {
-                        return Text(e.username);
-                      }),
-                    ],
+                    children: leftTeam.map((e) {
+                      return Text(e.username);
+                    }).toList(),
                   ),
                 ),
                 Expanded(
                   child: Column(
-                    children: [
-                      const Text('Right Team'),
-                      ...rightTeam.map((e) {
-                        return Text(e.username);
-                      }),
-                    ],
+                    children: rightTeam.map((e) {
+                      return Text(e.username);
+                    }).toList(),
                   ),
                 )
               ],
@@ -147,7 +158,12 @@ class MatchScreen extends ConsumerWidget {
             final error = state.error;
             final teamsWithError = CupertinoFormRow(
               error: error != null ? Text('$error') : null,
-              child: teams,
+              child: Column(
+                children: [
+                  teams,
+                  if (leftTeam.isEmpty && rightTeam.isEmpty) const Text('Tap to choose Players'),
+                ],
+              ),
             );
 
             return GestureDetector(
