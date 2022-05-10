@@ -52,9 +52,9 @@ class MatchFormBloc extends ListFieldBloc<dynamic> {
     final leftCount = values[Team.left]?.length ?? 0;
     final rightCount = values[Team.right]?.length ?? 0;
 
-    if (leftCount < 1 && rightCount < 1) return 'Missing Left and Right';
-    if (leftCount < 1) return 'Missing Left';
-    if (rightCount < 1) return 'Missing Right';
+    if (leftCount < 1 && rightCount < 1) return 'Missing Red and Blue';
+    if (leftCount < 1) return 'Missing Red';
+    if (rightCount < 1) return 'Missing Blue';
 
     return null;
   }
@@ -109,9 +109,19 @@ class MatchScreen extends ConsumerWidget {
     final form = Column(
       children: [
         Row(
-          children: const [
-            Expanded(child: Text('Left Team', textAlign: TextAlign.center)),
-            Expanded(child: Text('Right Team', textAlign: TextAlign.center)),
+          children: [
+            Expanded(
+                child: Text(
+                  'RED TEAM',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.red),
+                )),
+            Expanded(
+                child: Text(
+                  'BLUE TEAM',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.blue),
+                )),
           ],
         ),
         Row(
@@ -253,10 +263,10 @@ class _TeamsScreenState extends ConsumerState<_TeamsScreen> {
   static Object? _validate(Map<PlayerDvo, Team> values) {
     final leftCount = values.values.fold<int>(0, (count, e) => e == Team.left ? count + 1 : count);
     final rightCount =
-        values.values.fold<int>(0, (count, e) => e == Team.right ? count + 1 : count);
+    values.values.fold<int>(0, (count, e) => e == Team.right ? count + 1 : count);
 
-    if (leftCount < 1) return 'Missing Left';
-    if (rightCount < 1) return 'Missing Right';
+    if (leftCount < 1) return 'Missing Red';
+    if (rightCount < 1) return 'Missing Blue';
 
     return null;
   }
@@ -283,10 +293,10 @@ class _TeamsScreenState extends ConsumerState<_TeamsScreen> {
                 groupValue: e.value,
                 onValueChanged: (team) =>
                     _players.updateValue({...values, e.key: team ?? Team.none}),
-                children: const {
-                  Team.left: Text('Left'),
-                  Team.none: Text('None'),
-                  Team.right: Text('Right'),
+                children: {
+                  Team.left: Text('RED', style: TextStyle(color: Colors.red),),
+                  Team.none: const Text('None'),
+                  Team.right: Text('Right', style: TextStyle(color: Colors.blue),),
                 },
               ),
             );
