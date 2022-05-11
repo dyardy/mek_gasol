@@ -8,6 +8,9 @@ import 'package:mek_gasol/presentation/features/players.dart';
 import 'package:mek_gasol/shared/hub.dart';
 
 void main() {
+  // ignore: avoid_print
+  print('0: This is a hester egg. Naa, I just have to try the CI. ');
+
   BlocOverrides.runZoned(() async {
     WidgetsFlutterBinding.ensureInitialized();
 

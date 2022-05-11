@@ -4,7 +4,7 @@ on:
   pull_request:
     # Some filters on when this actions should run on pull requests
     # https://frontside.com/blog/2020-05-26-github-actions-pull_request/#:~:text=When%20a%20Github%20Actions%20workflow,opened%20%2C%20synchronize%20%2C%20and%20reopened%20.&text=Basic%20pull_request%20usage.
-    types: [ synchronize ]
+    types: [ ready_for_review, review_requested, synchronize ]
     paths: [ '**.dart' ]
 
 defaults:
@@ -36,7 +36,7 @@ jobs:
 
       # Analysis code
       - name: Check the format of the code
-        run: find ./lib/** -name "*.dart" ! -name "*.g.dart" | tr '\n' ' ' | xargs flutter format -l 100 --set-exit-if-changed
+        run: find ./lib/** -name "*.dart" ! -name "*.g.dart" ! -name "firebase_options.dart" | tr '\n' ' ' | xargs flutter format -l 100 --set-exit-if-changed
       - name: Analyze the code
         run: flutter analyze --no-pub --no-fatal-infos
 
