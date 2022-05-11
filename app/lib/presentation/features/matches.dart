@@ -33,7 +33,7 @@ class MatchesScreen extends StatelessWidget {
               final match = matches[index];
 
               String buildUsernames(BuiltList<PlayerDvo> players) {
-                return players.map((e) => e.username).join(',');
+                return players.map((e) => e.username).join(', ');
               }
 
               return AppListTile(
