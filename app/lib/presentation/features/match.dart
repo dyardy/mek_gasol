@@ -25,16 +25,16 @@ class MatchFormBloc extends ListFieldBloc<dynamic> {
   final leftPointsFB = AdaptiveFieldBloc<int, String>(
     adapter: IntegerAdapter(),
     fieldBloc: FieldBloc(
-      initialValue: '',
+      initialValue: '0',
     ),
-    validators: [const IntegerValidator(min: 1)],
+    validators: [const IntegerValidator(min: 0)],
   );
   final rightPointsFB = AdaptiveFieldBloc<int, String>(
     adapter: IntegerAdapter(),
     fieldBloc: FieldBloc(
-      initialValue: '',
+      initialValue: '0',
     ),
-    validators: [const IntegerValidator(min: 1)],
+    validators: [const IntegerValidator(min: 0)],
   );
 
   MatchFormBloc({required this.match}) {
