@@ -111,17 +111,19 @@ class MatchScreen extends ConsumerWidget {
         Row(
           children: [
             Expanded(
-                child: Text(
-                  'RED TEAM',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.red),
-                )),
+              child: Text(
+                'RED TEAM',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.red),
+              ),
+            ),
             Expanded(
-                child: Text(
-                  'BLUE TEAM',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.blue),
-                )),
+              child: Text(
+                'BLUE TEAM',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.blue),
+              ),
+            ),
           ],
         ),
         Row(
@@ -263,7 +265,7 @@ class _TeamsScreenState extends ConsumerState<_TeamsScreen> {
   static Object? _validate(Map<PlayerDvo, Team> values) {
     final leftCount = values.values.fold<int>(0, (count, e) => e == Team.left ? count + 1 : count);
     final rightCount =
-    values.values.fold<int>(0, (count, e) => e == Team.right ? count + 1 : count);
+        values.values.fold<int>(0, (count, e) => e == Team.right ? count + 1 : count);
 
     if (leftCount < 1) return 'Missing Red';
     if (rightCount < 1) return 'Missing Blue';
@@ -294,9 +296,15 @@ class _TeamsScreenState extends ConsumerState<_TeamsScreen> {
                 onValueChanged: (team) =>
                     _players.updateValue({...values, e.key: team ?? Team.none}),
                 children: {
-                  Team.left: Text('RED', style: TextStyle(color: Colors.red),),
+                  Team.left: Text(
+                    'RED',
+                    style: TextStyle(color: Colors.red),
+                  ),
                   Team.none: const Text('None'),
-                  Team.right: Text('Right', style: TextStyle(color: Colors.blue),),
+                  Team.right: Text(
+                    'BLUE',
+                    style: TextStyle(color: Colors.blue),
+                  ),
                 },
               ),
             );
