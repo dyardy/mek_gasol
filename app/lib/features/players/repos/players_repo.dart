@@ -36,7 +36,7 @@ class PlayersRepo {
       id: doc.id,
       username: username,
     );
-    doc.set(player);
+    await doc.set(player);
     return player;
   }
 

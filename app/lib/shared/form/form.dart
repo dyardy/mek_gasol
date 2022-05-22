@@ -21,7 +21,7 @@ class TextFieldBuilder extends ConsumerStatefulWidget {
   }) : super(key: key);
 
   @override
-  _TextFieldBuilderState createState() => _TextFieldBuilderState();
+  ConsumerState<TextFieldBuilder> createState() => _TextFieldBuilderState();
 }
 
 class _TextFieldBuilderState extends ConsumerState<TextFieldBuilder> {
@@ -130,7 +130,7 @@ class CubitConsumer<TState> extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _CubitConsumerState<TState> createState() => _CubitConsumerState();
+  State<CubitConsumer<TState>> createState() => _CubitConsumerState();
 }
 
 class _CubitConsumerState<TState> extends State<CubitConsumer<TState>> {

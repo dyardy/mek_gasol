@@ -21,11 +21,9 @@ mixin _$FieldBlocStateBase<TValue> {
 
   int get hashCode => Object.hashAll(_props);
 
-  String toString() =>
-      (ClassToString('FieldBlocStateBase', [TValue])).toString();
+  String toString() => (ClassToString('FieldBlocStateBase', [TValue])).toString();
 
-  FieldBlocStateBase<TValue> change(
-      void Function(_FieldBlocStateBaseChanges<TValue> c) updates);
+  FieldBlocStateBase<TValue> change(void Function(_FieldBlocStateBaseChanges<TValue> c) updates);
 
   _FieldBlocStateBaseChanges<TValue> toChanges();
 }
@@ -67,15 +65,13 @@ mixin _$FieldBlocState<TValue> {
         ..add('error', _self.error))
       .toString();
 
-  FieldBlocState<TValue> change(
-          void Function(_FieldBlocStateChanges<TValue> c) updates) =>
+  FieldBlocState<TValue> change(void Function(_FieldBlocStateChanges<TValue> c) updates) =>
       (_FieldBlocStateChanges<TValue>._(_self)..update(updates)).build();
 
   _FieldBlocStateChanges<TValue> toChanges() => _FieldBlocStateChanges._(_self);
 }
 
-class _FieldBlocStateChanges<TValue>
-    implements _FieldBlocStateBaseChanges<TValue> {
+class _FieldBlocStateChanges<TValue> implements _FieldBlocStateBaseChanges<TValue> {
   late TValue initialValue;
   late TValue value;
   late bool isChanged;
@@ -85,8 +81,7 @@ class _FieldBlocStateChanges<TValue>
     replace(dataClass);
   }
 
-  void update(void Function(_FieldBlocStateChanges<TValue> c) updates) =>
-      updates(this);
+  void update(void Function(_FieldBlocStateChanges<TValue> c) updates) => updates(this);
 
   void replace(covariant FieldBlocState<TValue> dataClass) {
     initialValue = dataClass.initialValue;
@@ -124,16 +119,13 @@ mixin _$ListFieldBlocState<TValue> {
         ..add('fieldStates', _self.fieldStates))
       .toString();
 
-  ListFieldBlocState<TValue> change(
-          void Function(_ListFieldBlocStateChanges<TValue> c) updates) =>
+  ListFieldBlocState<TValue> change(void Function(_ListFieldBlocStateChanges<TValue> c) updates) =>
       (_ListFieldBlocStateChanges<TValue>._(_self)..update(updates)).build();
 
-  _ListFieldBlocStateChanges<TValue> toChanges() =>
-      _ListFieldBlocStateChanges._(_self);
+  _ListFieldBlocStateChanges<TValue> toChanges() => _ListFieldBlocStateChanges._(_self);
 }
 
-class _ListFieldBlocStateChanges<TValue>
-    implements _FieldBlocStateBaseChanges<List<TValue>> {
+class _ListFieldBlocStateChanges<TValue> implements _FieldBlocStateBaseChanges<List<TValue>> {
   late List<FieldBlocBase<FieldBlocStateBase<TValue>, TValue>> fieldBlocs;
   late List<FieldBlocStateBase<TValue>> fieldStates;
 
@@ -141,8 +133,7 @@ class _ListFieldBlocStateChanges<TValue>
     replace(dataClass);
   }
 
-  void update(void Function(_ListFieldBlocStateChanges<TValue> c) updates) =>
-      updates(this);
+  void update(void Function(_ListFieldBlocStateChanges<TValue> c) updates) => updates(this);
 
   void replace(covariant ListFieldBlocState<TValue> dataClass) {
     fieldBlocs = dataClass.fieldBlocs;

@@ -1,7 +1,29 @@
 targets:
   $default:
     builders:
+      source_gen:combining_builder:
+        generate_for:
+          - 'lib/**/*_dto.dart'
+          - 'lib/**/*_dvo.dart'
+          - '**/form_blocs.dart'
+
+      mek_data_class_generator|data_class:
+        generate_for:
+          - 'lib/**/*_dto.dart'
+          - 'lib/**/*_dvo.dart'
+          - '**/form_blocs.dart'
+        options:
+          pageWidth: 100
+          comparable: true
+          stringify: true
+          copyable: false
+          changeable: false
+          changesVisible: false
+
       json_serializable_immutable_collections:
+        generate_for:
+          - 'lib/**/*_dto.dart'
+          - 'lib/**/*_dvo.dart'
         # configure your options here, same as json_serializable
         options:
           any_map: true

@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 
 class AppListTile extends StatelessWidget {
   final VoidCallback? onTap;
+  final Widget? leading;
   final Widget title;
   final Widget? subtitle;
   final Widget? trailing;
@@ -9,6 +10,7 @@ class AppListTile extends StatelessWidget {
   const AppListTile({
     Key? key,
     this.onTap,
+    this.leading,
     required this.title,
     this.subtitle,
     this.trailing,
@@ -16,6 +18,7 @@ class AppListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final leading = this.leading;
     final subtitle = this.subtitle;
     final trailing = this.trailing;
 
@@ -27,6 +30,11 @@ class AppListTile extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
           child: Row(
             children: [
+              if (leading != null)
+                ConstrainedBox(
+                  constraints: const BoxConstraints(minWidth: 64.0),
+                  child: leading,
+                ),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

@@ -45,7 +45,7 @@ class PlayerScreen extends ConsumerStatefulWidget {
   }) : super(key: key);
 
   @override
-  _PlayerScreenState createState() => _PlayerScreenState();
+  ConsumerState<PlayerScreen> createState() => _PlayerScreenState();
 }
 
 class _PlayerScreenState extends ConsumerState<PlayerScreen> {

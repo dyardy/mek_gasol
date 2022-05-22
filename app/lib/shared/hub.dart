@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 
-class Hub {
+abstract class Hub {
   static final navigatorKey = GlobalKey<NavigatorState>();
   static NavigatorState get navigator => navigatorKey.currentState!;
 
