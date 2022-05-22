@@ -108,19 +108,19 @@ class MatchScreen extends ConsumerWidget {
     final form = Column(
       children: [
         Row(
-          children: [
+          children: const [
             Expanded(
               child: Text(
                 'RED TEAM',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.red),
+                style: TextStyle(color: CupertinoColors.systemRed),
               ),
             ),
             Expanded(
               child: Text(
                 'BLUE TEAM',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.blue),
+                style: TextStyle(color: CupertinoColors.systemBlue),
               ),
             ),
           ],
@@ -294,15 +294,15 @@ class _TeamsScreenState extends ConsumerState<_TeamsScreen> {
                 groupValue: e.value,
                 onValueChanged: (team) =>
                     _players.updateValue({...values, e.key: team ?? Team.none}),
-                children: {
+                children: const {
                   Team.left: Text(
                     'RED',
-                    style: TextStyle(color: Colors.red),
+                    style: TextStyle(color: CupertinoColors.systemRed),
                   ),
                   Team.none: const Text('None'),
                   Team.right: Text(
                     'BLUE',
-                    style: TextStyle(color: Colors.blue),
+                    style: TextStyle(color: CupertinoColors.systemBlue),
                   ),
                 },
               ),

@@ -1,5 +1,4 @@
 import 'package:built_collection/built_collection.dart';
-import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -44,15 +43,12 @@ class MatchesScreen extends StatelessWidget {
                     children: [
                       TextSpan(
                         text: buildUsernames(match.leftPlayers),
-                        style: TextStyle(color: Colors.red),
+                        style: const TextStyle(color: CupertinoColors.systemRed),
                       ),
-                      const TextSpan(
-                        text: ' vs ',
-                        style: TextStyle(color: Colors.white),
-                      ),
+                      const TextSpan(text: ' vs '),
                       TextSpan(
                         text: buildUsernames(match.rightPlayers),
-                        style: TextStyle(color: Colors.blue),
+                        style: const TextStyle(color: CupertinoColors.systemBlue),
                       )
                     ],
                   ),
