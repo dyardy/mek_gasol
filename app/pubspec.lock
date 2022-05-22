@@ -30,7 +30,7 @@ packages:
     source: hosted
     version: "2.8.2"
   bloc:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: bloc
       url: "https://pub.dartlang.org"
@@ -177,7 +177,7 @@ packages:
     source: hosted
     version: "4.1.0"
   collection:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: collection
       url: "https://pub.dartlang.org"
@@ -303,9 +303,11 @@ packages:
   flutter_form_bloc:
     dependency: "direct main"
     description:
-      path: "../../../dart_flutter_packages/form_bloc/packages/flutter_form_bloc"
-      relative: true
-    source: path
+      path: "packages/flutter_form_bloc"
+      ref: release
+      resolved-ref: "986febf9a45a1f7246fa01c874381a64ff36ef4e"
+      url: "https://github.com/BreX900/form_bloc.git"
+    source: git
     version: "0.30.1"
   flutter_keyboard_visibility:
     dependency: transitive
@@ -360,9 +362,11 @@ packages:
   form_bloc:
     dependency: transitive
     description:
-      path: "../../../dart_flutter_packages/form_bloc/packages/form_bloc"
-      relative: true
-    source: path
+      path: "packages/form_bloc"
+      ref: release
+      resolved-ref: "986febf9a45a1f7246fa01c874381a64ff36ef4e"
+      url: "https://github.com/BreX900/form_bloc.git"
+    source: git
     version: "0.30.0"
   frontend_server_client:
     dependency: transitive

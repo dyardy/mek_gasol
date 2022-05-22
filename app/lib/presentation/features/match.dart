@@ -299,7 +299,7 @@ class _TeamsScreenState extends ConsumerState<_TeamsScreen> {
                     'RED',
                     style: TextStyle(color: CupertinoColors.systemRed),
                   ),
-                  Team.none: const Text('None'),
+                  Team.none: Text('None'),
                   Team.right: Text(
                     'BLUE',
                     style: TextStyle(color: CupertinoColors.systemBlue),

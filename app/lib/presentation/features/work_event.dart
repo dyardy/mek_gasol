@@ -48,8 +48,6 @@ class WorkEventBloc {
 }
 
 class WorkEventFormBloc extends GroupFieldBloc {
-  final Ref _ref;
-
   final clientFB = SelectFieldBloc<ClientDvo, void>(
     validators: [FieldBlocValidators.required],
   );
@@ -64,9 +62,8 @@ class WorkEventFormBloc extends GroupFieldBloc {
   WorkEventFormBloc({
     required Ref ref,
     required DateTime day,
-  }) : _ref = ref {
+  }) {
     ref.listenFuture<BuiltList<ClientDvo>>(WorkEventBloc.clients.future, (previous, next) {
-      print('Hola');
       clientFB.updateItems(next.asList());
     }, fireImmediately: true);
 

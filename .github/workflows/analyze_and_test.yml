@@ -19,19 +19,16 @@ jobs:
     steps:
       # The branch or tag ref that triggered the workflow will be checked out.
       - uses: actions/checkout@v2
-      - uses: actions/setup-java@v2
-        with:
-          distribution: 'zulu'
-          java-version: '12.x'
 
       # Setup a flutter environment.
       # https://github.com/marketplace/actions/flutter-action
-      - uses: subosito/flutter-action@v1
+      - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '2.10.x'
+          flutter-version: '3.0.x'
 
       # Resolve dependencies
       - name: Resolve dependencies
+        timeout-minutes: 2
         run: flutter pub get
 
       # Analysis code
