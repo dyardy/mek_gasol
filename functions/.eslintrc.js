@@ -18,14 +18,16 @@ module.exports = {
     sourceType: "module",
   },
   ignorePatterns: [
+    ".eslintrc.js",
     "/lib/**/*", // Ignore built files.
   ],
-  plugins: [
-    "@typescript-eslint",
-    "import",
-  ],
+  plugins: ["@typescript-eslint", "import"],
   rules: {
-    "quotes": ["error", "double"],
+    quotes: ["error", "double"],
     "import/no-unresolved": 0,
+    "object-curly-spacing": "off",
+    indent: "off",
+    "@typescript-eslint/no-unused-vars": "off",
+    "@typescript-eslint/no-non-null-assertion": "off",
   },
 };
