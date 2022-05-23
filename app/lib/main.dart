@@ -1,18 +1,11 @@
 import 'package:bloc/bloc.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mek_gasol/firebase_options.dart';
-import 'package:mek_gasol/modules/auth/sign_in_screen.dart';
-import 'package:mek_gasol/modules/eti/features/work_events/calendar.dart';
-import 'package:mek_gasol/presentation/features/matches.dart';
-import 'package:mek_gasol/presentation/features/players.dart';
+import 'package:mek_gasol/modules/eti/eti_app.dart';
+import 'package:mek_gasol/modules/gasol/gasol_app.dart';
 import 'package:mek_gasol/shared/app_list_tile.dart';
-import 'package:mek_gasol/shared/data/mek_widgets.dart';
-import 'package:mek_gasol/shared/hub.dart';
-import 'package:mek_gasol/shared/providers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
@@ -28,95 +21,22 @@ void main() {
 
     runApp(const ProviderScope(
       observers: [_ProviderObserver()],
-      child: Projects(),
+      child: Modules(),
     ));
   }, blocObserver: _BlocObserver());
 }
 
-class GasolProject extends StatelessWidget {
-  const GasolProject({Key? key}) : super(key: key);
+enum Module { gasol, eti }
+
+class Modules extends StatefulWidget {
+  const Modules({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return CupertinoApp(
-      navigatorKey: Hub.navigatorKey,
-      locale: const Locale.fromSubtags(languageCode: 'it'),
-      localizationsDelegates: GlobalCupertinoLocalizations.delegates,
-      supportedLocales: const [Locale.fromSubtags(languageCode: 'it')],
-      title: 'Mek Gasol',
-      theme: const CupertinoThemeData(
-        primaryColor: CupertinoColors.systemOrange,
-        primaryContrastingColor: CupertinoColors.systemYellow,
-        brightness: Brightness.dark,
-        // textTheme: CupertinoTextThemeData(
-        //   primaryColor: CupertinoColors.systemYellow,
-        // ),
-      ),
-      builder: (context, child) => CupertinoMekProvider(child: child!),
-      home: CupertinoTabScaffold(
-        tabBar: CupertinoTabBar(
-          items: const [
-            BottomNavigationBarItem(icon: Icon(CupertinoIcons.doc)),
-            BottomNavigationBarItem(icon: Icon(CupertinoIcons.map)),
-          ],
-        ),
-        tabBuilder: (context, index) {
-          switch (index) {
-            case 0:
-              return const MatchesScreen();
-            case 1:
-              return const PlayersScreen();
-          }
-          throw 'Not supported tab: $index';
-        },
-      ),
-    );
-  }
+  State<Modules> createState() => _ModulesState();
 }
 
-class EtiProject extends StatelessWidget {
-  const EtiProject({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      navigatorKey: Hub.navigatorKey,
-      locale: const Locale.fromSubtags(languageCode: 'it'),
-      localizationsDelegates: GlobalMaterialLocalizations.delegates,
-      supportedLocales: const [Locale.fromSubtags(languageCode: 'it')],
-      title: 'Mek Gasol',
-      theme: ThemeData.from(
-        colorScheme: const ColorScheme.highContrastDark(primary: Colors.yellow),
-      ),
-      builder: (context, child) => MaterialMekProvider(child: child!),
-      home: Consumer(builder: (context, ref, _) {
-        final user =
-            ref.watch(Providers.userStatus.select((value) => value.whenData((value) => value?.id)));
-
-        return user.maybeWhen(data: (userId) {
-          if (userId == null) {
-            return const SignInScreen();
-          }
-          return const CalendarScreen();
-        }, orElse: () {
-          return const Material(
-            child: MekProgressIndicator(),
-          );
-        });
-      }),
-    );
-  }
-}
-
-class Projects extends StatefulWidget {
-  const Projects({Key? key}) : super(key: key);
-
-  @override
-  State<Projects> createState() => _ProjectsState();
-}
-
-class _ProjectsState extends State<Projects> {
-  Project? _project;
+class _ModulesState extends State<Modules> {
+  Module? _module;
 
   @override
   void initState() {
@@ -126,32 +46,32 @@ class _ProjectsState extends State<Projects> {
 
   void _init() async {
     final preferences = await SharedPreferences.getInstance();
-    final projectName = preferences.getString('$Project');
-    final project = Project.values.firstWhere(orElse: () => Project.gasol, (e) {
-      return e.name == projectName;
+    final moduleName = preferences.getString('$Module');
+    final module = Module.values.firstWhere(orElse: () => Module.gasol, (e) {
+      return e.name == moduleName;
     });
-    setState(() => _project = project);
+    setState(() => _module = module);
   }
 
-  void change(Project project) async {
-    if (_project == project) return;
-    setState(() => _project = null);
+  void change(Module project) async {
+    if (_module == project) return;
+    setState(() => _module = null);
     final preferences = await SharedPreferences.getInstance();
-    await preferences.setString('$Project', project.name);
-    setState(() => _project = project);
+    await preferences.setString('$Module', project.name);
+    setState(() => _module = project);
   }
 
   @override
   Widget build(BuildContext context) {
     Widget _buildProject() {
-      switch (_project) {
-        case Project.gasol:
-          return const GasolProject();
-        case Project.eti:
-          return const EtiProject();
+      switch (_module) {
+        case Module.gasol:
+          return const GasolApp();
+        case Module.eti:
+          return const EtiApp();
         case null:
           return Column(
-            children: Project.values.map((e) {
+            children: Module.values.map((e) {
               return AppListTile(
                 onTap: () => change(e),
                 title: Text(e.name),
@@ -164,7 +84,7 @@ class _ProjectsState extends State<Projects> {
     return Directionality(
       textDirection: TextDirection.ltr,
       child: GestureDetector(
-        onSecondaryLongPress: () => setState(() => _project = null),
+        onSecondaryLongPress: () => setState(() => _module = null),
         child: SizedBox.expand(
           child: _buildProject(),
         ),
@@ -172,8 +92,6 @@ class _ProjectsState extends State<Projects> {
     );
   }
 }
-
-enum Project { gasol, eti }
 
 class _BlocObserver extends BlocObserver {
   @override
