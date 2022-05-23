@@ -1,6 +1,6 @@
 import 'package:built_collection/built_collection.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:mek_gasol/features/clients/dvo/client_dvo.dart';
+import 'package:mek_gasol/modules/eti/features/clients/dvo/client_dvo.dart';
 import 'package:mek_gasol/shared/providers.dart';
 import 'package:riverpod/riverpod.dart';
 

@@ -1,9 +1,9 @@
 import 'package:built_collection/built_collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mek_gasol/features/work_events/dvo/work_event_dvo.dart';
-import 'package:mek_gasol/features/work_events/triggers/work_event_trigger.dart';
-import 'package:mek_gasol/presentation/features/work_events.dart';
+import 'package:mek_gasol/modules/eti/features/work_events/dvo/work_event_dvo.dart';
+import 'package:mek_gasol/modules/eti/features/work_events/screens/work_events.dart';
+import 'package:mek_gasol/modules/eti/features/work_events/triggers/work_event_trigger.dart';
 import 'package:mek_gasol/shared/dart_utils.dart';
 import 'package:mek_gasol/shared/data/mek_widgets.dart';
 import 'package:mek_gasol/shared/hub.dart';
@@ -64,6 +64,12 @@ class CalendarScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Calendar'),
+        actions: [
+          IconButton(
+            onPressed: () => ref.read(Providers.auth).signOut(),
+            icon: const Icon(Icons.logout),
+          ),
+        ],
       ),
       body: eventsState.when(
         loading: () => const MekProgressIndicator(),

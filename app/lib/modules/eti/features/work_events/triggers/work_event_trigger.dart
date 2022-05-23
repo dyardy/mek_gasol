@@ -1,9 +1,9 @@
 import 'package:built_collection/built_collection.dart';
 import 'package:mek_gasol/features/users/dto/user_dto.dart';
 import 'package:mek_gasol/features/users/repositories/users_repo.dart';
-import 'package:mek_gasol/features/work_events/dto/work_event_dto.dart';
-import 'package:mek_gasol/features/work_events/dvo/work_event_dvo.dart';
-import 'package:mek_gasol/features/work_events/repositories/work_event_repo.dart';
+import 'package:mek_gasol/modules/eti/features/work_events/dto/work_event_dto.dart';
+import 'package:mek_gasol/modules/eti/features/work_events/dvo/work_event_dvo.dart';
+import 'package:mek_gasol/modules/eti/features/work_events/repositories/work_event_repo.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:rxdart/rxdart.dart';
 

@@ -12,21 +12,29 @@ abstract class Providers {
     return FirebaseFirestore.instance;
   });
 
-  static final user = FutureProvider<UserDto>((ref) async {
+  static final userStatus = StreamProvider((ref) async* {
     final auth = ref.watch(Providers.auth);
-    var user = auth.currentUser;
-    if (user == null) {
-      final credenties = await auth.signInWithEmailAndPassword(
-        email: 'brexmaster@gmail.com',
-        password: 'Password123\$',
-      );
-      user = credenties.user!;
-    }
 
-    return UserDto(
-      id: user.uid,
-      email: user.email!,
-    );
+    await for (final user in auth.authStateChanges()) {
+      if (user == null) {
+        yield null;
+        continue;
+      }
+
+      yield UserDto(
+        id: user.uid,
+        email: user.email!,
+      );
+    }
+  });
+
+  static final user = StreamProvider<UserDto>((ref) async* {
+    final userStream = ref.watch(userStatus.stream);
+
+    await for (final user in userStream) {
+      if (user == null) continue;
+      yield user;
+    }
   });
 }
 

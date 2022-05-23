@@ -5,12 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mek_gasol/firebase_options.dart';
-import 'package:mek_gasol/presentation/features/calendar.dart';
+import 'package:mek_gasol/modules/auth/sign_in_screen.dart';
+import 'package:mek_gasol/modules/eti/features/work_events/calendar.dart';
 import 'package:mek_gasol/presentation/features/matches.dart';
 import 'package:mek_gasol/presentation/features/players.dart';
 import 'package:mek_gasol/shared/app_list_tile.dart';
 import 'package:mek_gasol/shared/data/mek_widgets.dart';
 import 'package:mek_gasol/shared/hub.dart';
+import 'package:mek_gasol/shared/providers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
@@ -87,7 +89,21 @@ class EtiProject extends StatelessWidget {
         colorScheme: const ColorScheme.highContrastDark(primary: Colors.yellow),
       ),
       builder: (context, child) => MaterialMekProvider(child: child!),
-      home: const CalendarScreen(),
+      home: Consumer(builder: (context, ref, _) {
+        final user =
+            ref.watch(Providers.userStatus.select((value) => value.whenData((value) => value?.id)));
+
+        return user.maybeWhen(data: (userId) {
+          if (userId == null) {
+            return const SignInScreen();
+          }
+          return const CalendarScreen();
+        }, orElse: () {
+          return const Material(
+            child: MekProgressIndicator(),
+          );
+        });
+      }),
     );
   }
 }
