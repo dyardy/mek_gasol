@@ -22,21 +22,28 @@ class EtiApp extends StatelessWidget {
         colorScheme: const ColorScheme.highContrastDark(primary: Colors.yellow),
       ),
       builder: (context, child) => MaterialMekProvider(child: child!),
-      home: Consumer(builder: (context, ref, _) {
-        final user =
-            ref.watch(Providers.userStatus.select((value) => value.whenData((value) => value?.id)));
-
-        return user.maybeWhen(data: (userId) {
-          if (userId == null) {
-            return const SignInScreen();
-          }
-          return const CalendarScreen();
-        }, orElse: () {
-          return const Material(
-            child: MekProgressIndicator(),
-          );
-        });
-      }),
+      home: const _AuthArea(),
     );
+  }
+}
+
+class _AuthArea extends ConsumerWidget {
+  const _AuthArea({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final user =
+        ref.watch(Providers.userStatus.select((value) => value.whenData((value) => value?.id)));
+
+    return user.maybeWhen(data: (userId) {
+      if (userId == null) {
+        return const SignInScreen();
+      }
+      return const CalendarScreen();
+    }, orElse: () {
+      return const Material(
+        child: MekProgressIndicator(),
+      );
+    });
   }
 }

@@ -1,4 +1,6 @@
+import 'package:bloc/bloc.dart';
 import 'package:pure_extensions/pure_extensions.dart';
+import 'package:rxdart/rxdart.dart';
 
 abstract class DateTimeUtils {
   static DateTime darwinAdd(DateTime dateTime, int months) {
@@ -63,4 +65,8 @@ extension EqualsDateTime on DateTime {
     if (millisecond) return true;
     return true;
   }
+}
+
+extension HoStreamOnBloc<TState> on StateStreamable<TState> {
+  Stream<TState> get hotStream => Rx.merge([Stream.value(state), stream]);
 }

@@ -9,14 +9,22 @@ extension RefExtensions on Ref {
     } catch (_) {}
   }
 
-  void listenFuture<T>(
+  ProviderSubscription<Future<T>> listenFuture<T>(
     AlwaysAliveProviderListenable<Future<T>> provider,
     void Function(T? previous, T next) listener, {
     void Function(Object error, StackTrace stackTrace)? onError,
     bool fireImmediately = false,
   }) {
-    listen<Future<T>>(provider, (previous, next) async {
+    return listen<Future<T>>(provider, (previous, next) async {
       listener(await previous, await next);
     }, onError: onError, fireImmediately: fireImmediately);
+  }
+}
+
+extension LP<T> on Iterable<ProviderSubscription<T>> {
+  void close() {
+    for (final subscription in this) {
+      subscription.close();
+    }
   }
 }

@@ -14,6 +14,8 @@ mixin _$WorkEventDto {
   Iterable<Object?> get _props sync* {
     yield _self.id;
     yield _self.creatorUserId;
+    yield _self.clientId;
+    yield _self.projectId;
     yield _self.startAt;
     yield _self.endAt;
     yield _self.note;
@@ -30,6 +32,8 @@ mixin _$WorkEventDto {
   String toString() => (ClassToString('WorkEventDto')
         ..add('id', _self.id)
         ..add('creatorUserId', _self.creatorUserId)
+        ..add('clientId', _self.clientId)
+        ..add('projectId', _self.projectId)
         ..add('startAt', _self.startAt)
         ..add('endAt', _self.endAt)
         ..add('note', _self.note))
@@ -42,6 +46,8 @@ mixin _$WorkEventDto {
 
 WorkEventDto _$WorkEventDtoFromJson(Map json) => WorkEventDto(
       id: json['id'] as String,
+      clientId: json['clientId'] as String,
+      projectId: json['projectId'] as String,
       creatorUserId: json['creatorUserId'] as String,
       startAt:
           const TimestampJsonConvert().fromJson(json['startAt'] as Timestamp),
@@ -53,6 +59,8 @@ Map<String, dynamic> _$WorkEventDtoToJson(WorkEventDto instance) =>
     <String, dynamic>{
       'id': instance.id,
       'creatorUserId': instance.creatorUserId,
+      'clientId': instance.clientId,
+      'projectId': instance.projectId,
       'startAt': const TimestampJsonConvert().toJson(instance.startAt),
       'endAt': const TimestampJsonConvert().toJson(instance.endAt),
       'note': instance.note,

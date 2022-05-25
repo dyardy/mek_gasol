@@ -1,6 +1,9 @@
 import 'package:built_collection/built_collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mek_gasol/modules/eti/features/clients/screens/clients_screen.dart';
+import 'package:mek_gasol/modules/eti/features/clients/triggers/clients_trigger.dart';
+import 'package:mek_gasol/modules/eti/features/projects/triggers/projects_trigger.dart';
 import 'package:mek_gasol/modules/eti/features/work_events/dvo/work_event_dvo.dart';
 import 'package:mek_gasol/modules/eti/features/work_events/screens/work_events.dart';
 import 'package:mek_gasol/modules/eti/features/work_events/triggers/work_event_trigger.dart';
@@ -10,12 +13,32 @@ import 'package:mek_gasol/shared/hub.dart';
 import 'package:mek_gasol/shared/providers.dart';
 import 'package:pure_extensions/pure_extensions.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:tuple/tuple.dart';
 
 abstract class CalendarBloc {
-  static final events = StreamProvider.family((ref, DateTime moth) async* {
-    final user = await ref.watch(Providers.user.future);
+  // TODO: Promote it
+  static final events = FutureProvider.family((ref, DateTime moth) async {
+    final signedUser = await ref.watch(Providers.user.future);
+    final users = await ref.watch(Providers.users.future);
+    final clients = await ref.watch(ClientsTrigger.all.future);
+    final events = await ref.watch(WorkEventTrigger.month(Tuple2(signedUser.id, moth)).future);
 
-    yield* ref.read(WorkEventTrigger.instance).watchMonth(user.id, moth);
+    final mappedEvents = await events.map((event) async {
+      final client = clients.firstWhere((e) => event.clientId == e.id);
+      final projects = await ref.watch(ProjectsTrigger.all(client.id).future);
+      final project = projects.firstWhere((e) => event.projectId == e.id);
+
+      return WorkEventDvo(
+        id: event.id,
+        creatorUser: users.firstWhere((user) => event.creatorUserId == user.id),
+        client: client,
+        project: project,
+        startAt: event.startAt,
+        endAt: event.endAt,
+        note: event.note,
+      );
+    }).waitFutures();
+    return mappedEvents.toBuiltList();
   });
 }
 
@@ -65,6 +88,10 @@ class CalendarScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Calendar'),
         actions: [
+          IconButton(
+            onPressed: () => Hub.push(const ClientsScreen()),
+            icon: const Icon(Icons.people_alt_outlined),
+          ),
           IconButton(
             onPressed: () => ref.read(Providers.auth).signOut(),
             icon: const Icon(Icons.logout),

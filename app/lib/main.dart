@@ -36,6 +36,7 @@ class Modules extends StatefulWidget {
 }
 
 class _ModulesState extends State<Modules> {
+  var _isLoading = true;
   Module? _module;
 
   @override
@@ -50,7 +51,10 @@ class _ModulesState extends State<Modules> {
     final module = Module.values.firstWhere(orElse: () => Module.gasol, (e) {
       return e.name == moduleName;
     });
-    setState(() => _module = module);
+    setState(() {
+      _module = module;
+      _isLoading = false;
+    });
   }
 
   void change(Module project) async {
@@ -86,7 +90,7 @@ class _ModulesState extends State<Modules> {
       child: GestureDetector(
         onSecondaryLongPress: () => setState(() => _module = null),
         child: SizedBox.expand(
-          child: _buildProject(),
+          child: _isLoading ? null : _buildProject(),
         ),
       ),
     );

@@ -11,12 +11,16 @@ part 'work_event_dto.g.dart';
 class WorkEventDto with _$WorkEventDto {
   final String id;
   final String creatorUserId;
+  final String clientId;
+  final String projectId;
   final DateTime startAt;
   final DateTime endAt;
   final String note;
 
   const WorkEventDto({
     required this.id,
+    required this.clientId,
+    required this.projectId,
     required this.creatorUserId,
     required this.startAt,
     required this.endAt,

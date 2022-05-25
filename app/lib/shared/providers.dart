@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mek_gasol/features/users/dto/user_dto.dart';
+import 'package:mek_gasol/features/users/repositories/users_repo.dart';
 
 abstract class Providers {
   static final auth = Provider((ref) {
@@ -12,6 +13,7 @@ abstract class Providers {
     return FirebaseFirestore.instance;
   });
 
+  // TODO: rename to currentUser
   static final userStatus = StreamProvider((ref) async* {
     final auth = ref.watch(Providers.auth);
 
@@ -28,6 +30,8 @@ abstract class Providers {
     }
   });
 
+  // TODO: rename to signedUser
+  // Il tipo è richiesto perchè sennò lo segna come nullabile
   static final user = StreamProvider<UserDto>((ref) async* {
     final userStream = ref.watch(userStatus.stream);
 
@@ -35,6 +39,12 @@ abstract class Providers {
       if (user == null) continue;
       yield user;
     }
+  });
+
+  static final users = StreamProvider((ref) async* {
+    final usersRepo = ref.watch(UsersRepo.instance);
+
+    yield* usersRepo.watchAll();
   });
 }
 

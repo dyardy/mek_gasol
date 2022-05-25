@@ -1,11 +1,13 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:mek_data_class/mek_data_class.dart';
+import 'package:mek_gasol/features/firestore/repositories/firestore_repository.dart';
 
 part 'client_dvo.g.dart';
 
 @DataClass()
 @JsonSerializable()
-class ClientDvo with _$ClientDvo {
+class ClientDvo extends Dto with _$ClientDvo {
+  @override
   final String id;
   final String displayName;
 

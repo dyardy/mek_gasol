@@ -4,8 +4,11 @@ import 'package:flutter_form_bloc/flutter_form_bloc.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mek_gasol/modules/eti/features/clients/dvo/client_dvo.dart';
 import 'package:mek_gasol/modules/eti/features/clients/triggers/clients_trigger.dart';
+import 'package:mek_gasol/modules/eti/features/projects/dvo/project_dvo.dart';
+import 'package:mek_gasol/modules/eti/features/projects/triggers/projects_trigger.dart';
 import 'package:mek_gasol/modules/eti/features/work_events/dvo/work_event_dvo.dart';
 import 'package:mek_gasol/modules/eti/features/work_events/triggers/work_event_trigger.dart';
+import 'package:mek_gasol/shared/dart_utils.dart';
 import 'package:mek_gasol/shared/flutter_utils.dart';
 import 'package:mek_gasol/shared/hub.dart';
 import 'package:mek_gasol/shared/providers.dart';
@@ -15,13 +18,7 @@ import 'package:pure_extensions/pure_extensions.dart';
 import 'package:riverbloc/riverbloc.dart';
 import 'package:rivertion/rivertion.dart';
 
-class WorkEventBloc {
-  static final clients = StreamProvider((ref) {
-    final clientsTrigger = ref.watch(ClientsTrigger.instance);
-
-    return clientsTrigger.watchAll();
-  });
-
+abstract class WorkEventBloc {
   static final form =
       BlocProvider.family.autoDispose<WorkEventFormBloc, GroupFieldBlocState, DateTime>((ref, day) {
     return WorkEventFormBloc(
@@ -39,6 +36,8 @@ class WorkEventBloc {
       await trigger.save(WorkEventDvo(
         id: '',
         creatorUser: user,
+        client: formBloc.clientFB.value!,
+        project: formBloc.projectFB.value!,
         startAt: formBloc.startAtFB.value!.toDateTime(day),
         endAt: formBloc.endAtFB.value!.toDateTime(day),
         note: formBloc.noteFB.value,
@@ -48,7 +47,12 @@ class WorkEventBloc {
 }
 
 class WorkEventFormBloc extends GroupFieldBloc {
+  ProviderSubscription? _projectsSub;
+
   final clientFB = SelectFieldBloc<ClientDvo, void>(
+    validators: [FieldBlocValidators.required],
+  );
+  final projectFB = SelectFieldBloc<ProjectDvo, void>(
     validators: [FieldBlocValidators.required],
   );
   final startAtFB = InputFieldBloc<TimeOfDay?, void>(
@@ -63,15 +67,26 @@ class WorkEventFormBloc extends GroupFieldBloc {
     required Ref ref,
     required DateTime day,
   }) {
-    ref.listenFuture<BuiltList<ClientDvo>>(WorkEventBloc.clients.future, (previous, next) {
+    clientFB.hotStream.distinct((prev, curr) => prev.value == curr.value).listen((state) {
+      final client = state.value;
+      if (client == null) return;
+      _projectsSub?.close();
+      _projectsSub = ref.listenFuture<BuiltList<ProjectDvo>>(ProjectsTrigger.all(client.id).future,
+          fireImmediately: true, (previous, next) {
+        projectFB.updateItems(next.asList());
+      });
+    });
+
+    ref.listenFuture<BuiltList<ClientDvo>>(ClientsTrigger.all.future, (previous, next) {
       clientFB.updateItems(next.asList());
     }, fireImmediately: true);
 
     startAtFB.updateInitialValue(TimeOfDay.fromDateTime(day.copyWith(hour: 9)));
-    endAtFB.updateInitialValue(TimeOfDay.fromDateTime(day.copyWith(hour: 18)));
+    endAtFB.updateInitialValue(TimeOfDay.fromDateTime(day.copyWith(hour: 9 + 4)));
 
     addAll({
       'client': clientFB,
+      'project': projectFB,
       'startAt': startAtFB,
       'endAt': endAtFB,
       'note': noteFB,
@@ -110,6 +125,14 @@ class WorkEventScreen extends ConsumerWidget {
             labelText: 'Client',
           ),
           itemBuilder: (context, value) => FieldItem(child: Text(value.displayName)),
+        ),
+        DropdownFieldBlocBuilder<ProjectDvo>(
+          selectFieldBloc: formBloc.projectFB,
+          showEmptyItem: false,
+          decoration: const InputDecoration(
+            labelText: 'Project',
+          ),
+          itemBuilder: (context, value) => FieldItem(child: Text(value.name)),
         ),
         TimeFieldBlocBuilder(
           timeFieldBloc: formBloc.startAtFB,

@@ -14,6 +14,8 @@ mixin _$WorkEventDvo {
   Iterable<Object?> get _props sync* {
     yield _self.id;
     yield _self.creatorUser;
+    yield _self.client;
+    yield _self.project;
     yield _self.startAt;
     yield _self.endAt;
     yield _self.note;
@@ -30,6 +32,8 @@ mixin _$WorkEventDvo {
   String toString() => (ClassToString('WorkEventDvo')
         ..add('id', _self.id)
         ..add('creatorUser', _self.creatorUser)
+        ..add('client', _self.client)
+        ..add('project', _self.project)
         ..add('startAt', _self.startAt)
         ..add('endAt', _self.endAt)
         ..add('note', _self.note))
