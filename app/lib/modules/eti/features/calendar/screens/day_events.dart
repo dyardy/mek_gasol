@@ -16,7 +16,7 @@ final _dayFilter = StateProvider.family((ref, DateTime initialDay) {
 
 final _events = FutureProvider.family((ref, DateTime day) async {
   final events = await ref.watch(EventsCalendarTrigger.userMonth(day.copyUpTo(month: true)).future);
-  print(events);
+
   return events.where((event) {
     return event.startAt.isBetween(day, day.add(const Duration(days: 1)));
   }).toBuiltList();
@@ -43,14 +43,8 @@ class WorkEventsScreen extends ConsumerWidget {
 
     Widget _buildCells(BuiltList<EventCalendarDvo> events) {
       if (events.isEmpty) {
-        return InkWell(
-          // onTap: () => Hub.push(WorkEventScreen(
-          //   day: day,
-          //   type: null,
-          // )),
-          child: const Center(
-            child: Text('Tap to add new event!'),
-          ),
+        return const Center(
+          child: Text('Tap add icon to create new event!'),
         );
       }
 
@@ -130,11 +124,13 @@ class SheetMenuButton extends StatelessWidget {
     );
   }
 
+  static const _isMobile = true;
+
   @override
   Widget build(BuildContext context) {
     return IconButton(
       onPressed: () {
-        if (true) {
+        if (_isMobile) {
           const offset = Offset.zero;
           final button = context.findRenderObject()! as RenderBox;
           final overlay = Navigator.of(context).overlay!.context.findRenderObject()! as RenderBox;

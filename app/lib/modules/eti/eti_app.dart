@@ -17,6 +17,7 @@ class EtiApp extends StatelessWidget {
       locale: const Locale.fromSubtags(languageCode: 'it'),
       localizationsDelegates: GlobalMaterialLocalizations.delegates,
       supportedLocales: const [Locale.fromSubtags(languageCode: 'it')],
+      debugShowCheckedModeBanner: false,
       title: 'Mek Gasol',
       theme: ThemeData.from(
         colorScheme: const ColorScheme.highContrastDark(primary: Colors.yellow),
