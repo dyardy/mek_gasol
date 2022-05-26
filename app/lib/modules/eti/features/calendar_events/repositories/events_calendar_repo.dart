@@ -5,23 +5,31 @@ import 'package:mek_gasol/modules/eti/features/calendar_events/dto/calendar_even
 import 'package:mek_gasol/shared/dart_utils.dart';
 import 'package:mek_gasol/shared/providers.dart';
 import 'package:riverpod/riverpod.dart';
+import 'package:tuple/tuple.dart';
 
 class EventsCalendarRepo extends FirestoreRepository<EventCalendarDto> {
-  static final instance = Provider((ref) {
-    return EventsCalendarRepo(ref);
-  });
-
-  EventsCalendarRepo(Ref ref)
-      : super(FirestoreContext(
+  EventsCalendarRepo._(Ref ref)
+      : super(
           ref: ref,
           collectionName: 'events_calendar',
           fromFirestore: EventCalendarDto.fromJson,
-        ));
+        );
 
-  Stream<BuiltList<EventCalendarDto>> watchMonth(String userId, DateTime month) {
+  static final instance = Provider((ref) {
+    return EventsCalendarRepo._(ref);
+  });
+
+  static final month = StreamProvider.family((ref, Tuple2<String, DateTime> args) {
+    return ref.watch(instance)._watchMonth(args);
+  });
+
+  Stream<BuiltList<EventCalendarDto>> _watchMonth(Tuple2<String, DateTime> args) {
+    final userId = args.item1;
+    final month = args.item2;
+
     final nextMonth = DateTimeUtils.darwinAdd(month, 1);
 
-    var query = context.collection.asQuery();
+    var query = box.collection.asQuery();
 
     query = query.orderBy(EventCalendarDto.startAtKey);
     query = query.startAt([Timestamp.fromDate(month)]).endAt([Timestamp.fromDate(nextMonth)]);

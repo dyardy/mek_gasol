@@ -9,14 +9,14 @@ class ClientsRepo extends FirestoreRepository<ClientDvo> {
   });
 
   ClientsRepo(Ref ref)
-      : super(FirestoreContext(
+      : super(
           ref: ref,
           collectionName: 'clients',
           fromFirestore: ClientDvo.fromJson,
-        ));
+        );
 
   Stream<BuiltList<ClientDvo>> watchAll() {
-    final matchesQuery = context.collection.orderBy(ClientDvo.displayNameKey, descending: false);
+    final matchesQuery = box.collection.orderBy(ClientDvo.displayNameKey, descending: false);
 
     return matchesQuery.snapshots().map((snapshot) {
       return snapshot.docs.map((e) => e.data()).toBuiltList();

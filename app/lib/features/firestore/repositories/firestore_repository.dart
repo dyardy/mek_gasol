@@ -3,31 +3,41 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mek_gasol/shared/providers.dart';
 
-class FirestoreContext<T extends Dto> {
+typedef DtoFromFirestore<T> = T Function(Map<String, dynamic> json);
+
+class FirestoreBox<T extends Dto> {
   final Ref ref;
   final String collectionName;
-  final T Function(Map<String, dynamic> json) fromFirestore;
+  final DtoFromFirestore<T> fromFirestore;
 
-  const FirestoreContext({
+  const FirestoreBox._({
     required this.ref,
     required this.collectionName,
     required this.fromFirestore,
   });
 
-  FirebaseFirestore get firestore => ref.read(Providers.firestore);
+  FirebaseFirestore get firestore => ref.watch(Providers.firestore);
 
   CollectionReference<T> get collection {
     return firestore.collection(collectionName).withJsonConverter(fromFirestore);
   }
 }
 
-class FirestoreRepository<T extends Dto> {
+abstract class FirestoreRepository<T extends Dto> {
   @protected
-  final FirestoreContext<T> context;
+  final FirestoreBox<T> box;
 
-  FirestoreRepository(this.context);
+  FirestoreRepository({
+    required Ref ref,
+    required String collectionName,
+    required DtoFromFirestore<T> fromFirestore,
+  }) : box = FirestoreBox._(
+          ref: ref,
+          collectionName: collectionName,
+          fromFirestore: fromFirestore,
+        );
 
-  CollectionReference<T> get _collection => context.collection;
+  CollectionReference<T> get _collection => box.collection;
 
   Future<void> create(T dto) async {
     await _collection.add(dto);

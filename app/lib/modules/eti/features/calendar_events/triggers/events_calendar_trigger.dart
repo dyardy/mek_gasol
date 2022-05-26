@@ -20,15 +20,11 @@ class EventsCalendarTrigger {
 
   EventsCalendarTrigger._(this._ref);
 
-  static final month = StreamProvider.family((ref, Tuple2<String, DateTime> arg) {
-    return ref.watch(EventsCalendarRepo.instance).watchMonth(arg.item1, arg.item2);
-  });
-
   static final userMonth = FutureProvider.family((ref, DateTime moth) async {
     final signedUser = await ref.watch(Providers.user.future);
     final users = await ref.watch(Providers.users.future);
     final clients = await ref.watch(ClientsTrigger.all.future);
-    final events = await ref.watch(month(Tuple2(signedUser.id, moth)).future);
+    final events = await ref.watch(EventsCalendarRepo.month(Tuple2(signedUser.id, moth)).future);
 
     final mappedEvents = await events.map((event) async {
       final cratedBy = users.firstWhere((user) => event.createdBy == user.id);

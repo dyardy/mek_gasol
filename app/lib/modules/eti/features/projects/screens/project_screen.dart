@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_bloc/flutter_form_bloc.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mek_gasol/modules/eti/features/projects/blocs/projects_bloc.dart';
 import 'package:mek_gasol/modules/eti/features/projects/dvo/project_dvo.dart';
-import 'package:mek_gasol/modules/eti/features/projects/triggers/projects_trigger.dart';
 import 'package:mek_gasol/shared/hub.dart';
 import 'package:mek_gasol/shared/widgets/app_floating_action_button.dart';
 import 'package:riverbloc/riverbloc.dart';
@@ -18,7 +18,7 @@ final _form = BlocProvider.autoDispose((ref) {
 
 final _save = MutationProvider.family.autoDispose((ref, String clientId) {
   return MutationBloc((param) {
-    final clients = ref.read(ProjectsTrigger.instance);
+    final clients = ref.read(ProjectsBloc.instance);
     final formBloc = ref.read(_form.bloc);
 
     final project = ProjectDvo(

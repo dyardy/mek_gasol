@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_bloc/flutter_form_bloc.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mek_gasol/modules/eti/features/clients/blocs/clients_bloc.dart';
 import 'package:mek_gasol/modules/eti/features/clients/dvo/client_dvo.dart';
-import 'package:mek_gasol/modules/eti/features/clients/triggers/clients_trigger.dart';
 import 'package:mek_gasol/shared/hub.dart';
 import 'package:mek_gasol/shared/widgets/app_floating_action_button.dart';
 import 'package:riverbloc/riverbloc.dart';
@@ -19,7 +19,7 @@ final _form = BlocProvider.family.autoDispose((ref, ClientDvo? client) {
 
 final _save = MutationProvider.family.autoDispose((ref, ClientDvo? client) {
   return MutationBloc((param) async {
-    final clients = ref.read(ClientsTrigger.instance);
+    final clients = ref.read(ClientsBloc.instance);
     final formBloc = ref.read(_form(client).bloc);
 
     await clients.save(ClientDvo(
@@ -31,7 +31,7 @@ final _save = MutationProvider.family.autoDispose((ref, ClientDvo? client) {
 
 final _delete = MutationProvider.family.autoDispose((ref, ClientDvo client) {
   return MutationBloc((param) async {
-    final clients = ref.read(ClientsTrigger.instance);
+    final clients = ref.read(ClientsBloc.instance);
 
     await clients.delete(client.id);
   });
