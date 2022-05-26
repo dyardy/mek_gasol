@@ -17,7 +17,7 @@ class FirestoreContext<T extends Dto> {
   FirebaseFirestore get firestore => ref.read(Providers.firestore);
 
   CollectionReference<T> get collection {
-    return firestore.collection('clients').withJsonConverter(fromFirestore);
+    return firestore.collection(collectionName).withJsonConverter(fromFirestore);
   }
 }
 

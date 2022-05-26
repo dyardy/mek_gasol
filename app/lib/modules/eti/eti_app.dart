@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mek_gasol/modules/auth/sign_in_screen.dart';
-import 'package:mek_gasol/modules/eti/features/work_events/calendar.dart';
+import 'package:mek_gasol/modules/eti/features/calendar/screens/calendar_events.dart';
 import 'package:mek_gasol/shared/data/mek_widgets.dart';
 import 'package:mek_gasol/shared/hub.dart';
 import 'package:mek_gasol/shared/providers.dart';

@@ -90,19 +90,26 @@ class MaterialMekProvider extends StatelessWidget {
     required this.child,
   }) : super(key: key);
 
+  Widget _buildWithMaterial(BuildContext context, Widget child) {
+    final material = Material.of(context);
+    return material == null ? Material(child: child) : child;
+  }
+
   @override
   Widget build(BuildContext context) {
     return MekProvider(
       style: MekStyle.material,
       progressIndicatorBuilder: (context, data) {
-        return const Center(
+        const current = Center(
           child: CircularProgressIndicator(),
         );
+        return _buildWithMaterial(context, current);
       },
       crashIndicatorBuilder: (context, data) {
-        return const Center(
+        const current = Center(
           child: Icon(Icons.bug_report_outlined),
         );
+        return _buildWithMaterial(context, current);
       },
       child: child,
     );
