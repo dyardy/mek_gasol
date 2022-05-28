@@ -16,7 +16,7 @@ class ClientsRepo extends FirestoreRepository<ClientDvo> {
         );
 
   Stream<BuiltList<ClientDvo>> watchAll() {
-    final matchesQuery = box.collection.orderBy(ClientDvo.displayNameKey, descending: false);
+    final matchesQuery = box.watchCollection.orderBy(ClientDvo.displayNameKey, descending: false);
 
     return matchesQuery.snapshots().map((snapshot) {
       return snapshot.docs.map((e) => e.data()).toBuiltList();

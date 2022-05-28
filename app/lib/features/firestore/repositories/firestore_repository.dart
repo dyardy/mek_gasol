@@ -16,10 +16,15 @@ class FirestoreBox<T extends Dto> {
     required this.fromFirestore,
   });
 
-  FirebaseFirestore get firestore => ref.watch(Providers.firestore);
+  FirebaseFirestore get readFirestore => ref.read(Providers.firestore);
+  FirebaseFirestore get watchFirestore => ref.watch(Providers.firestore);
 
-  CollectionReference<T> get collection {
-    return firestore.collection(collectionName).withJsonConverter(fromFirestore);
+  CollectionReference<T> get readCollection {
+    return readFirestore.collection(collectionName).withJsonConverter(fromFirestore);
+  }
+
+  CollectionReference<T> get watchCollection {
+    return watchFirestore.collection(collectionName).withJsonConverter(fromFirestore);
   }
 }
 
@@ -37,23 +42,21 @@ abstract class FirestoreRepository<T extends Dto> {
           fromFirestore: fromFirestore,
         );
 
-  CollectionReference<T> get _collection => box.collection;
-
   Future<void> create(T dto) async {
-    await _collection.add(dto);
+    await box.readCollection.add(dto);
   }
 
   Future<void> update(T dto) async {
-    await _collection.doc(dto.id).set(dto);
+    await box.readCollection.doc(dto.id).set(dto);
   }
 
   Future<void> delete(String dtoId) async {
-    await _collection.doc(dtoId).delete();
+    await box.readCollection.doc(dtoId).delete();
   }
 }
 
-abstract class Dto {
+mixin Dto {
   String get id;
 
-  const Dto();
+  bool get hasId => id.isNotEmpty;
 }

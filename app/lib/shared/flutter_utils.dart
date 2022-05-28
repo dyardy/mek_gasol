@@ -6,3 +6,9 @@ extension ToDateTimeOnTimeOfDay on TimeOfDay {
     return original.copyWith(hour: hour, minute: minute);
   }
 }
+
+extension ToDurationOnTimeOfDay on TimeOfDay {
+  Duration toDuration() {
+    return Duration(hours: hour, minutes: minute);
+  }
+}

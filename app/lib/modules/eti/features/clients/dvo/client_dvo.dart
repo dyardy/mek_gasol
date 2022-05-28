@@ -6,7 +6,7 @@ part 'client_dvo.g.dart';
 
 @DataClass()
 @JsonSerializable()
-class ClientDvo extends Dto with _$ClientDvo {
+class ClientDvo with Dto, _$ClientDvo {
   @override
   final String id;
   final String displayName;

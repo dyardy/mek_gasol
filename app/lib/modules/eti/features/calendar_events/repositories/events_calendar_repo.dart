@@ -29,7 +29,7 @@ class EventsCalendarRepo extends FirestoreRepository<EventCalendarDto> {
 
     final nextMonth = DateTimeUtils.darwinAdd(month, 1);
 
-    var query = box.collection.asQuery();
+    var query = box.watchCollection.asQuery();
 
     query = query.orderBy(EventCalendarDto.startAtKey);
     query = query.startAt([Timestamp.fromDate(month)]).endAt([Timestamp.fromDate(nextMonth)]);

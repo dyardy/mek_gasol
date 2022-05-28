@@ -1,23 +1,38 @@
 import 'package:built_collection/built_collection.dart';
+import 'package:json_annotation/json_annotation.dart';
+import 'package:mek_data_class/mek_data_class.dart';
+import 'package:mek_gasol/features/firestore/repositories/firestore_repository.dart';
+
+part 'calendar_rule_dto.g.dart';
 
 enum RuleCalendarDtoType { work }
 
-class RuleCalendarDto {
-  const RuleCalendarDto();
-}
+// TODO: Implement base rule dto class
+// class RuleCalendarDto extends Dto {
+//   const RuleCalendarDto();
+// }
 
-class WorkRuleCalendarDto extends RuleCalendarDto {
+@DataClass()
+@JsonSerializable()
+class WorkRuleCalendarDto with Dto, _$WorkRuleCalendarDto {
+  @override
+  final String id;
   final RuleCalendarDtoType type;
   final Duration startAt;
   final Duration endAt;
   final BuiltList<WeekDay> weekDays;
 
   const WorkRuleCalendarDto({
-    required this.type,
+    required this.id,
+    this.type = RuleCalendarDtoType.work,
     required this.startAt,
     required this.endAt,
     required this.weekDays,
   });
+
+  factory WorkRuleCalendarDto.fromJson(Map<String, dynamic> map) =>
+      _$WorkRuleCalendarDtoFromJson(map);
+  Map<String, dynamic> toJson() => _$WorkRuleCalendarDtoToJson(this);
 }
 
 enum WeekDay {
@@ -33,7 +48,3 @@ enum WeekDay {
 
   const WeekDay(this.number);
 }
-
-// void main() {
-//   DateTime.wednesday
-// }
