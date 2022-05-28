@@ -8,7 +8,7 @@ part 'calendar_event_dto.g.dart';
 
 enum EventCalendarDtoType { work, holiday, vacation }
 
-abstract class EventCalendarDto implements Dto {
+abstract class EventCalendarDto with Dto {
   @override
   final String id;
   final EventCalendarDtoType type;
