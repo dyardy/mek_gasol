@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mek_gasol/features/players/dvo/player_dvo.dart';
-import 'package:mek_gasol/features/players/triggers/players_trigger.dart';
+import 'package:mek_gasol/modules/gasol/features/players/dvo/player_dvo.dart';
+import 'package:mek_gasol/modules/gasol/features/players/triggers/players_trigger.dart';
 import 'package:mek_gasol/shared/hub.dart';
 import 'package:rivertion/rivertion.dart';
 
@@ -91,7 +91,7 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen> {
       });
     });
 
-    Widget _buildDeleteButton(PlayerDvo player) {
+    Widget buildDeleteButton(PlayerDvo player) {
       return Consumer(
         builder: (context, ref, _) {
           final canDelete = ref.watch(PlayerBloc.delete.select((state) => !state.isMutating));
@@ -122,7 +122,7 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen> {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         middle: Text(widget.player?.username ?? 'Player'),
-        trailing: player != null ? _buildDeleteButton(player) : null,
+        trailing: player != null ? buildDeleteButton(player) : null,
       ),
       child: SafeArea(
         child: Column(

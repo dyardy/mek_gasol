@@ -1,6 +1,6 @@
 import 'package:built_collection/built_collection.dart';
 import 'package:mek_data_class/mek_data_class.dart';
-import 'package:mek_gasol/features/players/dvo/player_dvo.dart';
+import 'package:mek_gasol/modules/gasol/features/players/dvo/player_dvo.dart';
 
 part 'match_dvo.g.dart';
 

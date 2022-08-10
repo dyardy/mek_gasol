@@ -3,13 +3,12 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mek_gasol/modules/auth/protected_area.dart';
 import 'package:mek_gasol/modules/eti/features/calendar/screens/calendar_events.dart';
-import 'package:mek_gasol/modules/eti/features/calendar/screens/calendar_rules.dart';
 import 'package:mek_gasol/shared/data/mek_widgets.dart';
 import 'package:mek_gasol/shared/hub.dart';
 
-/// Work Time Tracker App
-class EtiApp extends StatelessWidget {
-  const EtiApp({Key? key}) : super(key: key);
+/// Simple pizza App
+class TuraApp extends StatelessWidget {
+  const TuraApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -31,9 +30,9 @@ class EtiApp extends StatelessWidget {
   }
 }
 
-enum _Tab { events, rules }
+enum _Tab { home }
 
-final _tab = StateProvider((ref) => _Tab.events);
+final _tab = StateProvider((ref) => _Tab.home);
 
 class _AuthenticatedArea extends ConsumerWidget {
   const _AuthenticatedArea({Key? key}) : super(key: key);
@@ -44,24 +43,17 @@ class _AuthenticatedArea extends ConsumerWidget {
 
     Widget buildTab() {
       switch (tab) {
-        case _Tab.events:
+        case _Tab.home:
           return const CalendarScreen();
-        case _Tab.rules:
-          return const CalendarRuleScreen();
       }
     }
 
     BottomNavigationBarItem buildBottomBarItem(_Tab tab) {
       switch (tab) {
-        case _Tab.events:
+        case _Tab.home:
           return const BottomNavigationBarItem(
             icon: Icon(Icons.calendar_today),
             label: 'Calendar',
-          );
-        case _Tab.rules:
-          return const BottomNavigationBarItem(
-            icon: Icon(Icons.rule),
-            label: 'Rules',
           );
       }
     }

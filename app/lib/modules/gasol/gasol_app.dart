@@ -1,10 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:mek_gasol/presentation/features/matches.dart';
-import 'package:mek_gasol/presentation/features/players.dart';
+import 'package:mek_gasol/modules/gasol/features/matches/widgets/matches.dart';
+import 'package:mek_gasol/modules/gasol/features/players/widgets/players.dart';
 import 'package:mek_gasol/shared/data/mek_widgets.dart';
 import 'package:mek_gasol/shared/hub.dart';
 
+/// Statistics Foosball table App
 class GasolApp extends StatelessWidget {
   const GasolApp({Key? key}) : super(key: key);
 

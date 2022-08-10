@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mek_gasol/features/players/triggers/players_trigger.dart';
-import 'package:mek_gasol/presentation/features/player.dart';
+import 'package:mek_gasol/modules/gasol/features/players/triggers/players_trigger.dart';
+import 'package:mek_gasol/modules/gasol/features/players/widgets/player.dart';
 import 'package:mek_gasol/shared/app_list_tile.dart';
 import 'package:mek_gasol/shared/hub.dart';
 

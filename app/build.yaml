@@ -20,6 +20,14 @@ targets:
           changeable: false
           changesVisible: false
 
+      mek_json_adapter:adapters:
+        generate_for:
+          - 'lib/**/*_dto.dart'
+          - 'lib/**/*_dvo.dart'
+      mek_json_adapter:bundle_adapters:
+        generate_for:
+          - 'lib/**/*_adapters.dart'
+
       json_serializable_immutable_collections:
         generate_for:
           - 'lib/**/*_dto.dart'

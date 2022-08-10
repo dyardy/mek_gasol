@@ -1,9 +1,9 @@
 import 'package:built_collection/built_collection.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:mek_gasol/features/matches/dto/match_dto.dart';
-import 'package:mek_gasol/features/matches/dvo/match_dvo.dart';
-import 'package:mek_gasol/features/players/dvo/player_dvo.dart';
-import 'package:mek_gasol/features/players/repos/players_repo.dart';
+import 'package:mek_gasol/modules/gasol/features/matches/dto/match_dto.dart';
+import 'package:mek_gasol/modules/gasol/features/matches/dvo/match_dvo.dart';
+import 'package:mek_gasol/modules/gasol/features/players/dvo/player_dvo.dart';
+import 'package:mek_gasol/modules/gasol/features/players/repositories/players_repo.dart';
 import 'package:mek_gasol/shared/providers.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:rxdart/rxdart.dart';

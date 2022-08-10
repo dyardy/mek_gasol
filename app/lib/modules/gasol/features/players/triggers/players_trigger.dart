@@ -1,6 +1,6 @@
 import 'package:built_collection/built_collection.dart';
-import 'package:mek_gasol/features/players/dvo/player_dvo.dart';
-import 'package:mek_gasol/features/players/repos/players_repo.dart';
+import 'package:mek_gasol/modules/gasol/features/players/dvo/player_dvo.dart';
+import 'package:mek_gasol/modules/gasol/features/players/repositories/players_repo.dart';
 import 'package:riverpod/riverpod.dart';
 
 class PlayersTrigger {

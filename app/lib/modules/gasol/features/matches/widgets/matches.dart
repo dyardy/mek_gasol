@@ -2,9 +2,9 @@ import 'package:built_collection/built_collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:mek_gasol/features/matches/triggers/matches_trigger.dart';
-import 'package:mek_gasol/features/players/dvo/player_dvo.dart';
-import 'package:mek_gasol/presentation/features/match.dart';
+import 'package:mek_gasol/modules/gasol/features/matches/triggers/matches_trigger.dart';
+import 'package:mek_gasol/modules/gasol/features/matches/widgets/match.dart';
+import 'package:mek_gasol/modules/gasol/features/players/dvo/player_dvo.dart';
 import 'package:mek_gasol/shared/app_list_tile.dart';
 import 'package:mek_gasol/shared/hub.dart';
 

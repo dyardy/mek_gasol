@@ -41,7 +41,7 @@ class WorkEventsScreen extends ConsumerWidget {
     final titleDateTimeFormat = DateFormat(null, languageTag).addPattern('EEEE').add_yMd();
     final cellDateTimeFormat = DateFormat(null, languageTag).add_Hm();
 
-    Widget _buildCells(BuiltList<EventCalendarDvo> events) {
+    Widget buildCells(BuiltList<EventCalendarDvo> events) {
       if (events.isEmpty) {
         return const Center(
           child: Text('Tap add icon to create new event!'),
@@ -95,7 +95,7 @@ class WorkEventsScreen extends ConsumerWidget {
               child: eventsState.when(
                 loading: () => const MekProgressIndicator(),
                 error: (_, __) => const MekCrashIndicator(),
-                data: (events) => _buildCells(events),
+                data: (events) => buildCells(events),
               ),
             ),
           ],

@@ -69,7 +69,7 @@ class CalendarRuleScreen extends ConsumerWidget {
       });
     });
 
-    List<Widget> _buildFields() {
+    List<Widget> buildFields() {
       return [
         TimeFieldBlocBuilder(
           timeFieldBloc: formBloc.startAtFB,
@@ -123,7 +123,7 @@ class CalendarRuleScreen extends ConsumerWidget {
         child: FormBlocProvider(
           formBloc: formBloc,
           child: Column(
-            children: _buildFields(),
+            children: buildFields(),
           ),
         ),
       ),

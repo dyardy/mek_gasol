@@ -39,7 +39,7 @@ class BarCalendar extends StatelessWidget {
       currentDay = currentDay.copyWith(day: currentDay.day + 1);
     }
 
-    Widget _buildTapDetector({
+    Widget buildTapDetector({
       required VoidCallback? onTap,
       bool isSelected = false,
       required Widget child,
@@ -63,7 +63,7 @@ class BarCalendar extends StatelessWidget {
       );
     }
 
-    Widget _buildScrollableBar({
+    Widget buildScrollableBar({
       required double height,
       required int itemCount,
       required IndexedWidgetBuilder itemBuilder,
@@ -85,7 +85,7 @@ class BarCalendar extends StatelessWidget {
 
     return Column(
       children: [
-        _buildScrollableBar(
+        buildScrollableBar(
           height: 40.0,
           itemCount: months.length,
           itemBuilder: (context, index) {
@@ -95,7 +95,7 @@ class BarCalendar extends StatelessWidget {
               height: double.infinity,
               child: Padding(
                 padding: const EdgeInsets.all(4.0),
-                child: _buildTapDetector(
+                child: buildTapDetector(
                   isSelected: month.isAtSameMonthAs(initialDate),
                   onTap: () => onDateChanged(initialDate.copyWith(
                     year: month.year,
@@ -107,7 +107,7 @@ class BarCalendar extends StatelessWidget {
             );
           },
         ),
-        _buildScrollableBar(
+        buildScrollableBar(
           height: 56.0,
           itemCount: days.length,
           itemBuilder: (context, index) {
@@ -118,7 +118,7 @@ class BarCalendar extends StatelessWidget {
               height: double.infinity,
               child: Padding(
                 padding: const EdgeInsets.all(4.0),
-                child: _buildTapDetector(
+                child: buildTapDetector(
                   isSelected: day.isAtSameDayAs(initialDate),
                   onTap: () => onDateChanged(initialDate.copyWith(
                     day: day.day,

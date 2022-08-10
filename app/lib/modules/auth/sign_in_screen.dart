@@ -54,7 +54,7 @@ class SignInScreen extends ConsumerWidget {
     final formBloc = ref.watch(SignInBloc.form.bloc);
     final authState = ref.watch(SignInBloc.signIn);
 
-    List<Widget> _buildFields() {
+    List<Widget> buildFields() {
       return [
         TextFieldBlocBuilder(
           textFieldBloc: formBloc.emailFB,
@@ -74,7 +74,7 @@ class SignInScreen extends ConsumerWidget {
         child: Column(
           children: [
             if (authState is FailedMutation<void>) Text('${authState.error}'),
-            ..._buildFields(),
+            ...buildFields(),
           ],
         ),
       ),

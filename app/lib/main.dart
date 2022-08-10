@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mek_gasol/firebase_options.dart';
 import 'package:mek_gasol/modules/eti/eti_app.dart';
 import 'package:mek_gasol/modules/gasol/gasol_app.dart';
+import 'package:mek_gasol/modules/tura/tura_app.dart';
 import 'package:mek_gasol/shared/app_list_tile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -26,7 +27,7 @@ void main() {
   }, blocObserver: _BlocObserver());
 }
 
-enum Module { gasol, eti }
+enum Module { gasol, eti, tura }
 
 class Modules extends StatefulWidget {
   const Modules({Key? key}) : super(key: key);
@@ -67,12 +68,14 @@ class _ModulesState extends State<Modules> {
 
   @override
   Widget build(BuildContext context) {
-    Widget _buildProject() {
+    Widget buildProject() {
       switch (_module) {
         case Module.gasol:
           return const GasolApp();
         case Module.eti:
           return const EtiApp();
+        case Module.tura:
+          return const TuraApp();
         case null:
           return Column(
             children: Module.values.map((e) {
@@ -90,7 +93,7 @@ class _ModulesState extends State<Modules> {
       child: GestureDetector(
         onSecondaryLongPress: () => setState(() => _module = null),
         child: SizedBox.expand(
-          child: _isLoading ? null : _buildProject(),
+          child: _isLoading ? null : buildProject(),
         ),
       ),
     );

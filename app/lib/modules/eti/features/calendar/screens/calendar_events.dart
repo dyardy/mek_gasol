@@ -19,7 +19,7 @@ class CalendarScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final month = DateTime.now().copyUpTo(month: true);
 
-    Widget _buildCalendar(BuiltList<EventCalendarDvo> events) {
+    Widget buildCalendar(BuiltList<EventCalendarDvo> events) {
       return TableCalendar(
         firstDay: DateTime.now().subtract(const Duration(days: 360)),
         focusedDay: DateTime.now(),
@@ -30,7 +30,7 @@ class CalendarScreen extends ConsumerWidget {
       );
     }
 
-    Widget _buildSummary(BuiltList<EventCalendarDvo> events) {
+    Widget buildSummary(BuiltList<EventCalendarDvo> events) {
       final groupedEvents = events.groupListsBy((event) => event.createdBy);
 
       return DataTable(
@@ -74,8 +74,8 @@ class CalendarScreen extends ConsumerWidget {
         data: (events) {
           return Column(
             children: [
-              _buildCalendar(events),
-              _buildSummary(events),
+              buildCalendar(events),
+              buildSummary(events),
             ],
           );
         },
