@@ -60,14 +60,14 @@ class ClientScreen extends ConsumerWidget {
 
     ref.listen<MutationState>(_save(client), (previous, next) {
       next.mapOrNull(success: (_) {
-        Hub.pop();
+        context.hub.pop();
       });
     });
 
     if (client != null) {
       ref.listen<MutationState>(_delete(client), (previous, next) {
         next.mapOrNull(success: (_) {
-          Hub.pop();
+          context.hub.pop();
         });
       });
     }

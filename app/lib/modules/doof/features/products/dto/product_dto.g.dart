@@ -33,3 +33,22 @@ mixin _$ProductDto {
         ..add('price', _self.price))
       .toString();
 }
+
+// **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
+ProductDto _$ProductDtoFromJson(Map json) => ProductDto(
+      id: json['id'] as String,
+      title: json['title'] as String,
+      description: json['description'] as String,
+      price: Decimal.fromJson(json['price'] as String),
+    );
+
+Map<String, dynamic> _$ProductDtoToJson(ProductDto instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'title': instance.title,
+      'description': instance.description,
+      'price': instance.price,
+    };

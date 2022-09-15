@@ -77,7 +77,7 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen> {
 
     ref.listen<MutationState>(PlayerBloc.save, (previous, next) {
       next.maybeMap(success: (state) {
-        Hub.pop(state.data);
+        context.hub.pop(state.data);
       }, orElse: (_) {
         // nothing
       });
@@ -85,7 +85,7 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen> {
 
     ref.listen<MutationState>(PlayerBloc.delete, (previous, next) {
       next.maybeMap(success: (state) {
-        Hub.pop(null);
+        context.hub.pop(null);
       }, orElse: (_) {
         // nothing
       });

@@ -4,12 +4,12 @@ import 'package:mek_gasol/modules/auth/sign_in_screen.dart';
 import 'package:mek_gasol/shared/data/mek_widgets.dart';
 import 'package:mek_gasol/shared/providers.dart';
 
-class ProtectedArea extends ConsumerWidget {
-  final WidgetBuilder authenticatedBuilder;
+class AuthGuard extends ConsumerWidget {
+  final Widget Function(BuildContext context, Widget? child) builder;
 
-  const ProtectedArea({
+  const AuthGuard({
     Key? key,
-    required this.authenticatedBuilder,
+    required this.builder,
   }) : super(key: key);
 
   @override
@@ -18,12 +18,9 @@ class ProtectedArea extends ConsumerWidget {
         ref.watch(Providers.userStatus.select((value) => value.whenData((value) => value?.id)));
 
     return user.maybeWhen(data: (userId) {
-      if (userId == null) {
-        return const SignInScreen();
-      }
-      return authenticatedBuilder(context);
+      return builder(context, userId != null ? null : const SignInScreen());
     }, orElse: () {
-      return const MekProgressIndicator();
+      return builder(context, const MekProgressIndicator());
     });
   }
 }

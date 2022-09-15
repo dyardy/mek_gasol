@@ -37,7 +37,7 @@ class MatchesScreen extends StatelessWidget {
               }
 
               return AppListTile(
-                onTap: () => Hub.push(MatchScreen(match: match)),
+                onTap: () => context.hub.push(MatchScreen(match: match)),
                 title: RichText(
                   text: TextSpan(
                     children: [
@@ -67,7 +67,7 @@ class MatchesScreen extends StatelessWidget {
         middle: const Text('Matches'),
         trailing: CupertinoButton(
           padding: EdgeInsets.zero,
-          onPressed: () => Hub.push(const MatchScreen(match: null)),
+          onPressed: () => context.hub.push(const MatchScreen(match: null)),
           child: const Text('Add'),
         ),
       ),

@@ -36,7 +36,7 @@ class ProjectsScreen extends ConsumerWidget {
         title: const Text('Projects'),
         actions: [
           IconButton(
-            onPressed: () => Hub.push(ProjectScreen(
+            onPressed: () => context.hub.push(ProjectScreen(
               clientId: clientId,
             )),
             icon: const Icon(Icons.add),

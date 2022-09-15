@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mek_adaptable/mek_adaptable.dart';
 import 'package:mek_gasol/features/users/dto/user_dto.dart';
 import 'package:mek_gasol/features/users/repositories/users_repo.dart';
 
@@ -56,6 +57,14 @@ extension FirestoreExtensions<T> on CollectionReference<T> {
       return fromFirestore({'id': snapshot.id, ...snapshot.data()!});
     }, toFirestore: (value, _) {
       return {...((value as dynamic).toJson() as Map<String, dynamic>)}..remove('id');
+    });
+  }
+
+  CollectionReference<R> withJsonAdapters<R extends Adaptable>(Adapters adapters) {
+    return withConverter<R>(fromFirestore: (snapshot, _) {
+      return adapters.deserialize<R>({'id': snapshot.id, ...snapshot.data()!});
+    }, toFirestore: (value, _) {
+      return {...(adapters.serialize(value) as Map<String, dynamic>)}..remove('id');
     });
   }
 }

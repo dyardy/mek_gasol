@@ -1,13 +1,18 @@
 import 'package:flutter/cupertino.dart';
 
-abstract class Hub {
-  static final navigatorKey = GlobalKey<NavigatorState>();
-  static NavigatorState get navigator => navigatorKey.currentState!;
+extension HubOnBuildContext on BuildContext {
+  Hub get hub => Hub._(Navigator.of(this));
+}
 
-  static void pop<T>([T? result]) => navigator.pop<T>(result);
+class Hub {
+  final NavigatorState _navigator;
 
-  static Future<T?> push<T>(Widget screen) {
-    return navigator.push<T>(CupertinoPageRoute(builder: (context) {
+  Hub._(this._navigator);
+
+  void pop<T>([T? result]) => _navigator.pop<T>(result);
+
+  Future<T?> push<T>(Widget screen) {
+    return _navigator.push<T>(CupertinoPageRoute(builder: (context) {
       return screen;
     }));
   }

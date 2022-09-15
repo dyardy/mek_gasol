@@ -47,7 +47,7 @@ class ProjectScreen extends ConsumerWidget {
 
     ref.listen<MutationState>(_save(clientId), (previous, next) {
       next.mapOrNull(success: (_) {
-        Hub.pop();
+        context.hub.pop();
       });
     });
 

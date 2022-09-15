@@ -23,12 +23,12 @@ class ClientsScreen extends ConsumerWidget {
             final client = clients[index];
 
             return ListTile(
-              onTap: () => Hub.push(ProjectsScreen(
+              onTap: () => context.hub.push(ProjectsScreen(
                 clientId: client.id,
               )),
               title: Text(client.displayName),
               trailing: IconButton(
-                onPressed: () => Hub.push(ClientScreen(
+                onPressed: () => context.hub.push(ClientScreen(
                   client: client,
                 )),
                 icon: const Icon(Icons.edit),
@@ -44,7 +44,7 @@ class ClientsScreen extends ConsumerWidget {
         title: const Text('Clients'),
         actions: [
           IconButton(
-            onPressed: () => Hub.push(const ClientScreen(
+            onPressed: () => context.hub.push(const ClientScreen(
               client: null,
             )),
             icon: const Icon(Icons.add),

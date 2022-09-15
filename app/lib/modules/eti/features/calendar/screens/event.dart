@@ -164,7 +164,7 @@ class WorkEventScreen extends ConsumerWidget {
 
     ref.listen<MutationState>(_save(args), (previous, next) {
       next.whenOrNull(success: (_) {
-        Hub.pop();
+        context.hub.pop();
       });
     });
 

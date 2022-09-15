@@ -65,7 +65,7 @@ class CalendarRuleScreen extends ConsumerWidget {
 
     ref.listen<MutationState>(_save, (previous, next) {
       next.whenOrNull(success: (_) {
-        Hub.pop();
+        context.hub.pop();
       });
     });
 

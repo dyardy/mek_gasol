@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mek_gasol/modules/auth/auth_guard.dart';
-import 'package:mek_gasol/modules/eti/features/calendar/screens/calendar_events.dart';
-import 'package:mek_gasol/modules/eti/features/calendar/screens/calendar_rules.dart';
+import 'package:mek_gasol/modules/doof/features/orders/screens/orders_screen.dart';
+import 'package:mek_gasol/modules/doof/features/products/screens/products_screen.dart';
 import 'package:mek_gasol/shared/data/mek_widgets.dart';
 
-/// Work Time Tracker App
-class EtiApp extends StatelessWidget {
-  const EtiApp({Key? key}) : super(key: key);
+/// Food app
+class DoofApp extends StatelessWidget {
+  const DoofApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +19,7 @@ class EtiApp extends StatelessWidget {
         localizationsDelegates: GlobalMaterialLocalizations.delegates,
         supportedLocales: const [Locale.fromSubtags(languageCode: 'it')],
         debugShowCheckedModeBanner: false,
-        title: 'Mek Gasol',
+        title: 'Doof App',
         theme: ThemeData.from(
           colorScheme: const ColorScheme.highContrastDark(primary: Colors.yellow),
         ),
@@ -30,9 +30,9 @@ class EtiApp extends StatelessWidget {
   }
 }
 
-enum _Tab { events, rules }
+enum _Tab { orders, products }
 
-final _tab = StateProvider((ref) => _Tab.events);
+final _tab = StateProvider((ref) => _Tab.orders);
 
 class _AuthenticatedArea extends ConsumerWidget {
   const _AuthenticatedArea({Key? key}) : super(key: key);
@@ -43,24 +43,24 @@ class _AuthenticatedArea extends ConsumerWidget {
 
     Widget buildTab() {
       switch (tab) {
-        case _Tab.events:
-          return const CalendarScreen();
-        case _Tab.rules:
-          return const CalendarRuleScreen();
+        case _Tab.orders:
+          return const OrdersScreen();
+        case _Tab.products:
+          return const ProductsScreen();
       }
     }
 
     BottomNavigationBarItem buildBottomBarItem(_Tab tab) {
       switch (tab) {
-        case _Tab.events:
+        case _Tab.orders:
           return const BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_today),
-            label: 'Calendar',
+            icon: Icon(Icons.library_books_outlined),
+            label: 'Orders',
           );
-        case _Tab.rules:
+        case _Tab.products:
           return const BottomNavigationBarItem(
-            icon: Icon(Icons.rule),
-            label: 'Rules',
+            icon: Icon(Icons.bug_report_outlined),
+            label: 'Products',
           );
       }
     }
@@ -68,6 +68,7 @@ class _AuthenticatedArea extends ConsumerWidget {
     return Scaffold(
       body: buildTab(),
       bottomNavigationBar: BottomNavigationBar(
+        currentIndex: tab.index,
         onTap: (index) => ref.read(_tab.notifier).state = _Tab.values[index],
         items: _Tab.values.map(buildBottomBarItem).toList(),
       ),

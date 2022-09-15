@@ -1,11 +1,14 @@
 import 'package:bloc/bloc.dart';
+import 'package:collection/collection.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get_it/get_it.dart';
 import 'package:mek_gasol/firebase_options.dart';
+import 'package:mek_gasol/modules/doof/doof_app.dart';
+import 'package:mek_gasol/modules/doof/shared/init_doof_service_locator.dart';
 import 'package:mek_gasol/modules/eti/eti_app.dart';
 import 'package:mek_gasol/modules/gasol/gasol_app.dart';
-import 'package:mek_gasol/modules/tura/tura_app.dart';
 import 'package:mek_gasol/shared/app_list_tile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -20,6 +23,8 @@ void main() {
       options: DefaultFirebaseOptions.currentPlatform,
     );
 
+    GetIt.instance.initDoofServiceLocator();
+
     runApp(const ProviderScope(
       observers: [_ProviderObserver()],
       child: Modules(),
@@ -27,7 +32,7 @@ void main() {
   }, blocObserver: _BlocObserver());
 }
 
-enum Module { gasol, eti, tura }
+enum Module { gasol, eti, doof }
 
 class Modules extends StatefulWidget {
   const Modules({Key? key}) : super(key: key);
@@ -49,9 +54,7 @@ class _ModulesState extends State<Modules> {
   void _init() async {
     final preferences = await SharedPreferences.getInstance();
     final moduleName = preferences.getString('$Module');
-    final module = Module.values.firstWhere(orElse: () => Module.gasol, (e) {
-      return e.name == moduleName;
-    });
+    final module = Module.values.firstWhereOrNull((e) => e.name == moduleName);
     setState(() {
       _module = module;
       _isLoading = false;
@@ -74,8 +77,8 @@ class _ModulesState extends State<Modules> {
           return const GasolApp();
         case Module.eti:
           return const EtiApp();
-        case Module.tura:
-          return const TuraApp();
+        case Module.doof:
+          return const DoofApp();
         case null:
           return Column(
             children: Module.values.map((e) {

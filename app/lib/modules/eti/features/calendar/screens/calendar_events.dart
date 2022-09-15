@@ -25,7 +25,7 @@ class CalendarScreen extends ConsumerWidget {
         focusedDay: DateTime.now(),
         lastDay: DateTime.now().add(const Duration(days: 360)),
         onDaySelected: (selectedDay, _) {
-          Hub.push(WorkEventsScreen(initialDay: selectedDay.toLocal().copyUpTo(day: true)));
+          context.hub.push(WorkEventsScreen(initialDay: selectedDay.toLocal().copyUpTo(day: true)));
         },
       );
     }
@@ -59,7 +59,7 @@ class CalendarScreen extends ConsumerWidget {
         title: const Text('Calendar'),
         actions: [
           IconButton(
-            onPressed: () => Hub.push(const ClientsScreen()),
+            onPressed: () => context.hub.push(const ClientsScreen()),
             icon: const Icon(Icons.people_alt_outlined),
           ),
           IconButton(

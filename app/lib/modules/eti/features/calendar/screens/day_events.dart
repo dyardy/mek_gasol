@@ -70,7 +70,7 @@ class WorkEventsScreen extends ConsumerWidget {
             itemsBuilder: (context) {
               return EventCalendarType.values.map((e) {
                 return PopupMenuItem<Never>(
-                  onTap: () => Hub.push(WorkEventScreen(
+                  onTap: () => context.hub.push(WorkEventScreen(
                     type: e,
                     day: day,
                   )),

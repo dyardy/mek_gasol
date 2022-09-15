@@ -99,7 +99,7 @@ class MatchScreen extends ConsumerWidget {
 
     ref.listen<MutationState<void>>(MatchBloc.save, (previous, next) {
       next.maybeMap(success: (_) {
-        Hub.pop();
+        context.hub.pop();
       }, orElse: (_) {
         //
       });
@@ -179,7 +179,8 @@ class MatchScreen extends ConsumerWidget {
 
             return GestureDetector(
               onTap: () async {
-                final teams = await Hub.push<Map<Team, List<PlayerDvo>>>(const _TeamsScreen());
+                final teams =
+                    await context.hub.push<Map<Team, List<PlayerDvo>>>(const _TeamsScreen());
                 if (teams == null) return;
                 formBloc.teamsFB.updateValue(teams);
               },
@@ -277,7 +278,7 @@ class _TeamsScreenState extends ConsumerState<_TeamsScreen> {
     final result = values.entries
         .groupListsBy((element) => element.value)
         .map((key, value) => MapEntry(key, value.map((e) => e.key).toList()));
-    Hub.pop(result);
+    context.hub.pop(result);
   }
 
   @override

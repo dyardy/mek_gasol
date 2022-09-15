@@ -3,7 +3,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:mek_gasol/modules/gasol/features/matches/widgets/matches.dart';
 import 'package:mek_gasol/modules/gasol/features/players/widgets/players.dart';
 import 'package:mek_gasol/shared/data/mek_widgets.dart';
-import 'package:mek_gasol/shared/hub.dart';
 
 /// Statistics Foosball table App
 class GasolApp extends StatelessWidget {
@@ -12,7 +11,6 @@ class GasolApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CupertinoApp(
-      navigatorKey: Hub.navigatorKey,
       locale: const Locale.fromSubtags(languageCode: 'it'),
       localizationsDelegates: GlobalCupertinoLocalizations.delegates,
       supportedLocales: const [Locale.fromSubtags(languageCode: 'it')],

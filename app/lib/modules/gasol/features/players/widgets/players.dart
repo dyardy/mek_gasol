@@ -29,7 +29,7 @@ class PlayersScreen extends ConsumerWidget {
           final player = players[index];
 
           return AppListTile(
-            onTap: () => Hub.push(PlayerScreen(player: player)),
+            onTap: () => context.hub.push(PlayerScreen(player: player)),
             title: Text(player.username),
           );
         },
@@ -41,7 +41,7 @@ class PlayersScreen extends ConsumerWidget {
         middle: const Text('Players'),
         trailing: CupertinoButton(
           padding: EdgeInsets.zero,
-          onPressed: () => Hub.push(const PlayerScreen(player: null)),
+          onPressed: () => context.hub.push(const PlayerScreen(player: null)),
           child: const Text('Add'),
         ),
       ),
