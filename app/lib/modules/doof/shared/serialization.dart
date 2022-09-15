@@ -1,7 +1,8 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:mek_gasol/clients/firebase/timestamp_json_converter.dart';
 
 class DtoSerializable extends JsonSerializable {
-  const DtoSerializable() : super();
+  const DtoSerializable() : super(converters: const [TimestampJsonConvert()]);
 }
 
 // class DecimalConverter extends JsonConverter<Decimal, String> {
