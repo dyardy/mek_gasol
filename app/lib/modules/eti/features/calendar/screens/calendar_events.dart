@@ -1,4 +1,3 @@
-import 'package:built_collection/built_collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mek_gasol/modules/eti/features/calendar/screens/day_events.dart';
@@ -19,7 +18,7 @@ class CalendarScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final month = DateTime.now().copyUpTo(month: true);
 
-    Widget buildCalendar(BuiltList<EventCalendarDvo> events) {
+    Widget buildCalendar(List<EventCalendarDvo> events) {
       return TableCalendar(
         firstDay: DateTime.now().subtract(const Duration(days: 360)),
         focusedDay: DateTime.now(),
@@ -30,7 +29,7 @@ class CalendarScreen extends ConsumerWidget {
       );
     }
 
-    Widget buildSummary(BuiltList<EventCalendarDvo> events) {
+    Widget buildSummary(List<EventCalendarDvo> events) {
       final groupedEvents = events.groupListsBy((event) => event.createdBy);
 
       return DataTable(

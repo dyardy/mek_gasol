@@ -112,7 +112,8 @@ mixin _$VacationEventCalendarDto {
 // JsonSerializableGenerator
 // **************************************************************************
 
-WorkEventCalendarDto _$WorkEventCalendarDtoFromJson(Map json) =>
+WorkEventCalendarDto _$WorkEventCalendarDtoFromJson(
+        Map<String, dynamic> json) =>
     WorkEventCalendarDto(
       id: json['id'] as String,
       type: $enumDecodeNullable(_$EventCalendarDtoTypeEnumMap, json['type']) ??
@@ -131,7 +132,7 @@ Map<String, dynamic> _$WorkEventCalendarDtoToJson(
         WorkEventCalendarDto instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'type': _$EventCalendarDtoTypeEnumMap[instance.type],
+      'type': _$EventCalendarDtoTypeEnumMap[instance.type]!,
       'createdBy': instance.createdBy,
       'startAt': const TimestampJsonConvert().toJson(instance.startAt),
       'endAt': const TimestampJsonConvert().toJson(instance.endAt),
@@ -147,7 +148,8 @@ const _$EventCalendarDtoTypeEnumMap = {
   EventCalendarDtoType.vacation: 'vacation',
 };
 
-HolidayEventCalendarDto _$HolidayEventCalendarDtoFromJson(Map json) =>
+HolidayEventCalendarDto _$HolidayEventCalendarDtoFromJson(
+        Map<String, dynamic> json) =>
     HolidayEventCalendarDto(
       id: json['id'] as String,
       type: $enumDecodeNullable(_$EventCalendarDtoTypeEnumMap, json['type']) ??
@@ -164,7 +166,7 @@ Map<String, dynamic> _$HolidayEventCalendarDtoToJson(
         HolidayEventCalendarDto instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'type': _$EventCalendarDtoTypeEnumMap[instance.type],
+      'type': _$EventCalendarDtoTypeEnumMap[instance.type]!,
       'createdBy': instance.createdBy,
       'startAt': const TimestampJsonConvert().toJson(instance.startAt),
       'endAt': const TimestampJsonConvert().toJson(instance.endAt),
@@ -172,7 +174,8 @@ Map<String, dynamic> _$HolidayEventCalendarDtoToJson(
       'isPaid': instance.isPaid,
     };
 
-VacationEventCalendarDto _$VacationEventCalendarDtoFromJson(Map json) =>
+VacationEventCalendarDto _$VacationEventCalendarDtoFromJson(
+        Map<String, dynamic> json) =>
     VacationEventCalendarDto(
       id: json['id'] as String,
       type: $enumDecodeNullable(_$EventCalendarDtoTypeEnumMap, json['type']) ??
@@ -189,7 +192,7 @@ Map<String, dynamic> _$VacationEventCalendarDtoToJson(
         VacationEventCalendarDto instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'type': _$EventCalendarDtoTypeEnumMap[instance.type],
+      'type': _$EventCalendarDtoTypeEnumMap[instance.type]!,
       'createdBy': instance.createdBy,
       'startAt': const TimestampJsonConvert().toJson(instance.startAt),
       'endAt': const TimestampJsonConvert().toJson(instance.endAt),

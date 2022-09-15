@@ -1,4 +1,3 @@
-import 'package:built_collection/built_collection.dart';
 import 'package:mek_gasol/modules/eti/features/calendar_events/dto/calendar_event_dto.dart';
 import 'package:mek_gasol/modules/eti/features/calendar_events/dvo/calendar_event_dvo.dart';
 import 'package:mek_gasol/modules/eti/features/calendar_events/repositories/events_calendar_repo.dart';
@@ -64,7 +63,7 @@ class EventsCalendarTrigger {
         );
       });
     }).waitFutures();
-    return mappedEvents.toBuiltList();
+    return mappedEvents.toList();
   });
 
   Future<void> save(EventCalendarDvo event) async {

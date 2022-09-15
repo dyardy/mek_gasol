@@ -1,11 +1,11 @@
 import 'package:decimal/decimal.dart';
-import 'package:json_annotation/json_annotation.dart';
 import 'package:mek_data_class/mek_data_class.dart';
+import 'package:mek_gasol/modules/doof/shared/serialization.dart';
 
 part 'product_dto.g.dart';
 
 @DataClass()
-@JsonSerializable()
+@DtoSerializable()
 class ProductDto with _$ProductDto {
   final String id;
   final String title;

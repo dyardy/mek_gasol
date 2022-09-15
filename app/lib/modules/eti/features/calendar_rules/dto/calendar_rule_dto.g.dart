@@ -40,25 +40,26 @@ mixin _$WorkRuleCalendarDto {
 // JsonSerializableGenerator
 // **************************************************************************
 
-WorkRuleCalendarDto _$WorkRuleCalendarDtoFromJson(Map json) =>
+WorkRuleCalendarDto _$WorkRuleCalendarDtoFromJson(Map<String, dynamic> json) =>
     WorkRuleCalendarDto(
       id: json['id'] as String,
       type: $enumDecodeNullable(_$RuleCalendarDtoTypeEnumMap, json['type']) ??
           RuleCalendarDtoType.work,
       startAt: Duration(microseconds: json['startAt'] as int),
       endAt: Duration(microseconds: json['endAt'] as int),
-      weekDays: ((json['weekDays'] as List)
-          .map((e) => $enumDecode(_$WeekDayEnumMap, e))).toBuiltList(),
+      weekDays: (json['weekDays'] as List<dynamic>)
+          .map((e) => $enumDecode(_$WeekDayEnumMap, e))
+          .toList(),
     );
 
 Map<String, dynamic> _$WorkRuleCalendarDtoToJson(
         WorkRuleCalendarDto instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'type': _$RuleCalendarDtoTypeEnumMap[instance.type],
+      'type': _$RuleCalendarDtoTypeEnumMap[instance.type]!,
       'startAt': instance.startAt.inMicroseconds,
       'endAt': instance.endAt.inMicroseconds,
-      'weekDays': instance.weekDays.map((e) => _$WeekDayEnumMap[e]).toList(),
+      'weekDays': instance.weekDays.map((e) => _$WeekDayEnumMap[e]!).toList(),
     };
 
 const _$RuleCalendarDtoTypeEnumMap = {

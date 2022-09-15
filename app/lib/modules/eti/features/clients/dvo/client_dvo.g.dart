@@ -34,7 +34,7 @@ mixin _$ClientDvo {
 // JsonSerializableGenerator
 // **************************************************************************
 
-ClientDvo _$ClientDvoFromJson(Map json) => ClientDvo(
+ClientDvo _$ClientDvoFromJson(Map<String, dynamic> json) => ClientDvo(
       id: json['id'] as String,
       displayName: json['displayName'] as String,
     );

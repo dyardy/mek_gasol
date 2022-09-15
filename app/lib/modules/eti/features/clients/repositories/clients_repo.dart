@@ -1,4 +1,3 @@
-import 'package:built_collection/built_collection.dart';
 import 'package:mek_gasol/features/firestore/repositories/firestore_repository.dart';
 import 'package:mek_gasol/modules/eti/features/clients/dvo/client_dvo.dart';
 import 'package:riverpod/riverpod.dart';
@@ -15,11 +14,11 @@ class ClientsRepo extends FirestoreRepository<ClientDvo> {
           fromFirestore: ClientDvo.fromJson,
         );
 
-  Stream<BuiltList<ClientDvo>> watchAll() {
+  Stream<List<ClientDvo>> watchAll() {
     final matchesQuery = box.watchCollection.orderBy(ClientDvo.displayNameKey, descending: false);
 
     return matchesQuery.snapshots().map((snapshot) {
-      return snapshot.docs.map((e) => e.data()).toBuiltList();
+      return snapshot.docs.map((e) => e.data()).toList();
     });
   }
 }

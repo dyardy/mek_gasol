@@ -1,4 +1,3 @@
-import 'package:built_collection/built_collection.dart';
 import 'package:mek_gasol/features/firestore/repositories/firestore_repository.dart';
 import 'package:mek_gasol/modules/eti/features/calendar_rules/dto/calendar_rule_dto.dart';
 import 'package:riverpod/riverpod.dart';
@@ -17,9 +16,9 @@ class RulesCalendarRepo extends FirestoreRepository<WorkRuleCalendarDto> {
     return ref.watch(instance)._watchAll();
   });
 
-  Stream<BuiltList<WorkRuleCalendarDto>> _watchAll() {
+  Stream<List<WorkRuleCalendarDto>> _watchAll() {
     return box.watchCollection.snapshots().map((snapshot) {
-      return snapshot.docs.map((e) => e.data()).toBuiltList();
+      return snapshot.docs.map((e) => e.data()).toList();
     });
   }
 }

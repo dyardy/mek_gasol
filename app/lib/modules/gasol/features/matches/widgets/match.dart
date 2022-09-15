@@ -1,4 +1,3 @@
-import 'package:built_collection/built_collection.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -38,8 +37,8 @@ class MatchFormBloc extends ListFieldBloc<dynamic> {
 
   MatchFormBloc({required this.match}) {
     teamsFB.updateValue({
-      Team.left: match?.leftPlayers.asList() ?? const [],
-      Team.right: match?.rightPlayers.asList() ?? const [],
+      Team.left: match?.leftPlayers ?? const [],
+      Team.right: match?.rightPlayers ?? const [],
     });
     leftPointsFB.updateValue(match?.leftPoints ?? 0);
     rightPointsFB.updateValue(match?.rightPoints ?? 0);
@@ -72,8 +71,8 @@ class MatchBloc {
 
       ref.read(MatchesTrigger.instance).save(
             matchId: formBloc.match?.id,
-            leftPlayers: teams[Team.left]!.toBuiltList(),
-            rightPlayers: teams[Team.right]!.toBuiltList(),
+            leftPlayers: teams[Team.left]!.toList(),
+            rightPlayers: teams[Team.right]!.toList(),
             leftPoints: formBloc.leftPointsFB.state.value,
             rightPoint: formBloc.rightPointsFB.state.value,
           );

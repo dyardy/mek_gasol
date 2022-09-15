@@ -1,4 +1,3 @@
-import 'package:built_collection/built_collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -19,7 +18,7 @@ final _events = FutureProvider.family((ref, DateTime day) async {
 
   return events.where((event) {
     return event.startAt.isBetween(day, day.add(const Duration(days: 1)));
-  }).toBuiltList();
+  }).toList();
 });
 
 class WorkEventsScreen extends ConsumerWidget {
@@ -41,7 +40,7 @@ class WorkEventsScreen extends ConsumerWidget {
     final titleDateTimeFormat = DateFormat(null, languageTag).addPattern('EEEE').add_yMd();
     final cellDateTimeFormat = DateFormat(null, languageTag).add_Hm();
 
-    Widget buildCells(BuiltList<EventCalendarDvo> events) {
+    Widget buildCells(List<EventCalendarDvo> events) {
       if (events.isEmpty) {
         return const Center(
           child: Text('Tap add icon to create new event!'),

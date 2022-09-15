@@ -1,4 +1,3 @@
-import 'package:built_collection/built_collection.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mek_gasol/modules/gasol/features/matches/dto/match_dto.dart';
 import 'package:mek_gasol/modules/gasol/features/matches/dvo/match_dvo.dart';
@@ -25,8 +24,8 @@ class MatchesTrigger {
 
   Future<void> save({
     required String? matchId,
-    required BuiltList<PlayerDvo> leftPlayers,
-    required BuiltList<PlayerDvo> rightPlayers,
+    required List<PlayerDvo> leftPlayers,
+    required List<PlayerDvo> rightPlayers,
     required int leftPoints,
     required int rightPoint,
   }) async {
@@ -34,34 +33,34 @@ class MatchesTrigger {
     final match = MatchDto(
       id: doc.id,
       createdAt: DateTime.now(),
-      leftPlayerIds: leftPlayers.map((e) => e.id).toBuiltList(),
-      rightPlayerIds: rightPlayers.map((e) => e.id).toBuiltList(),
+      leftPlayerIds: leftPlayers.map((e) => e.id).toList(),
+      rightPlayerIds: rightPlayers.map((e) => e.id).toList(),
       leftPoints: leftPoints,
       rightPoint: rightPoint,
     );
     await doc.set(match);
   }
 
-  Stream<BuiltList<MatchDvo>> watchAll() {
+  Stream<List<MatchDvo>> watchAll() {
     final playersStream = _ref.watch(PlayersRepo.instance).watchAll();
 
     final matchesQuery = _collection.orderBy(MatchDto.createdAtKey, descending: true);
     final matchesStream = matchesQuery.snapshots().map((snapshot) {
-      return snapshot.docs.map((e) => e.data()).toBuiltList();
+      return snapshot.docs.map((e) => e.data()).toList();
     });
 
-    return Rx.combineLatest2<BuiltList<PlayerDvo>, BuiltList<MatchDto>, BuiltList<MatchDvo>>(
+    return Rx.combineLatest2<List<PlayerDvo>, List<MatchDto>, List<MatchDvo>>(
         playersStream, matchesStream, (players, matches) {
       return matches.map((match) {
         return MatchDvo(
           id: match.id,
           createdAt: match.createdAt,
-          leftPlayers: players.where((e) => match.leftPlayerIds.contains(e.id)).toBuiltList(),
-          rightPlayers: players.where((e) => match.rightPlayerIds.contains(e.id)).toBuiltList(),
+          leftPlayers: players.where((e) => match.leftPlayerIds.contains(e.id)).toList(),
+          rightPlayers: players.where((e) => match.rightPlayerIds.contains(e.id)).toList(),
           leftPoints: match.leftPoints,
           rightPoints: match.rightPoint,
         );
-      }).toBuiltList();
+      }).toList();
     });
   }
 }

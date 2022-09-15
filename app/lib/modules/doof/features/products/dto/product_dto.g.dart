@@ -38,7 +38,7 @@ mixin _$ProductDto {
 // JsonSerializableGenerator
 // **************************************************************************
 
-ProductDto _$ProductDtoFromJson(Map json) => ProductDto(
+ProductDto _$ProductDtoFromJson(Map<String, dynamic> json) => ProductDto(
       id: json['id'] as String,
       title: json['title'] as String,
       description: json['description'] as String,
@@ -50,5 +50,5 @@ Map<String, dynamic> _$ProductDtoToJson(ProductDto instance) =>
       'id': instance.id,
       'title': instance.title,
       'description': instance.description,
-      'price': instance.price,
+      'price': instance.price.toJson(),
     };

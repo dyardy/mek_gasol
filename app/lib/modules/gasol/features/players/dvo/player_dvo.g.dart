@@ -34,7 +34,7 @@ mixin _$PlayerDvo {
 // JsonSerializableGenerator
 // **************************************************************************
 
-PlayerDvo _$PlayerDvoFromJson(Map json) => PlayerDvo(
+PlayerDvo _$PlayerDvoFromJson(Map<String, dynamic> json) => PlayerDvo(
       id: json['id'] as String,
       username: json['username'] as String,
     );

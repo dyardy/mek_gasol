@@ -1,4 +1,3 @@
-import 'package:built_collection/built_collection.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mek_gasol/features/firestore/repositories/firestore_repository.dart';
 import 'package:mek_gasol/modules/eti/features/calendar_events/dto/calendar_event_dto.dart';
@@ -23,7 +22,7 @@ class EventsCalendarRepo extends FirestoreRepository<EventCalendarDto> {
     return ref.watch(instance)._watchMonth(args);
   });
 
-  Stream<BuiltList<EventCalendarDto>> _watchMonth(Tuple2<String, DateTime> args) {
+  Stream<List<EventCalendarDto>> _watchMonth(Tuple2<String, DateTime> args) {
     final userId = args.item1;
     final month = args.item2;
 
@@ -36,7 +35,7 @@ class EventsCalendarRepo extends FirestoreRepository<EventCalendarDto> {
     query = query.where(EventCalendarDto.createdByKey, isEqualTo: userId);
 
     return query.snapshots().map((snapshot) {
-      return snapshot.docs.map((e) => e.data()).toBuiltList();
+      return snapshot.docs.map((e) => e.data()).toList();
     });
   }
 }

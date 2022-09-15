@@ -1,4 +1,3 @@
-import 'package:built_collection/built_collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_bloc/flutter_form_bloc.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -23,7 +22,7 @@ final _save = MutationProvider.autoDispose((ref) {
       id: '',
       startAt: formBloc.startAtFB.value!.toDuration(),
       endAt: formBloc.endAtFB.value!.toDuration(),
-      weekDays: formBloc.weekDays.value.toBuiltList(),
+      weekDays: formBloc.weekDays.value,
     ));
   });
 });

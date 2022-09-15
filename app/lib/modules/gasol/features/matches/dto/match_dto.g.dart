@@ -42,14 +42,16 @@ mixin _$MatchDto {
 // JsonSerializableGenerator
 // **************************************************************************
 
-MatchDto _$MatchDtoFromJson(Map json) => MatchDto(
+MatchDto _$MatchDtoFromJson(Map<String, dynamic> json) => MatchDto(
       id: json['id'] as String,
       createdAt:
           const TimestampJsonConvert().fromJson(json['createdAt'] as Timestamp),
-      leftPlayerIds: ((json['leftPlayerIds'] as List).map((e) => e as String))
-          .toBuiltList(),
-      rightPlayerIds: ((json['rightPlayerIds'] as List).map((e) => e as String))
-          .toBuiltList(),
+      leftPlayerIds: (json['leftPlayerIds'] as List<dynamic>)
+          .map((e) => e as String)
+          .toList(),
+      rightPlayerIds: (json['rightPlayerIds'] as List<dynamic>)
+          .map((e) => e as String)
+          .toList(),
       leftPoints: json['leftPoints'] as int,
       rightPoint: json['rightPoint'] as int,
     );
@@ -57,8 +59,8 @@ MatchDto _$MatchDtoFromJson(Map json) => MatchDto(
 Map<String, dynamic> _$MatchDtoToJson(MatchDto instance) => <String, dynamic>{
       'id': instance.id,
       'createdAt': const TimestampJsonConvert().toJson(instance.createdAt),
-      'leftPlayerIds': instance.leftPlayerIds.toList(),
-      'rightPlayerIds': instance.rightPlayerIds.toList(),
+      'leftPlayerIds': instance.leftPlayerIds,
+      'rightPlayerIds': instance.rightPlayerIds,
       'leftPoints': instance.leftPoints,
       'rightPoint': instance.rightPoint,
     };

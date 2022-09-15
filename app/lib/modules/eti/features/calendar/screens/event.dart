@@ -1,4 +1,3 @@
-import 'package:built_collection/built_collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_bloc/flutter_form_bloc.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -117,15 +116,14 @@ class _EventFormBloc extends GroupFieldBloc {
           final client = state.value;
           if (client == null) return;
           _projectsSub?.close();
-          _projectsSub = ref.listenFuture<BuiltList<ProjectDvo>>(
-              ProjectsTrigger.all(client.id).future,
+          _projectsSub = ref.listenFuture<List<ProjectDvo>>(ProjectsTrigger.all(client.id).future,
               fireImmediately: true, (previous, next) {
-            projectFB.updateItems(next.asList());
+            projectFB.updateItems(next);
           });
         });
 
-        ref.listenFuture<BuiltList<ClientDvo>>(ClientsTrigger.all.future, (previous, next) {
-          clientFB.updateItems(next.asList());
+        ref.listenFuture<List<ClientDvo>>(ClientsTrigger.all.future, (previous, next) {
+          clientFB.updateItems(next);
         }, fireImmediately: true);
 
         addAll({

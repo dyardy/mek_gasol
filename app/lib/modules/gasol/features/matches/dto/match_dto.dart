@@ -1,4 +1,3 @@
-import 'package:built_collection/built_collection.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:mek_data_class/mek_data_class.dart';
@@ -13,8 +12,8 @@ class MatchDto with _$MatchDto {
   final String id;
   final DateTime createdAt;
 
-  final BuiltList<String> leftPlayerIds;
-  final BuiltList<String> rightPlayerIds;
+  final List<String> leftPlayerIds;
+  final List<String> rightPlayerIds;
 
   final int leftPoints;
   final int rightPoint;

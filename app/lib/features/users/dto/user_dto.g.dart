@@ -34,7 +34,7 @@ mixin _$UserDto {
 // JsonSerializableGenerator
 // **************************************************************************
 
-UserDto _$UserDtoFromJson(Map json) => UserDto(
+UserDto _$UserDtoFromJson(Map<String, dynamic> json) => UserDto(
       id: json['id'] as String,
       email: json['email'] as String,
     );

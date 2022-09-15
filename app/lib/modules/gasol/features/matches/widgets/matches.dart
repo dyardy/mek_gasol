@@ -1,4 +1,3 @@
-import 'package:built_collection/built_collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -32,7 +31,7 @@ class MatchesScreen extends StatelessWidget {
             itemBuilder: (context, index) {
               final match = matches[index];
 
-              String buildUsernames(BuiltList<PlayerDvo> players) {
+              String buildUsernames(List<PlayerDvo> players) {
                 return players.map((e) => e.username).join(', ');
               }
 

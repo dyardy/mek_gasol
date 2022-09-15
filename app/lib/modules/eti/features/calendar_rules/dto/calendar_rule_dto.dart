@@ -1,4 +1,3 @@
-import 'package:built_collection/built_collection.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:mek_data_class/mek_data_class.dart';
 import 'package:mek_gasol/features/firestore/repositories/firestore_repository.dart';
@@ -20,7 +19,7 @@ class WorkRuleCalendarDto with Dto, _$WorkRuleCalendarDto {
   final RuleCalendarDtoType type;
   final Duration startAt;
   final Duration endAt;
-  final BuiltList<WeekDay> weekDays;
+  final List<WeekDay> weekDays;
 
   const WorkRuleCalendarDto({
     required this.id,

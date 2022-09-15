@@ -1,4 +1,3 @@
-import 'package:built_collection/built_collection.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mek_gasol/modules/eti/features/projects/dvo/project_dvo.dart';
 import 'package:mek_gasol/shared/providers.dart';
@@ -27,11 +26,11 @@ class ProjectsRepo {
     await _getCollection(clientId).add(project);
   }
 
-  Stream<BuiltList<ProjectDvo>> watchAll(String clientId) {
+  Stream<List<ProjectDvo>> watchAll(String clientId) {
     final projectsQuery = _getCollection(clientId).orderBy(ProjectDvo.nameKey, descending: false);
 
     return projectsQuery.snapshots().map((snapshot) {
-      return snapshot.docs.map((e) => e.data()).toBuiltList();
+      return snapshot.docs.map((e) => e.data()).toList();
     });
   }
 }

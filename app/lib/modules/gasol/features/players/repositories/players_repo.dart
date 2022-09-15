@@ -1,4 +1,3 @@
-import 'package:built_collection/built_collection.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mek_gasol/modules/gasol/features/players/dvo/player_dvo.dart';
 import 'package:mek_gasol/shared/providers.dart';
@@ -19,14 +18,14 @@ class PlayersRepo {
     return _firestore.collection('players').withJsonConverter(PlayerDvo.fromJson);
   }
 
-  Future<BuiltList<PlayerDvo>> readAll() async {
+  Future<List<PlayerDvo>> readAll() async {
     final snapshot = await _collection.get();
-    return snapshot.docs.map((e) => e.data()).toBuiltList();
+    return snapshot.docs.map((e) => e.data()).toList();
   }
 
-  Stream<BuiltList<PlayerDvo>> watchAll() {
+  Stream<List<PlayerDvo>> watchAll() {
     return _collection.snapshots().map((snapshot) {
-      return snapshot.docs.map((e) => e.data()).toBuiltList();
+      return snapshot.docs.map((e) => e.data()).toList();
     });
   }
 

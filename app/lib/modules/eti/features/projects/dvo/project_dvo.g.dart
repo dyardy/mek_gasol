@@ -34,7 +34,7 @@ mixin _$ProjectDvo {
 // JsonSerializableGenerator
 // **************************************************************************
 
-ProjectDvo _$ProjectDvoFromJson(Map json) => ProjectDvo(
+ProjectDvo _$ProjectDvoFromJson(Map<String, dynamic> json) => ProjectDvo(
       id: json['id'] as String,
       name: json['name'] as String,
     );

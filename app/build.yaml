@@ -20,34 +20,9 @@ targets:
           changeable: false
           changesVisible: false
 
-      mek_json_adapter:adapters:
-        generate_for:
-          - 'lib/**/*_dto.dart'
-          - 'lib/**/*_dvo.dart'
-      mek_json_adapter:bundle_adapters:
-        generate_for:
-          - 'lib/**/*_adapters.dart'
-
-      json_serializable_immutable_collections:
-        generate_for:
-          - 'lib/**/*_dto.dart'
-          - 'lib/**/*_dvo.dart'
-        # configure your options here, same as json_serializable
-        options:
-          any_map: true
-          checked: false
-          constructor: ""
-          create_factory: true
-          create_to_json: true
-          disallow_unrecognized_keys: false
-          explicit_to_json: false
-          field_rename: none
-          generic_argument_factories: false
-          ignore_unannotated: false
-          include_if_null: true
       json_serializable:json_serializable:
         generate_for:
-          # exclude everything to avoid conflicts, this library uses a custom builder
-          include:
-          exclude:
-            - '**'
+          - 'lib/**/*_dto.dart'
+          - 'lib/**/*_dvo.dart'
+        options:
+          explicit_to_json: true

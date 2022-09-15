@@ -1,4 +1,3 @@
-import 'package:built_collection/built_collection.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mek_gasol/features/users/dto/user_dto.dart';
 import 'package:mek_gasol/shared/providers.dart';
@@ -19,9 +18,9 @@ class UsersRepo {
     return _firestore.collection('users').withJsonConverter(UserDto.fromJson);
   }
 
-  Stream<BuiltList<UserDto>> watchAll() {
+  Stream<List<UserDto>> watchAll() {
     return _collection.snapshots().map((snapshot) {
-      return snapshot.docs.map((e) => e.data()).toBuiltList();
+      return snapshot.docs.map((e) => e.data()).toList();
     });
   }
 }

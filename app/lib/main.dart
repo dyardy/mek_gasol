@@ -12,24 +12,24 @@ import 'package:mek_gasol/modules/gasol/gasol_app.dart';
 import 'package:mek_gasol/shared/app_list_tile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
+void main() async {
   // ignore: avoid_print
   print('0: This is a hester egg. Naa, I just have to try the CI. ');
 
-  BlocOverrides.runZoned(() async {
-    WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
 
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
-    GetIt.instance.initDoofServiceLocator();
+  Bloc.observer = _BlocObserver();
 
-    runApp(const ProviderScope(
-      observers: [_ProviderObserver()],
-      child: Modules(),
-    ));
-  }, blocObserver: _BlocObserver());
+  GetIt.instance.initDoofServiceLocator();
+
+  runApp(const ProviderScope(
+    observers: [_ProviderObserver()],
+    child: Modules(),
+  ));
 }
 
 enum Module { gasol, eti, doof }

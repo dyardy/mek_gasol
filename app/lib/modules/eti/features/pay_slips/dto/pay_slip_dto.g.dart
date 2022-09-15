@@ -30,7 +30,7 @@ mixin _$PaySlipDto {
 // JsonSerializableGenerator
 // **************************************************************************
 
-PaySlipDto _$PaySlipDtoFromJson(Map json) => PaySlipDto(
+PaySlipDto _$PaySlipDtoFromJson(Map<String, dynamic> json) => PaySlipDto(
       month: DateTime.parse(json['month'] as String),
     );
 
