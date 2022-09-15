@@ -52,7 +52,9 @@ ProductOrderDto _$ProductOrderDtoFromJson(Map<String, dynamic> json) =>
       description: json['description'] as String,
       price: Decimal.fromJson(json['price'] as String),
       quantity: json['quantity'] as int,
-      additions: json['additions'] as List<dynamic>,
+      additions: (json['additions'] as List<dynamic>)
+          .map((e) => AdditionOrderDto.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
 
 Map<String, dynamic> _$ProductOrderDtoToJson(ProductOrderDto instance) =>
@@ -63,5 +65,5 @@ Map<String, dynamic> _$ProductOrderDtoToJson(ProductOrderDto instance) =>
       'description': instance.description,
       'price': instance.price.toJson(),
       'quantity': instance.quantity,
-      'additions': instance.additions,
+      'additions': instance.additions.map((e) => e.toJson()).toList(),
     };
