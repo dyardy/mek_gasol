@@ -1,31 +1,31 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:mek_gasol/modules/doof/features/products/dto/product_dto.dart';
+import 'package:mek_gasol/modules/doof/features/additions/dto/addition_dto.dart';
 import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
 import 'package:mek_gasol/shared/providers.dart';
 import 'package:pure_extensions/pure_extensions.dart';
 
-class ProductsRepository {
+class AdditionsRepository {
   FirebaseFirestore get _firestore => get<FirebaseFirestore>();
 
-  static const String collection = 'products';
+  static const String collection = 'additions';
 
-  CollectionReference<ProductDto> _ref() =>
-      _firestore.collection(collection).withJsonConverter(ProductDto.fromJson);
+  CollectionReference<AdditionDto> _ref() =>
+      _firestore.collection('additions').withJsonConverter(AdditionDto.fromJson);
 
-  Future<void> save(ProductDto product) async {
+  Future<void> save(AdditionDto product) async {
     await _ref().doc(product.id.nullIfEmpty()).set(product);
   }
 
-  Future<void> delete(ProductDto product) async {
+  Future<void> delete(AdditionDto product) async {
     await _ref().doc(product.id).delete();
   }
 
-  Future<List<ProductDto>> fetch() async {
+  Future<List<AdditionDto>> fetch() async {
     final snapshot = await _ref().get();
     return snapshot.docs.map((e) => e.data()).toList();
   }
 
-  Stream<List<ProductDto>> watch() {
+  Stream<List<AdditionDto>> watch() {
     return _ref().snapshots().map((event) => event.docs.map((e) => e.data()).toList());
   }
 }

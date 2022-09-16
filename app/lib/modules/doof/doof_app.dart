@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mek_gasol/modules/auth/auth_guard.dart';
 import 'package:mek_gasol/modules/doof/features/orders/screens/orders_screen.dart';
 import 'package:mek_gasol/modules/doof/features/products/screens/products_screen.dart';
+import 'package:mek_gasol/modules/doof/shared/doof_transaltions.dart';
 import 'package:mek_gasol/shared/data/mek_widgets.dart';
 
 /// Food app
@@ -16,7 +17,10 @@ class DoofApp extends StatelessWidget {
       builder: (context, child) => MaterialApp(
         key: ValueKey(child),
         locale: const Locale.fromSubtags(languageCode: 'it'),
-        localizationsDelegates: GlobalMaterialLocalizations.delegates,
+        localizationsDelegates: const [
+          DoofTranslations.delegate,
+          ...GlobalMaterialLocalizations.delegates,
+        ],
         supportedLocales: const [Locale.fromSubtags(languageCode: 'it')],
         debugShowCheckedModeBanner: false,
         title: 'Doof App',

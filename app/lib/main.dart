@@ -4,12 +4,15 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
+import 'package:logging/logging.dart';
 import 'package:mek_gasol/firebase_options.dart';
 import 'package:mek_gasol/modules/doof/doof_app.dart';
-import 'package:mek_gasol/modules/doof/shared/init_doof_service_locator.dart';
+import 'package:mek_gasol/modules/doof/shared/service_locator/init_doof_database.dart';
+import 'package:mek_gasol/modules/doof/shared/service_locator/init_doof_service_locator.dart';
 import 'package:mek_gasol/modules/eti/eti_app.dart';
 import 'package:mek_gasol/modules/gasol/gasol_app.dart';
 import 'package:mek_gasol/shared/app_list_tile.dart';
+import 'package:mek_gasol/shared/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
@@ -18,13 +21,16 @@ void main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
 
+  Logger.root.initLogging();
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
   Bloc.observer = _BlocObserver();
 
-  GetIt.instance.initDoofServiceLocator();
+  await GetIt.instance.initDoofServiceLocator();
+  await GetIt.instance.initDoofDatabase();
 
   runApp(const ProviderScope(
     observers: [_ProviderObserver()],

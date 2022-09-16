@@ -24,7 +24,7 @@ jobs:
       # https://github.com/marketplace/actions/flutter-action
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.0.x'
+          flutter-version: '3.3.x'
 
       # Resolve dependencies
       - name: Resolve dependencies

@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 extension HubOnBuildContext on BuildContext {
   Hub get hub => Hub._(Navigator.of(this));
@@ -12,7 +12,7 @@ class Hub {
   void pop<T>([T? result]) => _navigator.pop<T>(result);
 
   Future<T?> push<T>(Widget screen) {
-    return _navigator.push<T>(CupertinoPageRoute(builder: (context) {
+    return _navigator.push<T>(MaterialPageRoute(builder: (context) {
       return screen;
     }));
   }

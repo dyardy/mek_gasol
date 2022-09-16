@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mek_gasol/modules/doof/features/products/repositories/products_repository.dart';
 import 'package:mek_gasol/modules/doof/features/products/screens/product_screen.dart';
-import 'package:mek_gasol/modules/doof/shared/service_locator.dart';
+import 'package:mek_gasol/modules/doof/shared/doof_transaltions.dart';
+import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
 import 'package:mek_gasol/shared/data/mek_widgets.dart';
 import 'package:mek_gasol/shared/hub.dart';
 
@@ -34,8 +35,23 @@ class ProductsScreen extends ConsumerWidget {
             final product = products[index];
 
             return ListTile(
-              title: Text('${product.title} - ${product.price}'),
+              onTap: () => context.hub.push(ProductScreen(product: product)),
+              title: Text(
+                  '${DoofTranslations.of(context).formatPrice(product.price)} - ${product.title}'),
               subtitle: Text(product.description),
+              trailing: PopupMenuButton(
+                itemBuilder: (context) {
+                  return [
+                    PopupMenuItem(
+                      onTap: () => get<ProductsRepository>().delete(product),
+                      child: const ListTile(
+                        title: Text('Delete'),
+                        leading: Icon(Icons.delete),
+                      ),
+                    )
+                  ];
+                },
+              ),
             );
           },
         );
