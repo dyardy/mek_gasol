@@ -12,6 +12,7 @@ mixin _$ProductOrderDto {
   ProductOrderDto get _self => this as ProductOrderDto;
 
   Iterable<Object?> get _props sync* {
+    yield _self.id;
     yield _self.userId;
     yield _self.productId;
     yield _self.title;
@@ -30,6 +31,7 @@ mixin _$ProductOrderDto {
   int get hashCode => Object.hashAll(_props);
 
   String toString() => (ClassToString('ProductOrderDto')
+        ..add('id', _self.id)
         ..add('userId', _self.userId)
         ..add('productId', _self.productId)
         ..add('title', _self.title)
@@ -46,6 +48,7 @@ mixin _$ProductOrderDto {
 
 ProductOrderDto _$ProductOrderDtoFromJson(Map<String, dynamic> json) =>
     ProductOrderDto(
+      id: json['id'] as String,
       userId: json['userId'] as String,
       productId: json['productId'] as String,
       title: json['title'] as String,
@@ -59,6 +62,7 @@ ProductOrderDto _$ProductOrderDtoFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$ProductOrderDtoToJson(ProductOrderDto instance) =>
     <String, dynamic>{
+      'id': instance.id,
       'userId': instance.userId,
       'productId': instance.productId,
       'title': instance.title,

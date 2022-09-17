@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mek_gasol/features/users/dto/user_dto.dart';
 import 'package:mek_gasol/features/users/repositories/users_repo.dart';
+import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
 
 abstract class Providers {
   static final auth = Provider((ref) {
@@ -26,6 +27,7 @@ abstract class Providers {
       yield UserDto(
         id: user.uid,
         email: user.email!,
+        displayName: user.displayName ?? user.email!,
       );
     }
   });
@@ -42,9 +44,7 @@ abstract class Providers {
   });
 
   static final users = StreamProvider((ref) async* {
-    final usersRepo = ref.watch(UsersRepo.instance);
-
-    yield* usersRepo.watchAll();
+    yield* get<UsersRepository>().watchAll();
   });
 }
 

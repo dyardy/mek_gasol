@@ -20,6 +20,10 @@ class DoofTranslations {
       name: 'EUR',
     ).format(price.toDouble());
   }
+
+  String formatDate(DateTime date) {
+    return DateFormat.yMd(languageCode).format(date);
+  }
 }
 
 class _DoofTranslationsDelegate extends LocalizationsDelegate<DoofTranslations> {

@@ -21,11 +21,14 @@ class ProductsRepository {
   }
 
   Future<List<ProductDto>> fetch() async {
-    final snapshot = await _ref().get();
+    final snapshot = await _ref().orderBy('title').get();
     return snapshot.docs.map((e) => e.data()).toList();
   }
 
   Stream<List<ProductDto>> watch() {
-    return _ref().snapshots().map((event) => event.docs.map((e) => e.data()).toList());
+    return _ref()
+        .orderBy('title')
+        .snapshots()
+        .map((event) => event.docs.map((e) => e.data()).toList());
   }
 }

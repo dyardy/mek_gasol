@@ -49,20 +49,22 @@ class MutationBloc extends Cubit<MutationState> {
 
 class QueryState<T> {
   final bool isLoading;
-  final T data;
+  final T? dataOrNull;
 
-  const QueryState({
+  T get data => dataOrNull as T;
+
+  QueryState({
     required this.isLoading,
-    required this.data,
+    required this.dataOrNull,
   });
 
   QueryState<T> copyWith({
     bool? isLoading,
-    T? data,
+    T? dataOrNull,
   }) {
     return QueryState(
       isLoading: isLoading ?? this.isLoading,
-      data: data ?? this.data,
+      dataOrNull: dataOrNull ?? this.dataOrNull,
     );
   }
 }
@@ -70,17 +72,17 @@ class QueryState<T> {
 class QueryBloc<T> extends Cubit<QueryState<T>> {
   late final StreamSubscription _sub;
 
-  QueryBloc(Stream<T> Function() fetcher, {required T initialData})
-      : super(QueryState(
+  QueryBloc(Stream<T> Function() fetcher)
+      : super(QueryState<T>(
           isLoading: true,
-          data: initialData,
+          dataOrNull: null,
         )) {
     _init(fetcher);
   }
 
   void _init(Stream<T> Function() fetcher) async {
     _sub = fetcher().listen((data) {
-      emit(state.copyWith(isLoading: false, data: data));
+      emit(state.copyWith(isLoading: false, dataOrNull: data));
     });
   }
 

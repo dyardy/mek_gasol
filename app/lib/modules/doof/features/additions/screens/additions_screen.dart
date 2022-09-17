@@ -1,7 +1,6 @@
 // ignore_for_file: unused_local_variable
 
 import 'package:flutter/material.dart';
-import 'package:mek_gasol/modules/doof/features/additions/dto/addition_dto.dart';
 import 'package:mek_gasol/modules/doof/features/additions/repositories/additions_repository.dart';
 import 'package:mek_gasol/modules/doof/features/products/dto/product_dto.dart';
 import 'package:mek_gasol/modules/doof/shared/blocs.dart';
@@ -25,7 +24,7 @@ class AdditionsScreen extends StatefulWidget {
 class _AdditionsScreenState extends State<AdditionsScreen> {
   final _additionsBloc = QueryBloc(() {
     return get<AdditionsRepository>().watch();
-  }, initialData: <AdditionDto>[]);
+  });
 
   @override
   void dispose() {

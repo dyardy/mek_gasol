@@ -14,6 +14,7 @@ mixin _$UserDto {
   Iterable<Object?> get _props sync* {
     yield _self.id;
     yield _self.email;
+    yield _self.displayName;
   }
 
   bool operator ==(Object other) =>
@@ -26,7 +27,8 @@ mixin _$UserDto {
 
   String toString() => (ClassToString('UserDto')
         ..add('id', _self.id)
-        ..add('email', _self.email))
+        ..add('email', _self.email)
+        ..add('displayName', _self.displayName))
       .toString();
 }
 
@@ -37,9 +39,11 @@ mixin _$UserDto {
 UserDto _$UserDtoFromJson(Map<String, dynamic> json) => UserDto(
       id: json['id'] as String,
       email: json['email'] as String,
+      displayName: json['displayName'] as String,
     );
 
 Map<String, dynamic> _$UserDtoToJson(UserDto instance) => <String, dynamic>{
       'id': instance.id,
       'email': instance.email,
+      'displayName': instance.displayName,
     };

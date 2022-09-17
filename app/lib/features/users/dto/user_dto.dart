@@ -8,10 +8,14 @@ part 'user_dto.g.dart';
 class UserDto with _$UserDto {
   final String id;
   final String email;
+  final String displayName;
+  // final String avatarUrl;
 
   const UserDto({
     required this.id,
     required this.email,
+    required this.displayName,
+    // required this.avatarUrl,
   });
 
   factory UserDto.fromJson(Map<String, dynamic> map) => _$UserDtoFromJson(map);

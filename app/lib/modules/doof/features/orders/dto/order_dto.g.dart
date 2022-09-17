@@ -14,7 +14,7 @@ mixin _$OrderDto {
   Iterable<Object?> get _props sync* {
     yield _self.id;
     yield _self.createdAt;
-    yield _self.products;
+    yield _self.status;
   }
 
   bool operator ==(Object other) =>
@@ -28,7 +28,7 @@ mixin _$OrderDto {
   String toString() => (ClassToString('OrderDto')
         ..add('id', _self.id)
         ..add('createdAt', _self.createdAt)
-        ..add('products', _self.products))
+        ..add('status', _self.status))
       .toString();
 }
 
@@ -40,13 +40,16 @@ OrderDto _$OrderDtoFromJson(Map<String, dynamic> json) => OrderDto(
       id: json['id'] as String,
       createdAt:
           const TimestampJsonConvert().fromJson(json['createdAt'] as Timestamp),
-      products: (json['products'] as List<dynamic>)
-          .map((e) => ProductOrderDto.fromJson(e as Map<String, dynamic>))
-          .toList(),
+      status: $enumDecode(_$OrderStatusEnumMap, json['status']),
     );
 
 Map<String, dynamic> _$OrderDtoToJson(OrderDto instance) => <String, dynamic>{
       'id': instance.id,
       'createdAt': const TimestampJsonConvert().toJson(instance.createdAt),
-      'products': instance.products.map((e) => e.toJson()).toList(),
+      'status': _$OrderStatusEnumMap[instance.status]!,
     };
+
+const _$OrderStatusEnumMap = {
+  OrderStatus.draft: 'draft',
+  OrderStatus.sent: 'sent',
+};
