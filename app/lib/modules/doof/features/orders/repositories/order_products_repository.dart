@@ -1,9 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mek_gasol/modules/doof/features/orders/dto/order_dto.dart';
 import 'package:mek_gasol/modules/doof/features/orders/dto/product_order_dto.dart';
-import 'package:mek_gasol/modules/doof/features/orders/dvo/product_order_dvo.dart';
+import 'package:mek_gasol/modules/doof/features/orders/repositories/orders_repository.dart';
 import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
 import 'package:mek_gasol/shared/providers.dart';
+import 'package:pure_extensions/pure_extensions.dart';
 
 class OrderProductsRepository {
   FirebaseFirestore get _firestore => get<FirebaseFirestore>();
@@ -11,17 +12,17 @@ class OrderProductsRepository {
   static const String collection = 'products';
 
   CollectionReference<ProductOrderDto> _ref(String orderId) => _firestore
-      .collection(OrderProductsRepository.collection)
+      .collection(OrdersRepository.collection)
       .doc(orderId)
       .collection(collection)
       .withJsonConverter(ProductOrderDto.fromJson);
 
-  Future<void> create(OrderDto order, ProductOrderDto product) async {
-    await _ref(order.id).doc().set(product);
+  Future<void> save(OrderDto order, ProductOrderDto productOrder) async {
+    await _ref(order.id).doc(productOrder.id.nullIfEmpty()).set(productOrder);
   }
 
-  Future<void> delete(OrderDto order, ProductOrderDvo product) async {
-    await _ref(order.id).doc(product.id).delete();
+  Future<void> delete(OrderDto order, ProductOrderDto productOrder) async {
+    await _ref(order.id).doc(productOrder.id).delete();
   }
 
   Future<List<ProductOrderDto>> fetch(OrderDto order) async {

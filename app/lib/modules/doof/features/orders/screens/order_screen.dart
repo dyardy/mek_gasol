@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mek_gasol/modules/doof/features/orders/controllers/order_products_controller.dart';
 import 'package:mek_gasol/modules/doof/features/orders/dto/order_dto.dart';
+import 'package:mek_gasol/modules/doof/features/orders/repositories/order_products_repository.dart';
 import 'package:mek_gasol/modules/doof/features/products/screens/products_pick_screen.dart';
 import 'package:mek_gasol/modules/doof/shared/blocs.dart';
 import 'package:mek_gasol/modules/doof/shared/doof_transaltions.dart';
@@ -22,7 +22,7 @@ class OrderScreen extends StatefulWidget {
 
 class _OrderScreenState extends State<OrderScreen> {
   late final _products = QueryBloc(() {
-    return get<OrderProductsController>().watch(widget.order);
+    return get<OrderProductsRepository>().watch(widget.order);
   });
 
   @override
@@ -41,18 +41,25 @@ class _OrderScreenState extends State<OrderScreen> {
         return ListView.builder(
           itemCount: orders.length,
           itemBuilder: (context, index) {
-            final product = orders[index];
+            final productOrder = orders[index];
+            final user = productOrder.user;
+            final product = productOrder.product;
 
             return ListTile(
-              // onTap: () => context.hub.push(OrderScreen(order: product)),
-              leading: Text('${product.quantity}'),
-              title: Text('${t.formatPrice(product.total)} - ${product.title}'),
-              subtitle: Text(product.user.displayName),
+              onTap: () => context.hub.push(ProductOrderScreen(
+                order: widget.order,
+                productOrder: productOrder,
+                product: product,
+              )),
+              leading: Text('${productOrder.quantity}'),
+              title: Text('${t.formatPrice(productOrder.total)} - ${product.title}'),
+              subtitle: Text(user.displayName),
               trailing: PopupMenuButton(
                 itemBuilder: (context) {
                   return [
                     PopupMenuItem(
-                      onTap: () => get<OrderProductsController>().delete(widget.order, product),
+                      onTap: () =>
+                          get<OrderProductsRepository>().delete(widget.order, productOrder),
                       child: const ListTile(
                         title: Text('Delete'),
                         leading: Icon(Icons.delete),
@@ -72,12 +79,7 @@ class _OrderScreenState extends State<OrderScreen> {
         title: Text(t.formatDate(widget.order.createdAt)),
         actions: [
           IconButton(
-            onPressed: () async {
-              final data = await context.hub.push<PickedProductData>(const ProductsPickScreen());
-              if (data == null) return;
-              await get<OrderProductsController>()
-                  .create(widget.order, data.product, data.additions);
-            },
+            onPressed: () => context.hub.push(ProductsPickScreen(order: widget.order)),
             icon: const Icon(Icons.add),
           ),
         ],

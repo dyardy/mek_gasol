@@ -13,13 +13,11 @@ mixin _$ProductOrderDto {
 
   Iterable<Object?> get _props sync* {
     yield _self.id;
-    yield _self.userId;
-    yield _self.productId;
-    yield _self.title;
-    yield _self.description;
-    yield _self.price;
+    yield _self.user;
+    yield _self.product;
     yield _self.quantity;
     yield _self.additions;
+    yield _self.ingredients;
   }
 
   bool operator ==(Object other) =>
@@ -32,13 +30,11 @@ mixin _$ProductOrderDto {
 
   String toString() => (ClassToString('ProductOrderDto')
         ..add('id', _self.id)
-        ..add('userId', _self.userId)
-        ..add('productId', _self.productId)
-        ..add('title', _self.title)
-        ..add('description', _self.description)
-        ..add('price', _self.price)
+        ..add('user', _self.user)
+        ..add('product', _self.product)
         ..add('quantity', _self.quantity)
-        ..add('additions', _self.additions))
+        ..add('additions', _self.additions)
+        ..add('ingredients', _self.ingredients))
       .toString();
 }
 
@@ -49,25 +45,23 @@ mixin _$ProductOrderDto {
 ProductOrderDto _$ProductOrderDtoFromJson(Map<String, dynamic> json) =>
     ProductOrderDto(
       id: json['id'] as String,
-      userId: json['userId'] as String,
-      productId: json['productId'] as String,
-      title: json['title'] as String,
-      description: json['description'] as String,
-      price: Decimal.fromJson(json['price'] as String),
+      user: PublicUserDto.fromJson(json['user'] as Map<String, dynamic>),
+      product: ProductDto.fromJson(json['product'] as Map<String, dynamic>),
       quantity: json['quantity'] as int,
       additions: (json['additions'] as List<dynamic>)
           .map((e) => AdditionOrderDto.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      ingredients: (json['ingredients'] as List<dynamic>)
+          .map((e) => IngredientOrderDto.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 
 Map<String, dynamic> _$ProductOrderDtoToJson(ProductOrderDto instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'userId': instance.userId,
-      'productId': instance.productId,
-      'title': instance.title,
-      'description': instance.description,
-      'price': instance.price.toJson(),
+      'user': instance.user.toJson(),
+      'product': instance.product.toJson(),
       'quantity': instance.quantity,
       'additions': instance.additions.map((e) => e.toJson()).toList(),
+      'ingredients': instance.ingredients.map((e) => e.toJson()).toList(),
     };

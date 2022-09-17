@@ -3,12 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:mek_gasol/modules/doof/features/products/dto/product_dto.dart';
 import 'package:mek_gasol/modules/doof/features/products/repositories/products_repository.dart';
 import 'package:mek_gasol/modules/doof/shared/blocs.dart';
-import 'package:mek_gasol/modules/doof/shared/fields.dart';
 import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
 import 'package:mek_gasol/modules/doof/shared/widgets/bottom_button_bar.dart';
 import 'package:mek_gasol/modules/doof/shared/widgets/button_builder.dart';
+import 'package:mek_gasol/shared/form/fields/field_text.dart';
+import 'package:mek_gasol/shared/form/form_blocs.dart';
+import 'package:mek_gasol/shared/form/form_utils.dart';
+import 'package:mek_gasol/shared/form/form_validators.dart';
 import 'package:mek_gasol/shared/hub.dart';
-import 'package:reactive_forms/reactive_forms.dart';
 
 class ProductScreen extends StatefulWidget {
   final ProductDto? product;
@@ -23,17 +25,22 @@ class ProductScreen extends StatefulWidget {
 }
 
 class _ProductScreenState extends State<ProductScreen> {
-  final _titleControl = FormControl<String>(
-    validators: [Validators.required],
+  final _titleControl = FieldBloc<String>(
+    initialValue: '',
+    validators: [const TextValidation()],
   );
-  final _descriptionControl = FormControl<String>(
-    validators: [Validators.required],
+  final _descriptionControl = FieldBloc<String>(
+    initialValue: '',
+    validators: [const TextValidation()],
   );
-  final _priceControl = FormControl<Decimal>(
-    validators: [Validators.required],
+  final _priceControl = FieldBloc<Decimal?>(
+    initialValue: null,
+    validators: [const RequiredValidation()],
   );
 
-  late final _formControl = FormArray([_titleControl, _descriptionControl, _priceControl]);
+  late final _formControl = ListFieldBloc(
+    fieldBlocs: [_titleControl, _descriptionControl, _priceControl],
+  );
 
   final _mutationBloc = MutationBloc();
 
@@ -45,16 +52,15 @@ class _ProductScreenState extends State<ProductScreen> {
     _priceControl.updateValue(widget.product?.price);
   }
 
-  void _onSubmit() async {
-    if (!_formControl.valid) return;
-    _formControl.markAsDisabled();
-
+  void _onSubmit() {
     _mutationBloc.handle(() async {
+      _formControl.disable();
+
       await get<ProductsRepository>().save(ProductDto(
         id: widget.product?.id ?? '',
-        title: _titleControl.value!,
-        description: _descriptionControl.value!,
-        price: _priceControl.value!,
+        title: _titleControl.state.value,
+        description: _descriptionControl.state.value,
+        price: _priceControl.state.value!,
       ));
     }, onSuccess: (_) {
       context.hub.pop();
@@ -72,8 +78,8 @@ class _ProductScreenState extends State<ProductScreen> {
           Expanded(
             child: ButtonBuilder(
               onPressed: _onSubmit,
-              mutationBloc: _mutationBloc,
-              formControl: _formControl,
+              mutationBlocs: {_mutationBloc},
+              formBloc: _formControl,
               builder: (context, onPressed) {
                 return ElevatedButton(
                   onPressed: onPressed,
@@ -89,8 +95,9 @@ class _ProductScreenState extends State<ProductScreen> {
           minimum: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              AppTextField(
-                formControl: _titleControl,
+              FieldText(
+                fieldBloc: _titleControl,
+                converter: FieldConvert.text,
                 maxLines: 2,
                 minLines: 1,
                 keyboardType: TextInputType.text,
@@ -98,8 +105,9 @@ class _ProductScreenState extends State<ProductScreen> {
                   labelText: 'Title',
                 ),
               ),
-              AppTextField(
-                formControl: _descriptionControl,
+              FieldText(
+                fieldBloc: _descriptionControl,
+                converter: FieldConvert.text,
                 maxLines: 4,
                 minLines: 1,
                 keyboardType: TextInputType.text,
@@ -107,8 +115,10 @@ class _ProductScreenState extends State<ProductScreen> {
                   labelText: 'Description',
                 ),
               ),
-              AppDecimalField(
-                formControl: _priceControl,
+              FieldText(
+                fieldBloc: _priceControl,
+                converter: FieldConvert.decimal,
+                type: const TextFieldType.numeric(decimal: true),
                 decoration: const InputDecoration(
                   labelText: 'Price',
                 ),

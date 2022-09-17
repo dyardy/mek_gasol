@@ -37,6 +37,20 @@ class _OrdersScreenState extends State<OrdersScreen> {
             onTap: () => context.hub.push(OrderScreen(order: order)),
             title: Text('${order.createdAt}'),
             subtitle: Text('${order.status}'),
+            trailing: PopupMenuButton(
+              itemBuilder: (context) {
+                return [
+                  if (order.status == OrderStatus.draft)
+                    PopupMenuItem(
+                      onTap: () => get<OrdersRepository>().delete(order),
+                      child: const ListTile(
+                        title: Text('Delete'),
+                        leading: Icon(Icons.delete),
+                      ),
+                    ),
+                ];
+              },
+            ),
           );
         },
       );

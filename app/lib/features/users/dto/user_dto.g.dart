@@ -32,6 +32,28 @@ mixin _$UserDto {
       .toString();
 }
 
+mixin _$PublicUserDto {
+  PublicUserDto get _self => this as PublicUserDto;
+
+  Iterable<Object?> get _props sync* {
+    yield _self.id;
+    yield _self.displayName;
+  }
+
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is _$PublicUserDto &&
+          runtimeType == other.runtimeType &&
+          DataClass.$equals(_props, other._props);
+
+  int get hashCode => Object.hashAll(_props);
+
+  String toString() => (ClassToString('PublicUserDto')
+        ..add('id', _self.id)
+        ..add('displayName', _self.displayName))
+      .toString();
+}
+
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
@@ -45,5 +67,17 @@ UserDto _$UserDtoFromJson(Map<String, dynamic> json) => UserDto(
 Map<String, dynamic> _$UserDtoToJson(UserDto instance) => <String, dynamic>{
       'id': instance.id,
       'email': instance.email,
+      'displayName': instance.displayName,
+    };
+
+PublicUserDto _$PublicUserDtoFromJson(Map<String, dynamic> json) =>
+    PublicUserDto(
+      id: json['id'] as String,
+      displayName: json['displayName'] as String,
+    );
+
+Map<String, dynamic> _$PublicUserDtoToJson(PublicUserDto instance) =>
+    <String, dynamic>{
+      'id': instance.id,
       'displayName': instance.displayName,
     };

@@ -1,12 +1,14 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mek_gasol/modules/doof/shared/widgets/bloc_widgets.dart';
 import 'package:mek_gasol/modules/gasol/features/matches/dvo/match_dvo.dart';
 import 'package:mek_gasol/modules/gasol/features/matches/triggers/matches_trigger.dart';
 import 'package:mek_gasol/modules/gasol/features/players/dvo/player_dvo.dart';
 import 'package:mek_gasol/modules/gasol/features/players/widgets/players.dart';
-import 'package:mek_gasol/shared/form/form.dart';
+import 'package:mek_gasol/shared/form/fields/field_text.dart';
 import 'package:mek_gasol/shared/form/form_blocs.dart';
+import 'package:mek_gasol/shared/form/form_utils.dart';
 import 'package:mek_gasol/shared/form/form_validators.dart';
 import 'package:mek_gasol/shared/hub.dart';
 import 'package:riverbloc/riverbloc.dart';
@@ -20,18 +22,12 @@ class MatchFormBloc extends ListFieldBloc<dynamic> {
     validators: [_validateTeam],
   );
 
-  final leftPointsFB = AdaptiveFieldBloc<int, String>(
-    adapter: IntegerAdapter(),
-    fieldBloc: FieldBloc(
-      initialValue: '0',
-    ),
+  final leftPointsFB = FieldBloc(
+    initialValue: 0,
     validators: [const IntegerValidator(min: 0)],
   );
-  final rightPointsFB = AdaptiveFieldBloc<int, String>(
-    adapter: IntegerAdapter(),
-    fieldBloc: FieldBloc(
-      initialValue: '0',
-    ),
+  final rightPointsFB = FieldBloc(
+    initialValue: 0,
     validators: [const IntegerValidator(min: 0)],
   );
 
@@ -46,15 +42,15 @@ class MatchFormBloc extends ListFieldBloc<dynamic> {
     addFieldBlocs([teamsFB, leftPointsFB, rightPointsFB]);
   }
 
-  static Object? _validateTeam(Map<Team, List<PlayerDvo>> values) {
+  static List<Object> _validateTeam(Map<Team, List<PlayerDvo>> values) {
     final leftCount = values[Team.left]?.length ?? 0;
     final rightCount = values[Team.right]?.length ?? 0;
 
-    if (leftCount < 1 && rightCount < 1) return 'Missing Red and Blue';
-    if (leftCount < 1) return 'Missing Red';
-    if (rightCount < 1) return 'Missing Blue';
+    if (leftCount < 1 && rightCount < 1) return ['Missing Red and Blue'];
+    if (leftCount < 1) return ['Missing Red'];
+    if (rightCount < 1) return ['Missing Blue'];
 
-    return null;
+    return [];
   }
 }
 
@@ -127,22 +123,24 @@ class MatchScreen extends ConsumerWidget {
         Row(
           children: [
             Expanded(
-              child: TextFieldBuilder(
-                fieldBloc: formBloc.leftPointsFB.fieldBloc,
+              child: FieldText(
+                fieldBloc: formBloc.leftPointsFB,
+                converter: FieldConvert.integer,
                 type: const TextFieldType.numeric(),
               ),
             ),
             Expanded(
-              child: TextFieldBuilder(
-                fieldBloc: formBloc.rightPointsFB.fieldBloc,
+              child: FieldText(
+                fieldBloc: formBloc.rightPointsFB,
+                converter: FieldConvert.integer,
                 type: const TextFieldType.numeric(),
               ),
             ),
           ],
         ),
-        CubitConsumer<FieldBlocState<Map<Team, List<PlayerDvo>>>>(
+        BlocBuilder<FieldBlocState<Map<Team, List<PlayerDvo>>>>(
           bloc: formBloc.teamsFB,
-          builder: (context, state, _) {
+          builder: (context, state) {
             final leftTeam = state.value[Team.left] ?? [];
             final rightTeam = state.value[Team.right] ?? [];
 
@@ -165,9 +163,8 @@ class MatchScreen extends ConsumerWidget {
               ],
             );
 
-            final error = state.error;
             final teamsWithError = CupertinoFormRow(
-              error: error != null ? Text('$error') : null,
+              error: state.isInvalid ? Text('${state.errors.first}') : null,
               child: Column(
                 children: [
                   teams,
@@ -194,9 +191,9 @@ class MatchScreen extends ConsumerWidget {
       builder: (context, ref, _) {
         final canSave = ref.watch(MatchBloc.save.select((state) => !state.isMutating));
 
-        final saveButton = CubitConsumer<ListFieldBlocState<dynamic>>(
+        final saveButton = BlocBuilder<ListFieldBlocState<dynamic>>(
           bloc: formBloc,
-          builder: (context, state, _) {
+          builder: (context, state) {
             return CupertinoButton(
               onPressed: canSave && state.isValid ? () => save(ref) : null,
               child: const Text('Save'),
@@ -261,15 +258,15 @@ class _TeamsScreenState extends ConsumerState<_TeamsScreen> {
     super.dispose();
   }
 
-  static Object? _validate(Map<PlayerDvo, Team> values) {
+  static List<Object> _validate(Map<PlayerDvo, Team> values) {
     final leftCount = values.values.fold<int>(0, (count, e) => e == Team.left ? count + 1 : count);
     final rightCount =
         values.values.fold<int>(0, (count, e) => e == Team.right ? count + 1 : count);
 
-    if (leftCount < 1) return 'Missing Red';
-    if (rightCount < 1) return 'Missing Blue';
+    if (leftCount < 1) return ['Missing Red'];
+    if (rightCount < 1) return ['Missing Blue'];
 
-    return null;
+    return [];
   }
 
   void save() {
@@ -282,9 +279,9 @@ class _TeamsScreenState extends ConsumerState<_TeamsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final players = CubitConsumer<FieldBlocState<Map<PlayerDvo, Team>>>(
+    final players = BlocBuilder<FieldBlocState<Map<PlayerDvo, Team>>>(
       bloc: _players,
-      builder: (context, state, _) {
+      builder: (context, state) {
         final values = state.value;
         return Column(
           children: values.entries.map((e) {
@@ -312,12 +309,10 @@ class _TeamsScreenState extends ConsumerState<_TeamsScreen> {
       },
     );
 
-    final error = CubitConsumer<FieldBlocState<Map<PlayerDvo, Team>>>(
+    final error = BlocBuilder<FieldBlocState<Map<PlayerDvo, Team>>>(
       bloc: _players,
-      builder: (context, state, _) {
-        final error = state.error;
-
-        if (error == null) return const SizedBox.shrink();
+      builder: (context, state) {
+        if (state.isValid) return const SizedBox.shrink();
 
         return Align(
           alignment: AlignmentDirectional.center,
@@ -328,16 +323,16 @@ class _TeamsScreenState extends ConsumerState<_TeamsScreen> {
                 color: CupertinoColors.destructiveRed,
                 fontWeight: FontWeight.w500,
               ),
-              child: Text('$error'),
+              child: Text('${state.errors.first}'),
             ),
           ),
         );
       },
     );
 
-    final buttonsBar = CubitConsumer<FieldBlocState<Map<PlayerDvo, Team>>>(
+    final buttonsBar = BlocBuilder<FieldBlocState<Map<PlayerDvo, Team>>>(
       bloc: _players,
-      builder: (context, state, _) {
+      builder: (context, state) {
         return SizedBox(
           width: double.infinity,
           child: CupertinoButton(

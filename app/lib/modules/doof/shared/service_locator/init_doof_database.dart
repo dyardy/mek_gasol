@@ -3,13 +3,16 @@ import 'package:decimal/decimal.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mek_gasol/modules/doof/features/additions/dto/addition_dto.dart';
 import 'package:mek_gasol/modules/doof/features/additions/repositories/additions_repository.dart';
+import 'package:mek_gasol/modules/doof/features/ingredients/dto/ingredient_dto.dart';
+import 'package:mek_gasol/modules/doof/features/ingredients/repositories/ingredients_repository.dart';
+import 'package:mek_gasol/modules/doof/features/orders/repositories/orders_repository.dart';
 import 'package:mek_gasol/modules/doof/features/products/dto/product_dto.dart';
 import 'package:mek_gasol/modules/doof/features/products/repositories/products_repository.dart';
 import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
 import 'package:mek_gasol/shared/logger.dart';
 
 extension DoofDatabase on GetIt {
-  static const _nextVersion = _Version(0, 1);
+  static const _Version _nextVersion = _Version(1, 0);
 
   Future<void> initDoofDatabase() async {
     final firestore = get<FirebaseFirestore>();
@@ -20,60 +23,54 @@ extension DoofDatabase on GetIt {
 
     lg.config('DatabaseVersion: $currentVersion -> $_nextVersion');
 
-    if (_nextVersion.minor > currentVersion.minor) {
-      lg.config('Database Setup...!');
+    if (_nextVersion.isMinorGreater(currentVersion)) {
+      lg.config('Database Updating!');
 
       lg.config('Database Cleaning!');
       await Future.wait([
         _elaborate('Cleaning: Products', [_cleanCollection(ProductsRepository.collection)]),
         _elaborate('Cleaning: Additions', [_cleanCollection(AdditionsRepository.collection)]),
+        _elaborate('Cleaning: Ingredients', [_cleanCollection(IngredientsRepository.collection)]),
       ]);
       lg.config('Database Cleaned!');
 
-      final spaghettiWithEgg = ProductDto(
-        id: '2CEsGXmUT6GcDMhKHD7C',
-        title: 'Spaghetti all\'uovo',
-        description: 'Spaghetti all\'uovo saltati con uova e verdure di stagione.',
-        price: Decimal.parse('4.10'),
-      );
-      final spaghettiUdon = ProductDto(
-        id: 'eCO73liFjEGHEvIaF8QL',
-        title: 'Spaghetti Udon',
-        description: 'Spaghetti udon saltati con uova e verdure di stagione.',
-        price: Decimal.parse('4.10'),
-      );
-      final riceDumplings = ProductDto(
-        id: 'OU54VLbMSMRnMEIme0nu',
-        title: 'Gnocchi Di Riso',
-        description: 'Gnocchi di riso saltati con uova e verdure di stagione.',
-        price: Decimal.parse('4.10'),
-      );
-      final cantoneseRice = ProductDto(
-        id: 'KFdKDYCv5CrdEkMPlPPY',
-        title: 'Riso Alla Cantonese',
-        description: 'Riso saltato con uova, prosciutto cotto e piselli.',
-        price: Decimal.parse('3.60'),
-      );
-      final riceWithMixedVegetables = ProductDto(
-        id: 'eOuccbWyv3hXdaQTCUxm',
-        title: 'Riso Con Verdure Miste',
-        description: 'Riso saltato con uova, carote, zucchine e piselli.',
-        price: Decimal.parse('3.60'),
-      );
-      final riceWithShrimp = ProductDto(
-        id: 'tGVLMvzKY8FpgirYVK6P',
-        title: 'Riso Con Gamberetti',
-        description: 'Riso saltato con uova, piselli e gamberetti.',
-        price: Decimal.parse('4.40'),
-      );
-
       final firstCourses = [
-        spaghettiWithEgg,
-        spaghettiUdon,
-        riceDumplings,
-        cantoneseRice,
-        riceWithMixedVegetables,
-        riceWithShrimp
+        ProductDto(
+          id: '2CEsGXmUT6GcDMhKHD7C',
+          title: 'Spaghetti all\'uovo',
+          description: 'Spaghetti all\'uovo saltati con uova e verdure di stagione.',
+          price: Decimal.parse('4.10'),
+        ),
+        ProductDto(
+          id: 'eCO73liFjEGHEvIaF8QL',
+          title: 'Spaghetti Udon',
+          description: 'Spaghetti udon saltati con uova e verdure di stagione.',
+          price: Decimal.parse('4.10'),
+        ),
+        ProductDto(
+          id: 'OU54VLbMSMRnMEIme0nu',
+          title: 'Gnocchi Di Riso',
+          description: 'Gnocchi di riso saltati con uova e verdure di stagione.',
+          price: Decimal.parse('4.10'),
+        ),
+        ProductDto(
+          id: 'KFdKDYCv5CrdEkMPlPPY',
+          title: 'Riso Alla Cantonese',
+          description: 'Riso saltato con uova, prosciutto cotto e piselli.',
+          price: Decimal.parse('3.60'),
+        ),
+        ProductDto(
+          id: 'eOuccbWyv3hXdaQTCUxm',
+          title: 'Riso Con Verdure Miste',
+          description: 'Riso saltato con uova, carote, zucchine e piselli.',
+          price: Decimal.parse('3.60'),
+        ),
+        ProductDto(
+          id: 'tGVLMvzKY8FpgirYVK6P',
+          title: 'Riso Con Gamberetti',
+          description: 'Riso saltato con uova, piselli e gamberetti.',
+          price: Decimal.parse('4.40'),
+        ),
       ];
       final firsCourseIds = firstCourses.map((e) => e.id).toList();
 
@@ -136,6 +133,23 @@ extension DoofDatabase on GetIt {
         ),
       ];
 
+      final ingredients = [
+        IngredientDto(
+          id: 'MYfBAEtoVzUrFQQLFxyP',
+          productIds: firsCourseIds,
+          title: 'Salsa Di Soia',
+          description: '',
+          levels: 5,
+        ),
+        IngredientDto(
+          id: 'AJaYFe7rBgt3cODa0Yec',
+          productIds: firsCourseIds,
+          title: 'Salsa Piccante',
+          description: '',
+          levels: 5,
+        ),
+      ];
+
       final ravioli = [
         ProductDto(
           id: 'tIGXj4JPigpru7r1HTqT',
@@ -163,15 +177,24 @@ extension DoofDatabase on GetIt {
         ),
       ];
 
+      // TODO: Add Salse products
+
+      // TODO: Add Bevande products
+
       await Future.wait([
         _elaborate('Updating: Firs Courses', firstCourses.map(get<ProductsRepository>().save)),
         _elaborate('Updating: Additions', additions.map(get<AdditionsRepository>().save)),
+        _elaborate('Updating: Ingredients', ingredients.map(get<IngredientsRepository>().save)),
         _elaborate('Updating: Ravioli', ravioli.map(get<ProductsRepository>().save)),
       ]);
       lg.config('Database Updated!');
     }
-    if (_nextVersion.major > currentVersion.major) {
+    if (_nextVersion.isMajorGreater(currentVersion)) {
       // Delete user data database
+      lg.config('Database Deleting!');
+      await Future.wait([
+        _elaborate('Deleting: Orders', [_cleanCollection(OrdersRepository.collection)]),
+      ]);
       lg.config('Database Deleted!');
     }
 
@@ -197,6 +220,10 @@ class _Version {
   final int minor;
 
   const _Version(this.major, this.minor);
+
+  bool isMajorGreater(_Version other) => major > other.major;
+
+  bool isMinorGreater(_Version other) => isMajorGreater(other) || minor > other.minor;
 
   factory _Version.parse(String source) {
     final versions = source.split('.');

@@ -43,7 +43,7 @@ class CalendarScreen extends ConsumerWidget {
           });
           return DataRow(
             cells: [
-              DataCell(Text(user.email)),
+              DataCell(Text(user.displayName)),
               DataCell(Text('${hours.hours}:${hours.minutes}')),
             ],
           );

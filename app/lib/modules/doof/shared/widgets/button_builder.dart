@@ -1,18 +1,23 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:mek_gasol/modules/doof/shared/blocs.dart';
-import 'package:reactive_forms/reactive_forms.dart';
+import 'package:mek_gasol/shared/dart_utils.dart';
+import 'package:mek_gasol/shared/form/form_blocs.dart';
+import 'package:rxdart/rxdart.dart';
 
 /// It does not return the [onPressed] callback in the [builder] when the user cannot interact
 /// with the [mutationBloc] / [formControl]
 class ButtonBuilder extends StatefulWidget {
   final VoidCallback? onPressed;
 
-  final StateStreamableSource<MutationState>? mutationBloc;
+  final Set<StateStreamableSource<QueryState>> queryBlocs;
 
-  final AbstractControl? formControl;
+  final Set<StateStreamableSource<MutationState>> mutationBlocs;
+
+  final FieldBlocRule<dynamic>? formBloc;
 
   /// It allows you to submit the form even if it is not valid.
   ///
@@ -21,14 +26,15 @@ class ButtonBuilder extends StatefulWidget {
 
   final Widget Function(BuildContext context, VoidCallback? onPressed) builder;
 
-  const ButtonBuilder({
+  ButtonBuilder({
     Key? key,
     required this.onPressed,
-    this.mutationBloc,
-    this.formControl,
+    this.queryBlocs = const {},
+    this.mutationBlocs = const {},
+    this.formBloc,
     this.canSubmitInvalidForm = false,
     required this.builder,
-  })  : assert(formControl != null),
+  })  : assert(queryBlocs.isNotEmpty || mutationBlocs.isNotEmpty || formBloc != null),
         super(key: key);
 
   @override
@@ -36,87 +42,94 @@ class ButtonBuilder extends StatefulWidget {
 }
 
 class _ButtonBuilderState extends State<ButtonBuilder> {
+  StreamSubscription? _queryBlocSub;
   StreamSubscription? _mutationBlocSub;
-  StreamSubscription? _formControlSub;
+  StreamSubscription? _formBlocSub;
 
-  bool _canSubmitForm = false;
+  bool _canQuery = false;
   bool _canMutate = false;
+  bool _canSubmitForm = false;
 
-  bool get _canPress => _canSubmitForm && _canMutate;
+  bool get _canPress => _canQuery && _canMutate && _canSubmitForm;
 
   @override
   void initState() {
     super.initState();
+    _listenQueryBloc();
     _listenMutationBloc();
-    _initFormControl();
-    _listenFormControl();
+    _listenFormBloc();
   }
 
   @override
   void didUpdateWidget(covariant ButtonBuilder oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.mutationBloc != oldWidget.mutationBloc) {
+    if (!widget.queryBlocs.equals(oldWidget.queryBlocs)) {
+      _queryBlocSub?.cancel();
+      _listenQueryBloc();
+    }
+    if (!widget.mutationBlocs.equals(oldWidget.mutationBlocs)) {
       _mutationBlocSub?.cancel();
       _listenMutationBloc();
     }
-    if (widget.canSubmitInvalidForm != oldWidget.canSubmitInvalidForm) {
-      _initFormControl();
-    }
-    if (widget.formControl != oldWidget.formControl) {
-      _formControlSub?.cancel();
-      _listenFormControl();
+    if (widget.formBloc != oldWidget.formBloc) {
+      _formBlocSub?.cancel();
+      _listenFormBloc();
     }
   }
 
   @override
   void dispose() {
+    _queryBlocSub?.cancel();
     _mutationBlocSub?.cancel();
-    _formControlSub?.cancel();
+    _formBlocSub?.cancel();
     super.dispose();
   }
 
-  bool _checkFormStatus(ControlStatus status) {
-    switch (status) {
-      case ControlStatus.pending:
-      case ControlStatus.disabled:
-        return false;
-      case ControlStatus.invalid:
-        return widget.canSubmitInvalidForm;
-      case ControlStatus.valid:
-        return true;
-    }
+  bool _checkFormBlocStatus(FieldBlocStateBase<dynamic>? state) {
+    if (state == null) return true;
+    if (!state.isEnabled) return false;
+    if (state.isInvalid) return widget.canSubmitInvalidForm;
+    return true;
+  }
+
+  void _listenQueryBloc() {
+    _canMutate = widget.queryBlocs.every((e) => !e.state.isLoading);
+    _mutationBlocSub = Rx.combineLatestList(widget.queryBlocs.map((e) {
+      return e.hotStream;
+    })).skip(1).listen((states) {
+      _updateState(canQuery: states.every((e) => !e.isLoading));
+    });
   }
 
   void _listenMutationBloc() {
-    _canMutate = !(widget.mutationBloc?.state.isMutating ?? false);
-    _mutationBlocSub = widget.mutationBloc?.stream.listen((state) {
-      _updateState(canMutate: !state.isMutating);
+    _canMutate = widget.mutationBlocs.every((e) => !e.state.isMutating);
+    _mutationBlocSub = Rx.combineLatestList(widget.mutationBlocs.map((e) {
+      return e.hotStream;
+    })).skip(1).listen((states) {
+      _updateState(canMutate: states.every((e) => !e.isMutating));
     });
   }
 
-  void _initFormControl() {
-    _canSubmitForm = _checkFormStatus(widget.formControl?.status ?? ControlStatus.valid);
-  }
-
-  void _listenFormControl() {
-    _formControlSub = widget.formControl?.statusChanged.listen((status) {
-      _updateState(canSubmitForm: _checkFormStatus(status));
+  void _listenFormBloc() {
+    _canSubmitForm = _checkFormBlocStatus(widget.formBloc?.state);
+    _formBlocSub = widget.formBloc?.stream.listen((state) {
+      _updateState(canSubmitForm: _checkFormBlocStatus(state));
     });
   }
 
-  void _updateState({bool? canMutate, bool? canSubmitForm}) {
+  void _updateState({bool? canQuery, bool? canMutate, bool? canSubmitForm}) {
     final wasCanPress = _canPress;
 
+    _canQuery = canQuery ?? _canQuery;
     _canMutate = canMutate ?? _canMutate;
     _canSubmitForm = canSubmitForm ?? _canSubmitForm;
-
     if (wasCanPress == _canPress) return;
     setState(() {});
   }
 
   void _onPressedSubmit() {
-    if (!widget.formControl!.valid) {
-      widget.formControl!.markAllAsTouched();
+    if (!widget.formBloc!.state.isInvalid) {
+      // widget.formControl!.markAllAsTouched();
       return;
     }
     widget.onPressed!();
@@ -124,11 +137,15 @@ class _ButtonBuilderState extends State<ButtonBuilder> {
 
   @override
   Widget build(BuildContext context) {
-    final canSubmitForm = widget.canSubmitInvalidForm && widget.formControl != null;
+    final canSubmitForm = widget.canSubmitInvalidForm && widget.formBloc != null;
 
     final onPressed =
         widget.onPressed != null && canSubmitForm ? _onPressedSubmit : widget.onPressed;
 
     return widget.builder(context, _canPress ? onPressed : null);
   }
+}
+
+extension EqualsSet<T> on Set<T> {
+  bool equals(Set<T> other) => const SetEquality().equals(this, other);
 }

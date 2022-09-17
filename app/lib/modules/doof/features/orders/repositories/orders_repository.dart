@@ -21,6 +21,7 @@ class OrdersRepository {
   }
 
   Future<void> delete(OrderDto order) async {
+    if (order.status != OrderStatus.draft) throw 'Cant delete order';
     await _ref().doc(order.id).delete();
   }
 

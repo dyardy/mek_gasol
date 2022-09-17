@@ -10,7 +10,11 @@ class UsersRepository {
     return _firestore.collection('users').withJsonConverter(UserDto.fromJson);
   }
 
-  Stream<List<UserDto>> watchAll() {
+  Stream<UserDto> watch(String uid) {
+    return _ref().doc(uid).snapshots().map((snapshot) => snapshot.data()!);
+  }
+
+  Stream<List<PublicUserDto>> watchAll() {
     return _ref().snapshots().map((snapshot) {
       return snapshot.docs.map((e) => e.data()).toList();
     });

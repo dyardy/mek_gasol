@@ -7,7 +7,7 @@ part 'calendar_event_dvo.g.dart';
 
 abstract class EventCalendarDvo {
   final String id;
-  final UserDto createdBy;
+  final PublicUserDto createdBy;
   final DateTime startAt;
   final DateTime endAt;
   final String note;

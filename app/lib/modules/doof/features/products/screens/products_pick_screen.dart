@@ -1,27 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:mek_gasol/modules/doof/features/additions/dto/addition_dto.dart';
 import 'package:mek_gasol/modules/doof/features/additions/repositories/additions_repository.dart';
+import 'package:mek_gasol/modules/doof/features/ingredients/dto/ingredient_dto.dart';
+import 'package:mek_gasol/modules/doof/features/ingredients/repositories/ingredients_repository.dart';
+import 'package:mek_gasol/modules/doof/features/orders/dto/addition_order_dto.dart';
+import 'package:mek_gasol/modules/doof/features/orders/dto/ingredient_order_dto.dart';
+import 'package:mek_gasol/modules/doof/features/orders/dto/order_dto.dart';
+import 'package:mek_gasol/modules/doof/features/orders/dto/product_order_dto.dart';
+import 'package:mek_gasol/modules/doof/features/orders/repositories/order_products_repository.dart';
 import 'package:mek_gasol/modules/doof/features/products/dto/product_dto.dart';
 import 'package:mek_gasol/modules/doof/features/products/repositories/products_repository.dart';
 import 'package:mek_gasol/modules/doof/shared/blocs.dart';
 import 'package:mek_gasol/modules/doof/shared/doof_transaltions.dart';
 import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
 import 'package:mek_gasol/modules/doof/shared/widgets/bloc_widgets.dart';
+import 'package:mek_gasol/modules/doof/shared/widgets/bottom_button_bar.dart';
+import 'package:mek_gasol/modules/doof/shared/widgets/button_builder.dart';
+import 'package:mek_gasol/shared/form/fields/field_dropdown.dart';
+import 'package:mek_gasol/shared/form/fields/field_group_checkbox.dart';
+import 'package:mek_gasol/shared/form/fields/field_slider.dart';
+import 'package:mek_gasol/shared/form/form_blocs.dart';
+import 'package:mek_gasol/shared/form/form_utils.dart';
 import 'package:mek_gasol/shared/hub.dart';
-import 'package:reactive_forms/reactive_forms.dart';
-
-class PickedProductData {
-  final ProductDto product;
-  final List<AdditionDto> additions;
-
-  const PickedProductData({
-    required this.product,
-    required this.additions,
-  });
-}
+import 'package:pure_extensions/pure_extensions.dart';
 
 class ProductsPickScreen extends StatefulWidget {
-  const ProductsPickScreen({super.key});
+  final OrderDto order;
+
+  const ProductsPickScreen({
+    super.key,
+    required this.order,
+  });
 
   @override
   State<ProductsPickScreen> createState() => _ProductsPickScreenState();
@@ -47,17 +56,10 @@ class _ProductsPickScreenState extends State<ProductsPickScreen> {
           final product = products[index];
 
           return ListTile(
-            onTap: () async {
-              final additions = await showDialog<List<AdditionDto>>(
-                context: context,
-                builder: (context) => AdditionsPickDialog(product: product),
-              );
-              if (additions == null) return;
-              context.hub.pop(PickedProductData(
-                product: product,
-                additions: additions,
-              ));
-            },
+            onTap: () => context.hub.push(ProductOrderScreen(
+              order: widget.order,
+              product: product,
+            )),
             title: Text(
                 '${DoofTranslations.of(context).formatPrice(product.price)} - ${product.title}'),
             subtitle: Text(product.description),
@@ -75,87 +77,201 @@ class _ProductsPickScreenState extends State<ProductsPickScreen> {
   }
 }
 
-class AdditionsPickDialog extends StatefulWidget {
+class ProductOrderScreen extends StatefulWidget {
+  final OrderDto order;
+  final ProductOrderDto? productOrder;
   final ProductDto product;
-  final List<AdditionDto> additions;
 
-  const AdditionsPickDialog({
+  const ProductOrderScreen({
     super.key,
+    required this.order,
+    this.productOrder,
     required this.product,
-    this.additions = const [],
   });
 
   @override
-  State<AdditionsPickDialog> createState() => _AdditionsPickDialogState();
+  State<ProductOrderScreen> createState() => _ProductOrderScreenState();
 }
 
-class _AdditionsPickDialogState extends State<AdditionsPickDialog> {
-  final _additions = QueryBloc(() {
+class _ProductOrderScreenState extends State<ProductOrderScreen> {
+  final _additionsQb = QueryBloc(() {
     return get<AdditionsRepository>().watch();
   });
+  final _ingredientsQb = QueryBloc(() {
+    return get<IngredientsRepository>().watch();
+  });
 
-  final _additionsControl = FormControl<List<AdditionDto>>(value: []);
+  final _quantityFb = FieldBloc<int>(initialValue: 1);
+  final _additionsFb = FieldBloc<List<AdditionDto>>(initialValue: []);
+  final _ingredientsFb = MapFieldBloc<String, double>();
+
+  late final _form = ListFieldBloc(
+    fieldBlocs: [_quantityFb, _additionsFb, _ingredientsFb],
+  );
+
+  final _save = MutationBloc();
 
   @override
   void initState() {
     super.initState();
-    _additionsControl.updateValue(widget.additions);
+    _quantityFb.updateValue(widget.productOrder?.quantity ?? 1);
+    _additionsFb.updateValue(widget.productOrder?.additions.map((e) => e.addition).toList() ?? []);
+    _ingredientsQb.stream.map((state) => state.dataOrNull).whereNotNull().listen((ingredients) {
+      _ingredientsFb.updateFieldBlocs({
+        for (final ingredient in ingredients)
+          ingredient.id: FieldBloc(
+            initialValue: widget.productOrder?.ingredients
+                    .firstWhereOrNull((e) => e.ingredient.id == ingredient.id)
+                    ?.value ??
+                0.0,
+          ),
+      });
+    });
   }
 
   @override
   void dispose() {
-    _additions.close();
-    _additionsControl.dispose();
+    _additionsQb.close();
+    _ingredientsQb.close();
+    _form.close();
     super.dispose();
+  }
+
+  void _onSubmit() {
+    _save.handle(() async {
+      _form.disable();
+
+      final productOrder = ProductOrderDto(
+        id: widget.productOrder?.id ?? '',
+        user: widget.productOrder?.user ?? get(),
+        product: widget.productOrder?.product ?? widget.product,
+        quantity: _quantityFb.state.value,
+        additions: _additionsFb.state.value.map((e) {
+          return AdditionOrderDto(
+            addition: e,
+          );
+        }).toList(),
+        ingredients: _ingredientsFb.state.value.generateIterable((key, value) {
+          return IngredientOrderDto(
+            ingredient: _ingredientsQb.state.data.firstWhere((e) => e.id == key),
+            value: value,
+          );
+        }).toList(),
+      );
+
+      await get<OrderProductsRepository>().save(widget.order, productOrder);
+    }, onSuccess: (_) {
+      context.hub.pop(true);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final t = DoofTranslations.of(context);
 
-    return AlertDialog(
-      contentPadding: const EdgeInsets.symmetric(vertical: 8.0),
-      title: Text(widget.product.title),
-      content: QueryViewBuilder(
-        bloc: _additions,
-        builder: (context, additions) {
-          return ReactiveFormField<List<AdditionDto>, List<AdditionDto>>(
-            formControl: _additionsControl,
-            builder: (state) {
-              return ListView.builder(
-                itemCount: additions.length,
-                itemBuilder: (context, index) {
-                  final addition = additions[index];
-                  final value = state.value!;
+    Widget buildIngredientsFields(
+      BuildContext context,
+      List<IngredientDto> ingredients,
+      Map<String, FieldBlocRule<double>> fieldBlocs,
+    ) {
+      return Column(
+        children: fieldBlocs.generateIterable((ingredientId, fieldBloc) {
+          final ingredient = ingredients.firstWhereOrNull((e) => e.id == ingredientId);
+          if (ingredient == null) return const SizedBox.shrink();
 
-                  return CheckboxListTile(
-                    value: value.contains(addition),
-                    onChanged: (isChecked) {
-                      if (isChecked!) {
-                        state.didChange([...value, addition]);
-                      } else {
-                        state.didChange([...value]..remove(addition));
-                      }
-                    },
-                    title: Text('${t.formatPrice(addition.price)} - ${addition.title}'),
-                    subtitle: Text(addition.description),
-                  );
-                },
-              );
-            },
+          return FieldSlider(
+            fieldBloc: fieldBloc,
+            min: 0.0,
+            max: 1.0,
+            divisions: ingredient.levels,
+            decoration: InputDecoration(
+              labelText: ingredient.title,
+            ),
+            labelBuilder: (value) => (ingredient.levels * value).toStringAsFixed(0),
+          );
+        }).toList(),
+      );
+    }
+
+    Widget buildAdditionsField(BuildContext context, List<AdditionDto> additions) {
+      return FieldGroupBuilder(
+        fieldBloc: _additionsFb,
+        values: additions,
+        style: const GroupStyle.list(),
+        decoration: const InputDecoration(
+          labelText: 'Additions',
+        ),
+        valueBuilder: (state, value) {
+          return CheckboxListTile(
+            value: state.value.contains(value),
+            onChanged: state.widgetSelectHandler(_additionsFb, value),
+            title: Text('${t.formatPrice(value.price)} - ${value.title}'),
+            subtitle: Text(value.description),
           );
         },
+      );
+    }
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.product.title),
       ),
-      actions: [
-        TextButton(
-          onPressed: () => context.hub.pop(),
-          child: const Text('Cancel'),
+      bottomNavigationBar: BottomButtonBar(
+        children: [
+          Expanded(
+            child: ButtonBuilder(
+              queryBlocs: {_additionsQb, _ingredientsQb},
+              formBloc: _form,
+              onPressed: _onSubmit,
+              builder: (context, onPressed) {
+                return ElevatedButton.icon(
+                  onPressed: onPressed,
+                  icon: const Icon(Icons.check),
+                  label: Text(widget.productOrder == null ? 'Select' : 'Update'),
+                );
+              },
+            ),
+          )
+        ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: Column(
+          children: [
+            FieldDropdown(
+              fieldBloc: _quantityFb,
+              decoration: const InputDecoration(
+                labelText: 'Quantity',
+              ),
+              items: [
+                for (var i = 1; i <= 8; i++)
+                  DropdownMenuItem(
+                    value: i,
+                    child: Text('$i'),
+                  ),
+              ],
+            ),
+            QueryViewBuilder(
+              bloc: _ingredientsQb,
+              builder: (context, ingredients) {
+                return BlocBuilder(
+                  bloc: _ingredientsFb,
+                  buildWhen: (prev, curr) => !prev.fieldBlocs.equals(curr.fieldBlocs),
+                  builder: (context, control) {
+                    return buildIngredientsFields(context, ingredients, control.fieldBlocs);
+                  },
+                );
+              },
+            ),
+            Expanded(
+              child: QueryViewBuilder(
+                bloc: _additionsQb,
+                builder: buildAdditionsField,
+              ),
+            ),
+          ],
         ),
-        ElevatedButton(
-          onPressed: () => context.hub.pop(_additionsControl.value),
-          child: const Text('Select'),
-        ),
-      ],
+      ),
     );
   }
 }
