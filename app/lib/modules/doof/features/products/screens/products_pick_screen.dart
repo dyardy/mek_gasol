@@ -168,7 +168,7 @@ class _ProductOrderScreenState extends State<ProductOrderScreen> {
       );
 
       await get<OrderProductsRepository>().save(widget.order, productOrder);
-    }, onSuccess: (_) {
+    }, success: (_) {
       context.hub.pop(true);
     });
   }
@@ -241,7 +241,7 @@ class _ProductOrderScreenState extends State<ProductOrderScreen> {
       );
     }
 
-    return Scaffold(
+    Widget current = Scaffold(
       appBar: AppBar(
         title: Text(widget.product.title),
       ),
@@ -306,5 +306,17 @@ class _ProductOrderScreenState extends State<ProductOrderScreen> {
         ),
       ),
     );
+    current = BlocListener(
+      bloc: _save,
+      listener: (context, state) {
+        state.whenOrNull(failed: (_) {
+          _form.enable();
+        }, success: (_) {
+          context.hub.pop();
+        });
+      },
+      child: current,
+    );
+    return current;
   }
 }

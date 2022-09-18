@@ -14,6 +14,7 @@ import 'package:rxdart/rxdart.dart';
 
 extension DoofServiceLocator on GetIt {
   Future<void> initDoofServiceLocator() async {
+    registerSingleton(FirebaseAuth.instance);
     registerSingleton(FirebaseFirestore.instance);
 
     registerFactory(UsersRepository.new);

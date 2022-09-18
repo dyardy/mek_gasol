@@ -1,53 +1,229 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:mek_data_class/mek_data_class.dart';
 
-class MutationState {
-  final bool isMutating;
+part 'blocs.g.dart';
 
-  const MutationState({
-    required this.isMutating,
+@DataClass()
+abstract class MutationState<TData> with _$MutationState<TData> {
+  const MutationState._();
+
+  bool get isMutating;
+
+  bool get isIdle => this is IdleMutation<TData>;
+  bool get isLoading => this is LoadingMutation<TData>;
+  bool get isFailed => this is FailedMutation<TData>;
+  bool get isSuccess => this is SuccessMutation<TData>;
+
+  MutationState<TData> toIdle() => IdleMutation();
+
+  MutationState<TData> toLoading() => LoadingMutation();
+
+  MutationState<TData> toFailed({
+    bool isMutating = false,
+    required Object error,
+  }) {
+    return FailedMutation(isMutating: isMutating, error: error);
+  }
+
+  MutationState<TData> toSuccess({
+    bool isMutating = false,
+    required TData data,
+  }) {
+    return SuccessMutation(isMutating: isMutating, data: data);
+  }
+
+  R map<R>({
+    required R Function(IdleMutation<TData> state) idle,
+    required R Function(LoadingMutation<TData> state) loading,
+    required R Function(FailedMutation<TData> state) failed,
+    required R Function(SuccessMutation<TData> state) success,
   });
 
-  MutationState copyWith({
-    bool? isMutating,
+  R maybeMap<R>({
+    R Function(IdleMutation<TData> state)? idle,
+    R Function(LoadingMutation<TData> state)? loading,
+    R Function(FailedMutation<TData> state)? failed,
+    R Function(SuccessMutation<TData> state)? success,
+    required R Function(MutationState<TData>) orElse,
   }) {
-    return MutationState(
-      isMutating: isMutating ?? this.isMutating,
+    return map(
+      idle: idle ?? orElse,
+      loading: loading ?? orElse,
+      failed: failed ?? orElse,
+      success: success ?? orElse,
+    );
+  }
+
+  R? mapOrNull<R>({
+    R Function(IdleMutation<TData> state)? idle,
+    R Function(LoadingMutation<TData> state)? loading,
+    R Function(FailedMutation<TData> state)? failed,
+    R Function(SuccessMutation<TData> state)? success,
+  }) {
+    R? orNull(_) => null;
+    return map(
+      idle: idle ?? orNull,
+      loading: loading ?? orNull,
+      failed: failed ?? orNull,
+      success: success ?? orNull,
+    );
+  }
+
+  R when<R>({
+    required R Function() idle,
+    required R Function() loading,
+    required R Function(Object error) failed,
+    required R Function(TData data) success,
+  }) {
+    return map(
+      idle: (state) => idle(),
+      loading: (state) => loading(),
+      failed: (state) => failed(state.error),
+      success: (state) => success(state.data),
+    );
+  }
+
+  R maybeWhen<R>({
+    R Function()? idle,
+    R Function()? loading,
+    R Function(Object error)? failed,
+    R Function(TData data)? success,
+    required R Function() orElse,
+  }) {
+    return map(
+      idle: (_) => idle == null ? orElse() : idle(),
+      loading: (_) => loading == null ? orElse() : loading(),
+      failed: (state) => failed == null ? orElse() : failed(state.error),
+      success: (state) => success == null ? orElse() : success(state.data),
+    );
+  }
+
+  R? whenOrNull<R>({
+    R Function()? idle,
+    R Function()? loading,
+    R Function(Object error)? failed,
+    R Function(TData data)? success,
+  }) {
+    return map(
+      idle: (_) => idle?.call(),
+      loading: (_) => loading?.call(),
+      failed: (state) => failed?.call(state.error),
+      success: (state) => success?.call(state.data),
     );
   }
 }
 
-class MutationBloc extends Cubit<MutationState> {
-  MutationBloc() : super(const MutationState(isMutating: false));
+@DataClass()
+class IdleMutation<TData> extends MutationState<TData> with _$IdleMutation<TData> {
+  IdleMutation() : super._();
 
-  void handle<R>(
-    FutureOr<R> Function() mutator, {
-    void Function(Object error)? onFailed,
-    void Function(R result)? onSuccess,
-    void Function(Object? error, R? result)? onCompleted,
+  @override
+  bool get isMutating => false;
+
+  @override
+  R map<R>({
+    required R Function(IdleMutation<TData> state) idle,
+    required R Function(LoadingMutation<TData> state) loading,
+    required R Function(FailedMutation<TData> state) failed,
+    required R Function(SuccessMutation<TData> state) success,
+  }) {
+    return idle(this);
+  }
+}
+
+@DataClass()
+class LoadingMutation<TData> extends MutationState<TData> with _$LoadingMutation<TData> {
+  LoadingMutation() : super._();
+
+  @override
+  bool get isMutating => true;
+
+  @override
+  R map<R>({
+    required R Function(IdleMutation<TData> state) idle,
+    required R Function(LoadingMutation<TData> state) loading,
+    required R Function(FailedMutation<TData> state) failed,
+    required R Function(SuccessMutation<TData> state) success,
+  }) {
+    return loading(this);
+  }
+}
+
+@DataClass()
+class FailedMutation<TData> extends MutationState<TData> with _$FailedMutation<TData> {
+  @override
+  final bool isMutating;
+
+  final Object error;
+
+  FailedMutation({
+    required this.isMutating,
+    required this.error,
+  }) : super._();
+
+  @override
+  R map<R>({
+    required R Function(IdleMutation<TData> state) idle,
+    required R Function(LoadingMutation<TData> state) loading,
+    required R Function(FailedMutation<TData> state) failed,
+    required R Function(SuccessMutation<TData> state) success,
+  }) {
+    return failed(this);
+  }
+}
+
+@DataClass()
+class SuccessMutation<TData> extends MutationState<TData> with _$SuccessMutation<TData> {
+  @override
+  final bool isMutating;
+
+  final TData data;
+
+  SuccessMutation({
+    required this.isMutating,
+    required this.data,
+  }) : super._();
+
+  @override
+  R map<R>({
+    required R Function(IdleMutation<TData> state) idle,
+    required R Function(LoadingMutation<TData> state) loading,
+    required R Function(FailedMutation<TData> state) failed,
+    required R Function(SuccessMutation<TData> state) success,
+  }) {
+    return success(this);
+  }
+}
+
+class MutationBloc<T> extends Cubit<MutationState<T>> {
+  MutationBloc() : super(IdleMutation());
+
+  void handle(
+    FutureOr<T> Function() mutator, {
+    void Function(Object error)? failed,
+    void Function(T result)? success,
+    void Function(Object? error, T? result)? completed,
   }) async {
-    emit(state.copyWith(isMutating: true));
+    emit(state.toLoading());
 
     try {
       final result = await mutator();
-      if (!isClosed) {
-        onSuccess?.call(result);
-        onCompleted?.call(null, result);
-      }
-    } catch (error) {
-      if (!isClosed) {
-        onFailed?.call(error);
-        onCompleted?.call(error, null);
-      }
-      rethrow;
-    } finally {
-      emit(state.copyWith(isMutating: false));
+      success?.call(result);
+      completed?.call(null, result);
+      emit(state.toSuccess(data: result));
+    } catch (error, stackTrace) {
+      onError(error, stackTrace);
+      failed?.call(error);
+      completed?.call(error, null);
+      emit(state.toFailed(error: error));
     }
   }
 }
 
-class QueryState<T> {
+@DataClass(copyable: true)
+class QueryState<T> with _$QueryState<T> {
   final bool isLoading;
   final T? dataOrNull;
 
@@ -57,16 +233,6 @@ class QueryState<T> {
     required this.isLoading,
     required this.dataOrNull,
   });
-
-  QueryState<T> copyWith({
-    bool? isLoading,
-    T? dataOrNull,
-  }) {
-    return QueryState(
-      isLoading: isLoading ?? this.isLoading,
-      dataOrNull: dataOrNull ?? this.dataOrNull,
-    );
-  }
 }
 
 class QueryBloc<T> extends Cubit<QueryState<T>> {

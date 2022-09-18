@@ -4,6 +4,7 @@ import 'package:mek_gasol/modules/doof/features/products/dto/product_dto.dart';
 import 'package:mek_gasol/modules/doof/features/products/repositories/products_repository.dart';
 import 'package:mek_gasol/modules/doof/shared/blocs.dart';
 import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
+import 'package:mek_gasol/modules/doof/shared/widgets/bloc_widgets.dart';
 import 'package:mek_gasol/modules/doof/shared/widgets/bottom_button_bar.dart';
 import 'package:mek_gasol/modules/doof/shared/widgets/button_builder.dart';
 import 'package:mek_gasol/shared/form/fields/field_text.dart';
@@ -62,14 +63,12 @@ class _ProductScreenState extends State<ProductScreen> {
         description: _descriptionControl.state.value,
         price: _priceControl.state.value!,
       ));
-    }, onSuccess: (_) {
-      context.hub.pop();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    Widget current = Scaffold(
       appBar: AppBar(
         title: const Text('Products'),
       ),
@@ -128,5 +127,17 @@ class _ProductScreenState extends State<ProductScreen> {
         ),
       ),
     );
+    current = BlocListener(
+      bloc: _mutationBloc,
+      listener: (context, state) {
+        state.whenOrNull(failed: (_) {
+          _formControl.enable();
+        }, success: (_) {
+          context.hub.pop();
+        });
+      },
+      child: current,
+    );
+    return current;
   }
 }

@@ -5,13 +5,13 @@ targets:
         generate_for:
           - 'lib/**/*_dto.dart'
           - 'lib/**/*_dvo.dart'
-          - '**/form_blocs.dart'
+          - '**/*blocs.dart'
 
       mek_data_class_generator|data_class:
         generate_for:
           - 'lib/**/*_dto.dart'
           - 'lib/**/*_dvo.dart'
-          - '**/form_blocs.dart'
+          - '**/*blocs.dart'
         options:
           pageWidth: 100
           comparable: true

@@ -32,7 +32,7 @@ class ButtonBuilder extends StatefulWidget {
     this.queryBlocs = const {},
     this.mutationBlocs = const {},
     this.formBloc,
-    this.canSubmitInvalidForm = false,
+    this.canSubmitInvalidForm = true,
     required this.builder,
   })  : assert(queryBlocs.isNotEmpty || mutationBlocs.isNotEmpty || formBloc != null),
         super(key: key);
@@ -93,7 +93,7 @@ class _ButtonBuilderState extends State<ButtonBuilder> {
   }
 
   void _listenQueryBloc() {
-    _canMutate = widget.queryBlocs.every((e) => !e.state.isLoading);
+    _canQuery = widget.queryBlocs.every((e) => !e.state.isLoading);
     _mutationBlocSub = Rx.combineLatestList(widget.queryBlocs.map((e) {
       return e.hotStream;
     })).skip(1).listen((states) {
@@ -128,8 +128,8 @@ class _ButtonBuilderState extends State<ButtonBuilder> {
   }
 
   void _onPressedSubmit() {
-    if (!widget.formBloc!.state.isInvalid) {
-      // widget.formControl!.markAllAsTouched();
+    if (widget.formBloc!.state.isInvalid) {
+      widget.formBloc!.touch();
       return;
     }
     widget.onPressed!();
@@ -137,6 +137,7 @@ class _ButtonBuilderState extends State<ButtonBuilder> {
 
   @override
   Widget build(BuildContext context) {
+    // print('_canQuery:$_canQuery _canMutate:$_canMutate _canSubmitForm:$_canSubmitForm');
     final canSubmitForm = widget.canSubmitInvalidForm && widget.formBloc != null;
 
     final onPressed =

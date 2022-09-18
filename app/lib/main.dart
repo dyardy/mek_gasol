@@ -26,7 +26,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  Bloc.observer = _BlocObserver();
+  Bloc.observer = const _BlocObserver();
 
   await GetIt.instance.initDoofServiceLocator();
   await GetIt.instance.initDoofDatabase();
@@ -117,12 +117,12 @@ class ModulesState extends State<Modules> {
 }
 
 class _ModulesScreen extends StatelessWidget {
-  const _ModulesScreen({super.key});
+  const _ModulesScreen();
 
   @override
   Widget build(BuildContext context) {
     Widget buildBody() {
-      if (Modules.of(context)._isLoading) return Center(child: CircularProgressIndicator());
+      if (Modules.of(context)._isLoading) return const Center(child: CircularProgressIndicator());
 
       return Column(
         children: Module.values.map((e) {
@@ -144,7 +144,9 @@ class _ModulesScreen extends StatelessWidget {
   }
 }
 
-class _BlocObserver extends BlocObserver {
+class _BlocObserver with BlocObserver {
+  const _BlocObserver();
+
   @override
   void onError(BlocBase bloc, Object error, StackTrace stackTrace) {
     super.onError(bloc, error, stackTrace);

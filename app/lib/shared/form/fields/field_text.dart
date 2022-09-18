@@ -4,6 +4,132 @@ import 'package:mek_gasol/modules/doof/shared/widgets/bloc_widgets.dart';
 import 'package:mek_gasol/shared/form/form_blocs.dart';
 import 'package:mek_gasol/shared/form/form_utils.dart';
 
+class FieldText<T> extends StatefulWidget {
+  final FieldBlocRule<T> fieldBloc;
+  final FieldConvert<T> converter;
+  final TextFieldType type;
+  final int? maxLines;
+  final int? minLines;
+  final TextInputType? keyboardType;
+  final InputDecoration decoration;
+
+  const FieldText({
+    Key? key,
+    required this.fieldBloc,
+    required this.converter,
+    this.type = TextFieldType.none,
+    this.maxLines = 1,
+    this.minLines,
+    this.keyboardType,
+    this.decoration = const InputDecoration(),
+  }) : super(key: key);
+
+  static FieldTextState of(BuildContext context) {
+    return context.findAncestorStateOfType()!;
+  }
+
+  @override
+  State<FieldText<T>> createState() => FieldTextState();
+}
+
+class FieldTextState<T> extends State<FieldText<T>> {
+  late TextEditingController _controller;
+  late TextFieldTypeData _typeData;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(
+      text: widget.converter.toText(widget.fieldBloc.state.value),
+    );
+    _typeData = widget.type.resolve(context);
+  }
+
+  @override
+  void didUpdateWidget(covariant FieldText<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.fieldBloc != oldWidget.fieldBloc) {
+      _controller.dispose();
+      _controller = TextEditingController(
+        text: widget.converter.toText(widget.fieldBloc.state.value),
+      );
+    }
+    if (widget.type != oldWidget.type) {
+      _typeData = widget.type.resolve(context);
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void update(TextFieldTypeData data) {
+    setState(() => _typeData = data);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final field = BlocConsumer<FieldBlocStateBase<T>>(
+      bloc: widget.fieldBloc,
+      listener: (context, state) {
+        final fieldValue = widget.converter.toValue(_controller.text);
+        if (fieldValue == state.value) return;
+        _controller.text = widget.converter.toText(state.value);
+      },
+      builder: (context, state) {
+        final typeData = widget.type.build(context) ?? _typeData;
+
+        return TextField(
+          controller: _controller,
+          onChanged: (text) {
+            final value = widget.converter.toValue(text);
+            if (value is T) widget.fieldBloc.changeValue(value);
+          },
+          enabled: state.isEnabled,
+          maxLines: widget.maxLines,
+          minLines: widget.minLines,
+          decoration: (typeData.decoration ?? widget.decoration)
+              .copyWith(errorText: state.widgetError(context)),
+          obscureText: typeData.obscureText,
+          enableSuggestions: typeData.enableSuggestions,
+          autocorrect: typeData.autocorrect,
+          keyboardType: typeData.keyboardType,
+          inputFormatters: typeData.inputFormatters,
+        );
+      },
+    );
+
+    return TextFieldScope(
+      decoration: widget.decoration,
+      typeData: _typeData,
+      child: field,
+    );
+  }
+}
+
+class TextFieldScope extends InheritedWidget {
+  final InputDecoration decoration;
+  final TextFieldTypeData typeData;
+
+  const TextFieldScope({
+    super.key,
+    required this.decoration,
+    required this.typeData,
+    required super.child,
+  });
+
+  static TextFieldScope of(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<TextFieldScope>()!;
+  }
+
+  @override
+  bool updateShouldNotify(TextFieldScope oldWidget) {
+    return decoration != oldWidget.decoration || typeData != oldWidget.typeData;
+  }
+}
+
 abstract class FieldConvert<T> {
   const FieldConvert();
 
@@ -44,84 +170,4 @@ class _DecimalFieldConvert extends FieldConvert<Decimal> {
 
   @override
   String toText(Decimal? value) => value?.toString() ?? '';
-}
-
-class FieldText<T> extends StatefulWidget {
-  final FieldBlocRule<T> fieldBloc;
-  final FieldConvert<T> converter;
-  final TextFieldType type;
-  final int? maxLines;
-  final int? minLines;
-  final TextInputType? keyboardType;
-  final InputDecoration decoration;
-
-  const FieldText({
-    Key? key,
-    required this.fieldBloc,
-    required this.converter,
-    this.type = const TextFieldType(),
-    this.maxLines = 1,
-    this.minLines,
-    this.keyboardType,
-    this.decoration = const InputDecoration(),
-  }) : super(key: key);
-
-  @override
-  State<FieldText<T>> createState() => _TextFieldBuilderState();
-}
-
-class _TextFieldBuilderState<T> extends State<FieldText<T>> {
-  late TextEditingController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = TextEditingController(
-      text: widget.converter.toText(widget.fieldBloc.state.value),
-    );
-  }
-
-  @override
-  void didUpdateWidget(covariant FieldText<T> oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.fieldBloc != oldWidget.fieldBloc) {
-      _controller.dispose();
-      _controller = TextEditingController(
-        text: widget.converter.toText(widget.fieldBloc.state.value),
-      );
-    }
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocConsumer<FieldBlocStateBase<T>>(
-      bloc: widget.fieldBloc,
-      listener: (context, state) {
-        final fieldValue = widget.converter.toValue(_controller.text);
-        if (fieldValue == state.value) return;
-        _controller.text = widget.converter.toText(state.value);
-      },
-      builder: (context, state) {
-        return TextField(
-          controller: _controller,
-          onChanged: (text) {
-            final value = widget.converter.toValue(text);
-            if (value is T) widget.fieldBloc.changeValue(value);
-          },
-          enabled: state.isEnabled,
-          maxLines: widget.maxLines,
-          minLines: widget.minLines,
-          keyboardType: widget.keyboardType ?? widget.type.getKeyboardType(),
-          inputFormatters: widget.type.getInputFormatters(),
-          decoration: widget.decoration.copyWith(errorText: state.widgetError(context)),
-        );
-      },
-    );
-  }
 }

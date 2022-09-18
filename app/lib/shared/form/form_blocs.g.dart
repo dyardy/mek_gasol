@@ -8,46 +8,14 @@ part of 'form_blocs.dart';
 
 // ignore_for_file: annotate_overrides
 
-mixin _$FieldBlocStateBase<TValue> {
-  FieldBlocStateBase<TValue> get _self => this as FieldBlocStateBase<TValue>;
-
-  Iterable<Object?> get _props sync* {}
-
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is _$FieldBlocStateBase<TValue> &&
-          runtimeType == other.runtimeType &&
-          DataClass.$equals(_props, other._props);
-
-  int get hashCode => Object.hashAll(_props);
-
-  String toString() => (ClassToString('FieldBlocStateBase', [TValue])).toString();
-
-  FieldBlocStateBase<TValue> change(void Function(_FieldBlocStateBaseChanges<TValue> c) updates);
-
-  _FieldBlocStateBaseChanges<TValue> toChanges();
-}
-
-abstract class _FieldBlocStateBaseChanges<TValue> {
-  _FieldBlocStateBaseChanges._(FieldBlocStateBase<TValue> dataClass) {
-    replace(dataClass);
-  }
-
-  void update(void Function(_FieldBlocStateBaseChanges<TValue> c) updates);
-
-  void replace(covariant FieldBlocStateBase<TValue> dataClass);
-
-  FieldBlocStateBase<TValue> build();
-}
-
 mixin _$FieldBlocState<TValue> {
   FieldBlocState<TValue> get _self => this as FieldBlocState<TValue>;
 
   Iterable<Object?> get _props sync* {
     yield _self.isEnabled;
+    yield _self.isTouched;
     yield _self.initialValue;
     yield _self.value;
-    yield _self.isChanged;
     yield _self.errors;
   }
 
@@ -61,9 +29,9 @@ mixin _$FieldBlocState<TValue> {
 
   String toString() => (ClassToString('FieldBlocState', [TValue])
         ..add('isEnabled', _self.isEnabled)
+        ..add('isTouched', _self.isTouched)
         ..add('initialValue', _self.initialValue)
         ..add('value', _self.value)
-        ..add('isChanged', _self.isChanged)
         ..add('errors', _self.errors))
       .toString();
 
@@ -73,11 +41,11 @@ mixin _$FieldBlocState<TValue> {
   _FieldBlocStateChanges<TValue> toChanges() => _FieldBlocStateChanges._(_self);
 }
 
-class _FieldBlocStateChanges<TValue> implements _FieldBlocStateBaseChanges<TValue> {
+class _FieldBlocStateChanges<TValue> {
   late bool isEnabled;
+  late bool isTouched;
   late TValue initialValue;
   late TValue value;
-  late bool isChanged;
   late List<Object> errors;
 
   _FieldBlocStateChanges._(FieldBlocState<TValue> dataClass) {
@@ -88,17 +56,17 @@ class _FieldBlocStateChanges<TValue> implements _FieldBlocStateBaseChanges<TValu
 
   void replace(covariant FieldBlocState<TValue> dataClass) {
     isEnabled = dataClass.isEnabled;
+    isTouched = dataClass.isTouched;
     initialValue = dataClass.initialValue;
     value = dataClass.value;
-    isChanged = dataClass.isChanged;
     errors = dataClass.errors;
   }
 
   FieldBlocState<TValue> build() => FieldBlocState(
         isEnabled: isEnabled,
+        isTouched: isTouched,
         initialValue: initialValue,
         value: value,
-        isChanged: isChanged,
         errors: errors,
       );
 }
@@ -130,7 +98,7 @@ mixin _$ListFieldBlocState<TValue> {
   _ListFieldBlocStateChanges<TValue> toChanges() => _ListFieldBlocStateChanges._(_self);
 }
 
-class _ListFieldBlocStateChanges<TValue> implements _FieldBlocStateBaseChanges<List<TValue>> {
+class _ListFieldBlocStateChanges<TValue> {
   late List<FieldBlocBase<FieldBlocStateBase<TValue>, TValue>> fieldBlocs;
   late List<FieldBlocStateBase<TValue>> fieldStates;
 
@@ -179,8 +147,7 @@ mixin _$MapFieldBlocState<TKey, TValue> {
   _MapFieldBlocStateChanges<TKey, TValue> toChanges() => _MapFieldBlocStateChanges._(_self);
 }
 
-class _MapFieldBlocStateChanges<TKey, TValue>
-    implements _FieldBlocStateBaseChanges<Map<TKey, TValue>> {
+class _MapFieldBlocStateChanges<TKey, TValue> {
   late Map<TKey, FieldBlocBase<FieldBlocStateBase<TValue>, TValue>> fieldBlocs;
   late Map<TKey, FieldBlocStateBase<TValue>> fieldStates;
 

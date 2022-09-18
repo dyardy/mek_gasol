@@ -13,7 +13,7 @@ class TextFieldBuilder extends ConsumerStatefulWidget {
   const TextFieldBuilder({
     Key? key,
     required this.fieldBloc,
-    this.type = const TextFieldType(),
+    this.type = TextFieldType.none,
     this.placeholderText,
     this.helper,
   }) : super(key: key);
@@ -48,6 +48,8 @@ class _TextFieldBuilderState extends ConsumerState<TextFieldBuilder> {
 
   @override
   Widget build(BuildContext context) {
+    final typeData = widget.type.resolve(context);
+
     return BlocConsumer<FieldBlocState<String>>(
       bloc: widget.fieldBloc,
       listener: (context, state) {
@@ -59,8 +61,11 @@ class _TextFieldBuilderState extends ConsumerState<TextFieldBuilder> {
           controller: _controller,
           placeholder: widget.placeholderText,
           onChanged: widget.fieldBloc.changeValue,
-          keyboardType: widget.type.getKeyboardType(),
-          inputFormatters: widget.type.getInputFormatters(),
+          obscureText: typeData.obscureText,
+          enableSuggestions: typeData.enableSuggestions,
+          autocorrect: typeData.autocorrect,
+          keyboardType: typeData.keyboardType,
+          inputFormatters: typeData.inputFormatters,
         );
 
         return CupertinoFormRow(

@@ -13,17 +13,16 @@ extension<T> on StateStreamableSource<T> {
   Stream<T> get hotStream => Rx.merge([Stream.value(state), stream]);
 }
 
-@DataClass(changeable: true)
-abstract class FieldBlocStateBase<TValue> with _$FieldBlocStateBase<TValue> {
+abstract class FieldBlocStateBase<TValue> {
   bool get isEnabled;
+  bool get isTouched;
   TValue get value;
-  bool get isValid;
   bool get isInitial;
-  bool get isChanged;
   List<Object> get errors;
 
   const FieldBlocStateBase();
 
+  bool get isValid => errors.isEmpty;
   bool get isInvalid => !isValid;
 }
 
@@ -40,6 +39,8 @@ abstract class FieldBlocBase<TState extends FieldBlocStateBase<TValue>, TValue>
   void enable();
 
   void disable();
+
+  void touch();
 }
 
 typedef FieldBlocRule<TValue> = FieldBlocBase<FieldBlocStateBase<TValue>, TValue>;
@@ -48,24 +49,22 @@ typedef FieldBlocRule<TValue> = FieldBlocBase<FieldBlocStateBase<TValue>, TValue
 class FieldBlocState<TValue> extends FieldBlocStateBase<TValue> with _$FieldBlocState<TValue> {
   @override
   final bool isEnabled;
+  @override
+  final bool isTouched;
   final TValue initialValue;
   @override
   final TValue value;
-  @override
-  final bool isChanged;
+
   @override
   final List<Object> errors;
 
   const FieldBlocState({
     required this.isEnabled,
+    required this.isTouched,
     required this.initialValue,
     required this.value,
-    required this.isChanged,
     required this.errors,
   });
-
-  @override
-  bool get isValid => errors.isEmpty;
 
   @override
   bool get isInitial => initialValue == value;
@@ -80,9 +79,10 @@ class FieldBloc<TValue> extends FieldBlocBase<FieldBlocState<TValue>, TValue> {
   })  : _validators = validators,
         super(FieldBlocState(
           isEnabled: true,
+          isTouched: false,
           initialValue: initialValue,
           value: initialValue,
-          isChanged: false,
+          // isChanged: false,
           errors: _validate(validators, initialValue),
         ));
 
@@ -90,7 +90,7 @@ class FieldBloc<TValue> extends FieldBlocBase<FieldBlocState<TValue>, TValue> {
   void changeValue(TValue value) {
     emit(state.change((c) => c
       ..value = value
-      ..isChanged = true
+      ..isTouched = true
       ..errors = _validate(_validators, value)));
   }
 
@@ -99,7 +99,7 @@ class FieldBloc<TValue> extends FieldBlocBase<FieldBlocState<TValue>, TValue> {
     final effectiveValue = value is! TValue ? state.initialValue : value;
     emit(state.change((c) => c
       ..value = effectiveValue
-      ..isChanged = false
+      ..isTouched = false
       ..errors = _validate(_validators, effectiveValue)));
   }
 
@@ -108,7 +108,7 @@ class FieldBloc<TValue> extends FieldBlocBase<FieldBlocState<TValue>, TValue> {
     emit(state.change((c) => c
       ..initialValue = value
       ..value = value
-      ..isChanged = false
+      ..isTouched = false
       ..errors = _validate(_validators, value)));
   }
 
@@ -130,6 +130,9 @@ class FieldBloc<TValue> extends FieldBlocBase<FieldBlocState<TValue>, TValue> {
 
   @override
   void enable() => emit(state.change((c) => c..isEnabled = true));
+
+  @override
+  void touch() => emit(state.change((c) => c..isTouched = true));
 }
 
 @DataClass(changeable: true)
@@ -147,16 +150,13 @@ class ListFieldBlocState<TValue> extends FieldBlocStateBase<List<TValue>>
   late final bool isEnabled = fieldStates.every((e) => e.isEnabled);
 
   @override
+  late final bool isTouched = fieldStates.any((e) => e.isTouched);
+
+  @override
   late final bool isInitial = fieldStates.every((e) => e.isInitial);
 
   @override
-  late final bool isValid = fieldStates.every((e) => e.isValid);
-
-  @override
   late final List<TValue> value = fieldStates.map((e) => e.value).toList();
-
-  @override
-  late final bool isChanged = fieldStates.any((e) => e.isChanged);
 
   @override
   late final List<Object> errors = fieldStates.expand((e) => e.errors).toList();
@@ -227,6 +227,15 @@ class ListFieldBloc<TValue> extends FieldBlocBase<ListFieldBlocState<TValue>, Li
     _restoreListener();
   }
 
+  @override
+  void touch() {
+    _fieldBlocsSub?.cancel();
+    for (final field in state.fieldBlocs) {
+      field.touch();
+    }
+    _restoreListener();
+  }
+
   void _initListener() {
     if (state.fieldBlocs.isEmpty) return;
     _fieldBlocsSub = hotStream
@@ -262,16 +271,13 @@ class MapFieldBlocState<TKey, TValue> extends FieldBlocStateBase<Map<TKey, TValu
   late final bool isEnabled = fieldStates.values.every((e) => e.isEnabled);
 
   @override
+  late final bool isTouched = fieldStates.values.any((e) => e.isTouched);
+
+  @override
   late final bool isInitial = fieldStates.values.every((e) => e.isInitial);
 
   @override
-  late final bool isValid = fieldStates.values.every((e) => e.isValid);
-
-  @override
   late final Map<TKey, TValue> value = fieldStates.map((key, state) => MapEntry(key, state.value));
-
-  @override
-  late final bool isChanged = fieldStates.values.every((e) => !e.isChanged);
 
   @override
   late final List<Object> errors = fieldStates.values.expand((e) => e.errors).toList();
@@ -334,8 +340,13 @@ class MapFieldBloc<TKey, TValue>
     _restoreListener();
   }
 
-  void _restoreListener() {
-    updateFieldBlocs(state.fieldBlocs);
+  @override
+  void touch() {
+    _fieldBlocsSub?.cancel();
+    for (final field in state.fieldBlocs.values) {
+      field.touch();
+    }
+    _restoreListener();
   }
 
   @override
@@ -343,6 +354,10 @@ class MapFieldBloc<TKey, TValue>
     await _fieldBlocsSub?.cancel();
     await Future.wait(state.fieldBlocs.generateIterable((key, value) => value.close()));
     return super.close();
+  }
+
+  void _restoreListener() {
+    updateFieldBlocs(state.fieldBlocs);
   }
 
   void _initListener() {
