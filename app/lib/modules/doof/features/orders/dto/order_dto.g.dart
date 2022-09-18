@@ -30,6 +30,35 @@ mixin _$OrderDto {
         ..add('createdAt', _self.createdAt)
         ..add('status', _self.status))
       .toString();
+
+  OrderDto change(void Function(_OrderDtoChanges c) updates) =>
+      (_OrderDtoChanges._(_self)..update(updates)).build();
+
+  _OrderDtoChanges toChanges() => _OrderDtoChanges._(_self);
+}
+
+class _OrderDtoChanges {
+  late String id;
+  late DateTime createdAt;
+  late OrderStatus status;
+
+  _OrderDtoChanges._(OrderDto dataClass) {
+    replace(dataClass);
+  }
+
+  void update(void Function(_OrderDtoChanges c) updates) => updates(this);
+
+  void replace(covariant OrderDto dataClass) {
+    id = dataClass.id;
+    createdAt = dataClass.createdAt;
+    status = dataClass.status;
+  }
+
+  OrderDto build() => OrderDto(
+        id: id,
+        createdAt: createdAt,
+        status: status,
+      );
 }
 
 // **************************************************************************

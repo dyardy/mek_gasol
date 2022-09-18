@@ -20,8 +20,8 @@ class OrdersRepository {
     await _ref().doc().set(draftOrder);
   }
 
-  Future<void> update(OrderDto orderDto) async {
-    await _ref().doc(orderDto.id).update(orderDto.toJson());
+  Future<void> update(OrderDto orderDto, {required OrderStatus status}) async {
+    await _ref().doc(orderDto.id).set(orderDto.change((c) => c..status = status));
   }
 
   Future<void> delete(OrderDto order) async {
@@ -30,11 +30,14 @@ class OrdersRepository {
   }
 
   Future<List<OrderDto>> fetch() async {
-    final snapshot = await _ref().get();
+    final snapshot = await _ref().orderBy('createdAt', descending: true).get();
     return snapshot.docs.map((e) => e.data()).toList();
   }
 
   Stream<List<OrderDto>> watch() {
-    return _ref().snapshots().map((event) => event.docs.map((e) => e.data()).toList());
+    return _ref()
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .map((event) => event.docs.map((e) => e.data()).toList());
   }
 }

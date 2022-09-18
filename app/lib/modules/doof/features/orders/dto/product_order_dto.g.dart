@@ -36,6 +36,44 @@ mixin _$ProductOrderDto {
         ..add('additions', _self.additions)
         ..add('ingredients', _self.ingredients))
       .toString();
+
+  ProductOrderDto change(void Function(_ProductOrderDtoChanges c) updates) =>
+      (_ProductOrderDtoChanges._(_self)..update(updates)).build();
+
+  _ProductOrderDtoChanges toChanges() => _ProductOrderDtoChanges._(_self);
+}
+
+class _ProductOrderDtoChanges {
+  late String id;
+  late List<PublicUserDto> buyers;
+  late ProductDto product;
+  late int quantity;
+  late List<AdditionOrderDto> additions;
+  late List<IngredientOrderDto> ingredients;
+
+  _ProductOrderDtoChanges._(ProductOrderDto dataClass) {
+    replace(dataClass);
+  }
+
+  void update(void Function(_ProductOrderDtoChanges c) updates) => updates(this);
+
+  void replace(covariant ProductOrderDto dataClass) {
+    id = dataClass.id;
+    buyers = dataClass.buyers;
+    product = dataClass.product;
+    quantity = dataClass.quantity;
+    additions = dataClass.additions;
+    ingredients = dataClass.ingredients;
+  }
+
+  ProductOrderDto build() => ProductOrderDto(
+        id: id,
+        buyers: buyers,
+        product: product,
+        quantity: quantity,
+        additions: additions,
+        ingredients: ingredients,
+      );
 }
 
 // **************************************************************************

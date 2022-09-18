@@ -43,6 +43,7 @@ abstract class TextFieldType {
   const factory TextFieldType.numeric({bool signed, bool decimal}) = _NumericTextFieldType;
   const factory TextFieldType.email() = _EmailTextFieldType;
   const factory TextFieldType.password() = _PasswordTextFieldType;
+  const factory TextFieldType.phone() = _PhoneTextFieldType;
 
   TextFieldTypeData resolve(BuildContext context);
 
@@ -199,6 +200,18 @@ class _PasswordTextFieldType extends TextFieldType {
               : const Icon(Icons.visibility_off),
         ),
       ),
+    );
+  }
+}
+
+class _PhoneTextFieldType extends TextFieldType {
+  const _PhoneTextFieldType();
+
+  @override
+  TextFieldTypeData resolve(BuildContext context) {
+    return TextFieldTypeData(
+      keyboardType: TextInputType.phone,
+      inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[+\d]'))],
     );
   }
 }

@@ -15,6 +15,8 @@ class IngredientOrderDto with _$IngredientOrderDto {
     required this.value,
   });
 
+  int get effectiveValue => (ingredient.levels * value).toInt();
+
   factory IngredientOrderDto.fromJson(Map<String, dynamic> map) =>
       _$IngredientOrderDtoFromJson(map);
   Map<String, dynamic> toJson() => _$IngredientOrderDtoToJson(this);

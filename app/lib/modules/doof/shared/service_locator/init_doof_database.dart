@@ -12,7 +12,7 @@ import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.da
 import 'package:mek_gasol/shared/logger.dart';
 
 extension DoofDatabase on GetIt {
-  static const _Version _nextVersion = _Version(2, 0);
+  static const _Version _nextVersion = _Version(3, 0);
 
   Future<void> initDoofDatabase() async {
     final firestore = get<FirebaseFirestore>();
@@ -139,14 +139,16 @@ extension DoofDatabase on GetIt {
           productIds: firsCourseIds,
           title: 'Salsa Di Soia',
           description: '',
-          levels: 5,
+          minLevel: 0,
+          maxLevel: 4,
         ),
         IngredientDto(
           id: 'AJaYFe7rBgt3cODa0Yec',
           productIds: firsCourseIds,
           title: 'Salsa Piccante',
           description: '',
-          levels: 5,
+          minLevel: 0,
+          maxLevel: 4,
         ),
       ];
 
@@ -176,8 +178,6 @@ extension DoofDatabase on GetIt {
           price: Decimal.parse('4.20'),
         ),
       ];
-
-      // TODO: Add Salse products
 
       // TODO: Add Bevande products
 

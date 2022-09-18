@@ -10,15 +10,19 @@ class IngredientDto with _$IngredientDto {
   final List<String> productIds;
   final String title;
   final String description;
-  final int levels;
+  final int minLevel;
+  final int maxLevel;
 
   const IngredientDto({
     required this.id,
     required this.productIds,
     required this.title,
     required this.description,
-    required this.levels,
+    required this.minLevel,
+    required this.maxLevel,
   });
+
+  int get levels => maxLevel - minLevel;
 
   factory IngredientDto.fromJson(Map<String, dynamic> map) => _$IngredientDtoFromJson(map);
   Map<String, dynamic> toJson() => _$IngredientDtoToJson(this);

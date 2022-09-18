@@ -121,13 +121,29 @@ mixin _$QueryState<T> {
         ..add('dataOrNull', _self.dataOrNull))
       .toString();
 
-  QueryState<T> copyWith({
-    bool? isLoading,
-    T? dataOrNull,
-  }) {
-    return QueryState(
-      isLoading: isLoading ?? _self.isLoading,
-      dataOrNull: dataOrNull ?? _self.dataOrNull,
-    );
+  QueryState<T> change(void Function(_QueryStateChanges<T> c) updates) =>
+      (_QueryStateChanges<T>._(_self)..update(updates)).build();
+
+  _QueryStateChanges<T> toChanges() => _QueryStateChanges._(_self);
+}
+
+class _QueryStateChanges<T> {
+  late bool isLoading;
+  late T? dataOrNull;
+
+  _QueryStateChanges._(QueryState<T> dataClass) {
+    replace(dataClass);
   }
+
+  void update(void Function(_QueryStateChanges<T> c) updates) => updates(this);
+
+  void replace(covariant QueryState<T> dataClass) {
+    isLoading = dataClass.isLoading;
+    dataOrNull = dataClass.dataOrNull;
+  }
+
+  QueryState<T> build() => QueryState(
+        isLoading: isLoading,
+        dataOrNull: dataOrNull,
+      );
 }

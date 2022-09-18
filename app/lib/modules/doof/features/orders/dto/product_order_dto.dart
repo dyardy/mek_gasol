@@ -8,7 +8,7 @@ import 'package:mek_gasol/modules/doof/shared/serialization.dart';
 
 part 'product_order_dto.g.dart';
 
-@DataClass()
+@DataClass(changeable: true)
 @DtoSerializable()
 class ProductOrderDto with _$ProductOrderDto {
   final String id;
@@ -27,11 +27,10 @@ class ProductOrderDto with _$ProductOrderDto {
     required this.ingredients,
   });
 
-  Decimal get total => additions.fold(product.price, (total, e) => total + e.addition.price);
-
+  Decimal get total =>
+      quantity.toDecimal() * additions.fold(product.price, (total, e) => total + e.addition.price);
   Decimal get buyerTotal => (total / buyers.length.toDecimal()).toDecimal();
 
   factory ProductOrderDto.fromJson(Map<String, dynamic> map) => _$ProductOrderDtoFromJson(map);
-
   Map<String, dynamic> toJson() => _$ProductOrderDtoToJson(this);
 }

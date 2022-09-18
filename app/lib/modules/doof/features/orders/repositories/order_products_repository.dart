@@ -18,6 +18,8 @@ class OrderProductsRepository {
       .withJsonConverter(ProductOrderDto.fromJson);
 
   Future<void> save(OrderDto order, ProductOrderDto productOrder) async {
+    productOrder = productOrder
+        .change((c) => c..ingredients = c.ingredients.where((e) => e.value > 0.0).toList());
     await _ref(order.id).doc(productOrder.id.nullIfEmpty()).set(productOrder);
   }
 

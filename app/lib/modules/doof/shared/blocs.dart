@@ -222,7 +222,7 @@ class MutationBloc<T> extends Cubit<MutationState<T>> {
   }
 }
 
-@DataClass(copyable: true)
+@DataClass(changeable: true)
 class QueryState<T> with _$QueryState<T> {
   final bool isLoading;
   final T? dataOrNull;
@@ -248,7 +248,9 @@ class QueryBloc<T> extends Cubit<QueryState<T>> {
 
   void _init(Stream<T> Function() fetcher) async {
     _sub = fetcher().listen((data) {
-      emit(state.copyWith(isLoading: false, dataOrNull: data));
+      emit(state.change((c) => c
+        ..isLoading = false
+        ..dataOrNull = data));
     });
   }
 

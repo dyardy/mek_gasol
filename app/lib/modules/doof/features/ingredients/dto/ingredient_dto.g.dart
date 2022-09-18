@@ -16,7 +16,8 @@ mixin _$IngredientDto {
     yield _self.productIds;
     yield _self.title;
     yield _self.description;
-    yield _self.levels;
+    yield _self.minLevel;
+    yield _self.maxLevel;
   }
 
   bool operator ==(Object other) =>
@@ -32,7 +33,8 @@ mixin _$IngredientDto {
         ..add('productIds', _self.productIds)
         ..add('title', _self.title)
         ..add('description', _self.description)
-        ..add('levels', _self.levels))
+        ..add('minLevel', _self.minLevel)
+        ..add('maxLevel', _self.maxLevel))
       .toString();
 }
 
@@ -48,7 +50,8 @@ IngredientDto _$IngredientDtoFromJson(Map<String, dynamic> json) =>
           .toList(),
       title: json['title'] as String,
       description: json['description'] as String,
-      levels: json['levels'] as int,
+      minLevel: json['minLevel'] as int,
+      maxLevel: json['maxLevel'] as int,
     );
 
 Map<String, dynamic> _$IngredientDtoToJson(IngredientDto instance) =>
@@ -57,5 +60,6 @@ Map<String, dynamic> _$IngredientDtoToJson(IngredientDto instance) =>
       'productIds': instance.productIds,
       'title': instance.title,
       'description': instance.description,
-      'levels': instance.levels,
+      'minLevel': instance.minLevel,
+      'maxLevel': instance.maxLevel,
     };

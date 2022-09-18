@@ -168,8 +168,6 @@ class _ProductOrderScreenState extends State<ProductOrderScreen> {
       );
 
       await get<OrderProductsRepository>().save(widget.order, productOrder);
-    }, success: (_) {
-      context.hub.pop(true);
     });
   }
 
@@ -208,15 +206,16 @@ class _ProductOrderScreenState extends State<ProductOrderScreen> {
           final ingredient = ingredients.firstWhereOrNull((e) => e.id == ingredientId);
           if (ingredient == null) return const SizedBox.shrink();
 
+          final divisions = ingredient.levels;
           return FieldSlider(
             fieldBloc: fieldBloc,
             min: 0.0,
             max: 1.0,
-            divisions: ingredient.levels,
+            divisions: divisions,
             decoration: InputDecoration(
               labelText: ingredient.title,
             ),
-            labelBuilder: (value) => (ingredient.levels * value).toStringAsFixed(0),
+            labelBuilder: (value) => (divisions * value).toStringAsFixed(0),
           );
         }).toList(),
       );
