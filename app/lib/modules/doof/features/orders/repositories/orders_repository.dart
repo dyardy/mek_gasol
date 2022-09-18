@@ -20,6 +20,10 @@ class OrdersRepository {
     await _ref().doc().set(draftOrder);
   }
 
+  Future<void> update(OrderDto orderDto) async {
+    await _ref().doc(orderDto.id).update(orderDto.toJson());
+  }
+
   Future<void> delete(OrderDto order) async {
     if (order.status != OrderStatus.draft) throw 'Cant delete order';
     await _ref().doc(order.id).delete();

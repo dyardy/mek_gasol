@@ -13,6 +13,8 @@ class AdditionOrderDto with _$AdditionOrderDto {
     required this.addition,
   });
 
+  String get displayableAddition => addition.title;
+
   factory AdditionOrderDto.fromJson(Map<String, dynamic> map) => _$AdditionOrderDtoFromJson(map);
   Map<String, dynamic> toJson() => _$AdditionOrderDtoToJson(this);
 }

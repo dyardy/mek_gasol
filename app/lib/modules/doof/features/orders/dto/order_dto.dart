@@ -22,4 +22,12 @@ class OrderDto with _$OrderDto {
 
   factory OrderDto.fromJson(Map<String, dynamic> map) => _$OrderDtoFromJson(map);
   Map<String, dynamic> toJson() => _$OrderDtoToJson(this);
+
+  OrderDto copyWith({String? id, DateTime? createdAt, OrderStatus? status}) {
+    return OrderDto(
+      id: id ?? this.id,
+      createdAt: createdAt ?? this.createdAt,
+      status: status ?? this.status,
+    );
+  }
 }

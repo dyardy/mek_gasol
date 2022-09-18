@@ -32,5 +32,6 @@ class ProductOrderDto with _$ProductOrderDto {
   Decimal get buyerTotal => (total / buyers.length.toDecimal()).toDecimal();
 
   factory ProductOrderDto.fromJson(Map<String, dynamic> map) => _$ProductOrderDtoFromJson(map);
+
   Map<String, dynamic> toJson() => _$ProductOrderDtoToJson(this);
 }
