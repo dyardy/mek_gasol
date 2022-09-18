@@ -113,7 +113,7 @@ class _ProductOrderScreenState extends State<ProductOrderScreen> {
   final _ingredientsFb = MapFieldBloc<String, double>();
 
   late final _form = ListFieldBloc(
-    fieldBlocs: [_quantityFb, _additionsFb, _ingredientsFb],
+    fieldBlocs: [_buyersFb, _quantityFb, _additionsFb, _ingredientsFb],
   );
 
   final _save = MutationBloc();

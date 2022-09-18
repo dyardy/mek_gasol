@@ -15,7 +15,7 @@ jobs:
         with:
           flutter-version: '3.3.x'
 
-      - run: flutter build web
+      - run: flutter build web --build-name=${{github.ref_name}}
         working-directory: app
 
       - uses: FirebaseExtended/action-hosting-deploy@v0
