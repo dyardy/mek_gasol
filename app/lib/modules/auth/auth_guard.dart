@@ -1,12 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mek_gasol/features/users/dto/user_dto.dart';
 import 'package:mek_gasol/modules/auth/sign_in_screen.dart';
-import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
-import 'package:mek_gasol/modules/doof/shared/widgets/bloc_widgets.dart';
-import 'package:mek_gasol/shared/providers.dart';
+import 'package:mek_gasol/modules/doof/shared/widgets/stream_consumer_base.dart';
 
-class AuthGuard extends ConsumerWidget {
+class AuthGuard extends StatelessWidget {
   final Widget Function(BuildContext context, Widget? child) builder;
 
   const AuthGuard({
@@ -15,21 +12,13 @@ class AuthGuard extends ConsumerWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final user =
-        ref.watch(Providers.userStatus.select((value) => value.whenData((value) => value?.id)));
-
-    return QueryViewBuilder<UserDto?>(
-      bloc: get(),
+  Widget build(BuildContext context) {
+    return ValueStreamBuilder(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      initialValue: FirebaseAuth.instance.currentUser,
       builder: (context, user) {
         return builder(context, user != null ? null : const SignInScreen());
       },
     );
-
-    // return user.maybeWhen(data: (userId) {
-    //   return builder(context, userId != null ? null : const SignInScreen());
-    // }, orElse: () {
-    //   return builder(context, const MekProgressIndicator());
-    // });
   }
 }

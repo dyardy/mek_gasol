@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:mek_gasol/modules/doof/features/orders/dto/order_dto.dart';
 import 'package:mek_gasol/modules/doof/features/orders/repositories/order_products_repository.dart';
+import 'package:mek_gasol/modules/doof/features/orders/screens/order_stat_screen.dart';
 import 'package:mek_gasol/modules/doof/features/products/screens/products_pick_screen.dart';
 import 'package:mek_gasol/modules/doof/shared/blocs.dart';
 import 'package:mek_gasol/modules/doof/shared/doof_transaltions.dart';
 import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
 import 'package:mek_gasol/modules/doof/shared/widgets/bloc_widgets.dart';
 import 'package:mek_gasol/shared/hub.dart';
+import 'package:mek_gasol/shared/widgets/text_icon.dart';
 
 class OrderScreen extends StatefulWidget {
   final OrderDto order;
@@ -21,13 +23,13 @@ class OrderScreen extends StatefulWidget {
 }
 
 class _OrderScreenState extends State<OrderScreen> {
-  late final _products = QueryBloc(() {
+  late final _productsQb = QueryBloc(() {
     return get<OrderProductsRepository>().watch(widget.order);
   });
 
   @override
   void dispose() {
-    _products.close();
+    _productsQb.close();
     super.dispose();
   }
 
@@ -36,13 +38,13 @@ class _OrderScreenState extends State<OrderScreen> {
     final t = DoofTranslations.of(context);
 
     final body = QueryViewBuilder(
-      bloc: _products,
+      bloc: _productsQb,
       builder: (context, orders) {
         return ListView.builder(
           itemCount: orders.length,
           itemBuilder: (context, index) {
             final productOrder = orders[index];
-            final user = productOrder.user;
+            final buyers = productOrder.buyers;
             final product = productOrder.product;
 
             return ListTile(
@@ -51,9 +53,9 @@ class _OrderScreenState extends State<OrderScreen> {
                 productOrder: productOrder,
                 product: product,
               )),
-              leading: Text('${productOrder.quantity}'),
+              leading: TextIcon('${productOrder.quantity}'),
               title: Text('${t.formatPrice(productOrder.total)} - ${product.title}'),
-              subtitle: Text(user.displayName),
+              subtitle: Text(buyers.map((e) => e.displayName).join(' - ')),
               trailing: PopupMenuButton(
                 itemBuilder: (context) {
                   return [
@@ -81,6 +83,15 @@ class _OrderScreenState extends State<OrderScreen> {
           IconButton(
             onPressed: () => context.hub.push(ProductsPickScreen(order: widget.order)),
             icon: const Icon(Icons.add),
+          ),
+          QueryViewBuilder(
+            bloc: _productsQb,
+            builder: (context, products) {
+              return IconButton(
+                onPressed: () => context.hub.push(OrderStatScreen(productsQb: _productsQb)),
+                icon: const Icon(Icons.attach_money),
+              );
+            },
           ),
         ],
       ),

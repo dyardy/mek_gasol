@@ -12,7 +12,7 @@ part 'product_order_dto.g.dart';
 @DtoSerializable()
 class ProductOrderDto with _$ProductOrderDto {
   final String id;
-  final PublicUserDto user;
+  final List<PublicUserDto> buyers;
   final ProductDto product;
   final int quantity;
   final List<AdditionOrderDto> additions;
@@ -20,7 +20,7 @@ class ProductOrderDto with _$ProductOrderDto {
 
   const ProductOrderDto({
     required this.id,
-    required this.user,
+    required this.buyers,
     required this.product,
     required this.quantity,
     required this.additions,
@@ -28,6 +28,8 @@ class ProductOrderDto with _$ProductOrderDto {
   });
 
   Decimal get total => additions.fold(product.price, (total, e) => total + e.addition.price);
+
+  Decimal get buyerTotal => (total / buyers.length.toDecimal()).toDecimal();
 
   factory ProductOrderDto.fromJson(Map<String, dynamic> map) => _$ProductOrderDtoFromJson(map);
   Map<String, dynamic> toJson() => _$ProductOrderDtoToJson(this);

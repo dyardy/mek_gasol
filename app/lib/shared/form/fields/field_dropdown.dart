@@ -23,9 +23,9 @@ class FieldDropdown<T> extends StatelessWidget {
       builder: (context, state) {
         return DropdownButtonFormField<T>(
           value: state.value,
-          onChanged: state.getIfEnabled((value) => fieldBloc.changeValue(value as T)),
+          onChanged: state.ifEnabled((value) => fieldBloc.changeValue(value as T)),
           items: items,
-          decoration: decoration,
+          decoration: decoration.copyWith(errorText: state.widgetError(context)),
         );
       },
     );

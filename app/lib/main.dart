@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:collection/collection.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:logging/logging.dart';
@@ -11,7 +11,6 @@ import 'package:mek_gasol/modules/doof/shared/service_locator/init_doof_database
 import 'package:mek_gasol/modules/doof/shared/service_locator/init_doof_service_locator.dart';
 import 'package:mek_gasol/modules/eti/eti_app.dart';
 import 'package:mek_gasol/modules/gasol/gasol_app.dart';
-import 'package:mek_gasol/shared/app_list_tile.dart';
 import 'package:mek_gasol/shared/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -38,16 +37,26 @@ void main() async {
   ));
 }
 
-enum Module { gasol, eti, doof }
+enum Module {
+  gasol('Biliardino App'),
+  eti('Time tracker App'),
+  doof('Wok Time App');
+
+  final String description;
+
+  const Module(this.description);
+}
 
 class Modules extends StatefulWidget {
   const Modules({Key? key}) : super(key: key);
 
+  static ModulesState of(BuildContext context) => context.findAncestorStateOfType()!;
+
   @override
-  State<Modules> createState() => _ModulesState();
+  State<Modules> createState() => ModulesState();
 }
 
-class _ModulesState extends State<Modules> {
+class ModulesState extends State<Modules> {
   var _isLoading = true;
   Module? _module;
 
@@ -67,11 +76,14 @@ class _ModulesState extends State<Modules> {
     });
   }
 
-  void change(Module project) async {
+  void select(Module? project) async {
     if (_module == project) return;
-    setState(() => _module = null);
     final preferences = await SharedPreferences.getInstance();
-    await preferences.setString('$Module', project.name);
+    if (project == null) {
+      await preferences.remove('$Module');
+    } else {
+      await preferences.setString('$Module', project.name);
+    }
     setState(() => _module = project);
   }
 
@@ -86,13 +98,8 @@ class _ModulesState extends State<Modules> {
         case Module.doof:
           return const DoofApp();
         case null:
-          return Column(
-            children: Module.values.map((e) {
-              return AppListTile(
-                onTap: () => change(e),
-                title: Text(e.name),
-              );
-            }).toList(),
+          return const MaterialApp(
+            home: _ModulesScreen(),
           );
       }
     }
@@ -100,11 +107,39 @@ class _ModulesState extends State<Modules> {
     return Directionality(
       textDirection: TextDirection.ltr,
       child: GestureDetector(
-        onSecondaryLongPress: () => setState(() => _module = null),
+        onSecondaryLongPress: () => select(null),
         child: SizedBox.expand(
           child: _isLoading ? null : buildProject(),
         ),
       ),
+    );
+  }
+}
+
+class _ModulesScreen extends StatelessWidget {
+  const _ModulesScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    Widget buildBody() {
+      if (Modules.of(context)._isLoading) return Center(child: CircularProgressIndicator());
+
+      return Column(
+        children: Module.values.map((e) {
+          return ListTile(
+            onTap: () => Modules.of(context).select(e),
+            title: Text(e.name),
+            subtitle: Text(e.description),
+          );
+        }).toList(),
+      );
+    }
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Modules'),
+      ),
+      body: buildBody(),
     );
   }
 }

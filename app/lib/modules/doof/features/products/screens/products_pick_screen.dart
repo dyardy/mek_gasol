@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mek_gasol/features/users/dto/user_dto.dart';
+import 'package:mek_gasol/features/users/repositories/users_repo.dart';
 import 'package:mek_gasol/modules/doof/features/additions/dto/addition_dto.dart';
 import 'package:mek_gasol/modules/doof/features/additions/repositories/additions_repository.dart';
 import 'package:mek_gasol/modules/doof/features/ingredients/dto/ingredient_dto.dart';
@@ -16,6 +18,7 @@ import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.da
 import 'package:mek_gasol/modules/doof/shared/widgets/bloc_widgets.dart';
 import 'package:mek_gasol/modules/doof/shared/widgets/bottom_button_bar.dart';
 import 'package:mek_gasol/modules/doof/shared/widgets/button_builder.dart';
+import 'package:mek_gasol/shared/form/fields/field_chips_input.dart';
 import 'package:mek_gasol/shared/form/fields/field_dropdown.dart';
 import 'package:mek_gasol/shared/form/fields/field_group_checkbox.dart';
 import 'package:mek_gasol/shared/form/fields/field_slider.dart';
@@ -94,6 +97,9 @@ class ProductOrderScreen extends StatefulWidget {
 }
 
 class _ProductOrderScreenState extends State<ProductOrderScreen> {
+  final _usersQb = QueryBloc(() {
+    return get<UsersRepository>().watchAll();
+  });
   final _additionsQb = QueryBloc(() {
     return get<AdditionsRepository>().watch();
   });
@@ -101,6 +107,7 @@ class _ProductOrderScreenState extends State<ProductOrderScreen> {
     return get<IngredientsRepository>().watch();
   });
 
+  final _buyersFb = FieldBloc<List<PublicUserDto>>(initialValue: []);
   final _quantityFb = FieldBloc<int>(initialValue: 1);
   final _additionsFb = FieldBloc<List<AdditionDto>>(initialValue: []);
   final _ingredientsFb = MapFieldBloc<String, double>();
@@ -114,6 +121,7 @@ class _ProductOrderScreenState extends State<ProductOrderScreen> {
   @override
   void initState() {
     super.initState();
+    _buyersFb.updateValue(widget.productOrder?.buyers ?? [get()]);
     _quantityFb.updateValue(widget.productOrder?.quantity ?? 1);
     _additionsFb.updateValue(widget.productOrder?.additions.map((e) => e.addition).toList() ?? []);
     _ingredientsQb.stream.map((state) => state.dataOrNull).whereNotNull().listen((ingredients) {
@@ -143,7 +151,7 @@ class _ProductOrderScreenState extends State<ProductOrderScreen> {
 
       final productOrder = ProductOrderDto(
         id: widget.productOrder?.id ?? '',
-        user: widget.productOrder?.user ?? get(),
+        buyers: _buyersFb.state.value,
         product: widget.productOrder?.product ?? widget.product,
         quantity: _quantityFb.state.value,
         additions: _additionsFb.state.value.map((e) {
@@ -168,6 +176,27 @@ class _ProductOrderScreenState extends State<ProductOrderScreen> {
   @override
   Widget build(BuildContext context) {
     final t = DoofTranslations.of(context);
+
+    Widget buildBuyersField(BuildContext context, List<PublicUserDto> users) {
+      return FieldChipsInput<PublicUserDto>(
+        fieldBloc: _buyersFb,
+        decoration: const InputDecoration(
+          labelText: 'Buyers',
+        ),
+        findSuggestions: (query) {
+          return users.where((user) {
+            return user.displayName.toLowerCase().contains(query.toLowerCase());
+          }).toList();
+        },
+        suggestionBuilder: (context, suggestion) => ListTile(title: Text(suggestion.displayName)),
+        chipBuilder: (context, state, value) {
+          return Chip(
+            onDeleted: () => state.deleteChip(value),
+            label: Text(value.displayName),
+          );
+        },
+      );
+    }
 
     Widget buildIngredientsFields(
       BuildContext context,
@@ -238,6 +267,10 @@ class _ProductOrderScreenState extends State<ProductOrderScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Column(
           children: [
+            QueryViewBuilder(
+              bloc: _usersQb,
+              builder: buildBuyersField,
+            ),
             FieldDropdown(
               fieldBloc: _quantityFb,
               decoration: const InputDecoration(

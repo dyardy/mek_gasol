@@ -7,7 +7,7 @@ extension FieldBlocStateBaseExtensions<TValue> on FieldBlocStateBase<TValue> {
     return isInvalid && isChanged ? '${errors.first}' : null;
   }
 
-  R? getIfEnabled<R>(R result) {
+  R? ifEnabled<R>(R result) {
     return isEnabled ? result : null;
   }
 }
@@ -24,7 +24,7 @@ extension ListFieldBlocBaseExtensions<T> on FieldBlocRule<List<T>> {
 
 extension ListFieldBlocStateBaseExtensions<T> on FieldBlocStateBase<List<T>> {
   ValueChanged<bool?>? widgetSelectHandler(FieldBlocRule<List<T>> fieldBloc, T value) {
-    return getIfEnabled((isSelected) {
+    return ifEnabled((isSelected) {
       if (isSelected!) {
         fieldBloc.changeAddingValues(value);
       } else {

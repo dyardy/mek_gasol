@@ -6,6 +6,7 @@ import 'package:mek_gasol/modules/eti/features/calendar_rules/triggers/rules_cal
 import 'package:mek_gasol/shared/flutter_utils.dart';
 import 'package:mek_gasol/shared/hub.dart';
 import 'package:mek_gasol/shared/widgets/app_floating_action_button.dart';
+import 'package:mek_gasol/shared/widgets/sign_out_icon_button.dart';
 import 'package:riverbloc/riverbloc.dart';
 import 'package:rivertion/rivertion.dart';
 
@@ -115,6 +116,7 @@ class CalendarRuleScreen extends ConsumerWidget {
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       appBar: AppBar(
+        leading: const SignOutIconButton(),
         title: const Text('Add Event'),
       ),
       body: SafeArea(

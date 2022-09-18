@@ -13,7 +13,7 @@ mixin _$ProductOrderDto {
 
   Iterable<Object?> get _props sync* {
     yield _self.id;
-    yield _self.user;
+    yield _self.buyers;
     yield _self.product;
     yield _self.quantity;
     yield _self.additions;
@@ -30,7 +30,7 @@ mixin _$ProductOrderDto {
 
   String toString() => (ClassToString('ProductOrderDto')
         ..add('id', _self.id)
-        ..add('user', _self.user)
+        ..add('buyers', _self.buyers)
         ..add('product', _self.product)
         ..add('quantity', _self.quantity)
         ..add('additions', _self.additions)
@@ -45,7 +45,9 @@ mixin _$ProductOrderDto {
 ProductOrderDto _$ProductOrderDtoFromJson(Map<String, dynamic> json) =>
     ProductOrderDto(
       id: json['id'] as String,
-      user: PublicUserDto.fromJson(json['user'] as Map<String, dynamic>),
+      buyers: (json['buyers'] as List<dynamic>)
+          .map((e) => PublicUserDto.fromJson(e as Map<String, dynamic>))
+          .toList(),
       product: ProductDto.fromJson(json['product'] as Map<String, dynamic>),
       quantity: json['quantity'] as int,
       additions: (json['additions'] as List<dynamic>)
@@ -59,7 +61,7 @@ ProductOrderDto _$ProductOrderDtoFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$ProductOrderDtoToJson(ProductOrderDto instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'user': instance.user.toJson(),
+      'buyers': instance.buyers.map((e) => e.toJson()).toList(),
       'product': instance.product.toJson(),
       'quantity': instance.quantity,
       'additions': instance.additions.map((e) => e.toJson()).toList(),

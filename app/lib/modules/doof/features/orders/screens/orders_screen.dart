@@ -6,6 +6,7 @@ import 'package:mek_gasol/modules/doof/shared/blocs.dart';
 import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
 import 'package:mek_gasol/modules/doof/shared/widgets/bloc_widgets.dart';
 import 'package:mek_gasol/shared/hub.dart';
+import 'package:mek_gasol/shared/widgets/sign_out_icon_button.dart';
 
 class OrdersScreen extends StatefulWidget {
   const OrdersScreen({super.key});
@@ -58,6 +59,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        leading: const SignOutIconButton(),
         title: const Text('Orders'),
         actions: [
           IconButton(

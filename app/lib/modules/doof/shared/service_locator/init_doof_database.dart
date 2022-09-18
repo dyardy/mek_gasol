@@ -12,7 +12,7 @@ import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.da
 import 'package:mek_gasol/shared/logger.dart';
 
 extension DoofDatabase on GetIt {
-  static const _Version _nextVersion = _Version(1, 0);
+  static const _Version _nextVersion = _Version(2, 0);
 
   Future<void> initDoofDatabase() async {
     final firestore = get<FirebaseFirestore>();

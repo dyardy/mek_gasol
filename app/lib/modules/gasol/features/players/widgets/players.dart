@@ -4,6 +4,7 @@ import 'package:mek_gasol/modules/gasol/features/players/triggers/players_trigge
 import 'package:mek_gasol/modules/gasol/features/players/widgets/player.dart';
 import 'package:mek_gasol/shared/app_list_tile.dart';
 import 'package:mek_gasol/shared/hub.dart';
+import 'package:mek_gasol/shared/widgets/sign_out_icon_button.dart';
 
 class PlayersBloc {
   static final all = StreamProvider((ref) {
@@ -38,6 +39,7 @@ class PlayersScreen extends ConsumerWidget {
 
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
+        leading: const SignOutIconButton(),
         middle: const Text('Players'),
         trailing: CupertinoButton(
           padding: EdgeInsets.zero,

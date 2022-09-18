@@ -6,6 +6,7 @@ import 'package:mek_gasol/modules/gasol/features/matches/widgets/match.dart';
 import 'package:mek_gasol/modules/gasol/features/players/dvo/player_dvo.dart';
 import 'package:mek_gasol/shared/app_list_tile.dart';
 import 'package:mek_gasol/shared/hub.dart';
+import 'package:mek_gasol/shared/widgets/sign_out_icon_button.dart';
 
 abstract class MatchesBloc {
   static final all = StreamProvider((ref) {
@@ -63,6 +64,7 @@ class MatchesScreen extends StatelessWidget {
 
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
+        leading: const SignOutIconButton(),
         middle: const Text('Matches'),
         trailing: CupertinoButton(
           padding: EdgeInsets.zero,

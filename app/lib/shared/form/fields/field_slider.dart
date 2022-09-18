@@ -30,7 +30,7 @@ class FieldSlider extends StatelessWidget {
           decoration: decoration.copyWith(errorText: state.widgetError(context)),
           child: Slider(
             value: state.value,
-            onChanged: state.getIfEnabled(fieldBloc.changeValue),
+            onChanged: state.ifEnabled(fieldBloc.changeValue),
             min: min,
             max: max,
             divisions: divisions,

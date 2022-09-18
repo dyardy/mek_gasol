@@ -8,7 +8,7 @@ class DoofTranslations {
 
   static const LocalizationsDelegate<DoofTranslations> delegate = _DoofTranslationsDelegate();
 
-  const DoofTranslations({
+  const DoofTranslations._({
     required this.languageCode,
   });
 
@@ -34,7 +34,7 @@ class _DoofTranslationsDelegate extends LocalizationsDelegate<DoofTranslations> 
 
   @override
   Future<DoofTranslations> load(Locale locale) =>
-      SynchronousFuture(DoofTranslations(languageCode: locale.languageCode));
+      SynchronousFuture(DoofTranslations._(languageCode: locale.languageCode));
 
   @override
   bool shouldReload(covariant LocalizationsDelegate<DoofTranslations> old) => true;
