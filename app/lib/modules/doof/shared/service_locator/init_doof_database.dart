@@ -12,7 +12,7 @@ import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.da
 import 'package:mek_gasol/shared/logger.dart';
 
 extension DoofDatabase on GetIt {
-  static const _Version _nextVersion = _Version(3, 0);
+  static const _Version _nextVersion = _Version(3, 1);
 
   Future<void> initDoofDatabase() async {
     final firestore = get<FirebaseFirestore>();
@@ -129,7 +129,7 @@ extension DoofDatabase on GetIt {
           productIds: firsCourseIds,
           title: 'Cavolo Extra',
           description: 'Aggiunta di una porzione di cavolo',
-          price: Decimal.parse('10.50'),
+          price: Decimal.parse('0.50'),
         ),
       ];
 
@@ -198,7 +198,7 @@ extension DoofDatabase on GetIt {
       lg.config('Database Deleted!');
     }
 
-    if (currentVersion != _nextVersion) {
+    if (_nextVersion > currentVersion) {
       await optionsDoc.update({'databaseVersion': _nextVersion.toString()});
       lg.config('Database Setup Completed!');
     }
@@ -224,6 +224,10 @@ class _Version {
   bool isMajorGreater(_Version other) => major > other.major;
 
   bool isMinorGreater(_Version other) => isMajorGreater(other) || minor > other.minor;
+
+  bool operator >(_Version other) => isMinorGreater(other);
+
+  bool operator <(_Version other) => !isMinorGreater(other);
 
   factory _Version.parse(String source) {
     final versions = source.split('.');

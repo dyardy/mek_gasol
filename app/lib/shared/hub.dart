@@ -16,4 +16,10 @@ class Hub {
       return screen;
     }));
   }
+
+  Future<T?> pushReplacement<T>(Widget screen) {
+    return _navigator.pushReplacement(MaterialPageRoute(builder: (context) {
+      return screen;
+    }));
+  }
 }

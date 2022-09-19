@@ -13,6 +13,8 @@ class DoofApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const buttonSize = Size(kMinInteractiveDimension * 3, kMinInteractiveDimension);
+
     return AuthGuard(
       builder: (context, child) => MaterialApp(
         key: ValueKey(child),
@@ -26,6 +28,22 @@ class DoofApp extends StatelessWidget {
         title: 'Doof App',
         theme: ThemeData.from(
           colorScheme: const ColorScheme.highContrastDark(primary: Colors.yellow),
+        ).copyWith(
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              minimumSize: buttonSize,
+            ),
+          ),
+          outlinedButtonTheme: OutlinedButtonThemeData(
+            style: OutlinedButton.styleFrom(
+              minimumSize: buttonSize,
+            ),
+          ),
+          textButtonTheme: TextButtonThemeData(
+            style: TextButton.styleFrom(
+              minimumSize: buttonSize,
+            ),
+          ),
         ),
         builder: (context, child) => MaterialMekProvider(child: child!),
         home: child ?? const _AuthenticatedArea(),
