@@ -48,6 +48,18 @@ class _OrderScreenState extends State<OrderScreen> {
             final buyers = productOrder.buyers;
             final product = productOrder.product;
 
+            final buffer = StringBuffer();
+            buffer.write(productOrder.ingredients
+                .map((e) => "${e.ingredient.title}  ${e.value * e.ingredient.maxLevel}")
+                .join(", "));
+            if (productOrder.additions.isNotEmpty) {
+              buffer.writeln();
+            }
+            buffer.write(productOrder.additions.map((e) => e.addition.title).join(" - "));
+            buffer.writeln();
+            buffer.write("Ordine di: ");
+            buffer.write(buyers.map((e) => e.displayName).join(' - '));
+
             return ListTile(
               onTap: () => context.hub.push(ProductOrderScreen(
                 order: widget.order,
@@ -56,7 +68,7 @@ class _OrderScreenState extends State<OrderScreen> {
               )),
               leading: TextIcon('${productOrder.quantity}'),
               title: Text('${t.formatPrice(productOrder.total)} - ${product.title}'),
-              subtitle: Text(buyers.map((e) => e.displayName).join(' - ')),
+              subtitle: Text(buffer.toString()),
               trailing: PopupMenuButton(
                 itemBuilder: (context) {
                   return [
