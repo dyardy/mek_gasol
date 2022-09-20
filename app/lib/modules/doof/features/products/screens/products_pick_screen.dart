@@ -100,11 +100,11 @@ class _ProductOrderScreenState extends State<ProductOrderScreen> {
   final _usersQb = QueryBloc(() {
     return get<UsersRepository>().watchAll();
   });
-  final _additionsQb = QueryBloc(() {
-    return get<AdditionsRepository>().watch();
+  late final _additionsQb = QueryBloc(() {
+    return get<AdditionsRepository>().watch(widget.product);
   });
-  final _ingredientsQb = QueryBloc(() {
-    return get<IngredientsRepository>().watch();
+  late final _ingredientsQb = QueryBloc(() {
+    return get<IngredientsRepository>().watch(widget.product);
   });
 
   final _buyersFb = FieldBloc<List<PublicUserDto>>(initialValue: []);
@@ -222,6 +222,8 @@ class _ProductOrderScreenState extends State<ProductOrderScreen> {
     }
 
     Widget buildAdditionsField(BuildContext context, List<AdditionDto> additions) {
+      if (additions.isEmpty) return const SizedBox.shrink();
+
       return FieldGroupBuilder(
         fieldBloc: _additionsFb,
         values: additions,
