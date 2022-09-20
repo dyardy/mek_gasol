@@ -1,16 +1,10 @@
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
+import 'package:mek/mek.dart';
 import 'package:mek_gasol/modules/doof/features/products/dto/product_dto.dart';
 import 'package:mek_gasol/modules/doof/features/products/repositories/products_repository.dart';
-import 'package:mek_gasol/modules/doof/shared/blocs.dart';
 import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
-import 'package:mek_gasol/modules/doof/shared/widgets/bloc_widgets.dart';
 import 'package:mek_gasol/modules/doof/shared/widgets/bottom_button_bar.dart';
-import 'package:mek_gasol/modules/doof/shared/widgets/button_builder.dart';
-import 'package:mek_gasol/shared/form/fields/field_text.dart';
-import 'package:mek_gasol/shared/form/form_blocs.dart';
-import 'package:mek_gasol/shared/form/form_utils.dart';
-import 'package:mek_gasol/shared/form/form_validators.dart';
 import 'package:mek_gasol/shared/hub.dart';
 
 class ProductScreen extends StatefulWidget {

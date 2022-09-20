@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:mek_gasol/modules/doof/shared/widgets/bloc_widgets.dart';
-import 'package:mek_gasol/shared/form/form_blocs.dart';
-import 'package:mek_gasol/shared/form/form_utils.dart';
+import 'package:mek/src/bloc/bloc_consumers.dart';
+import 'package:mek/src/form/blocs/field_bloc.dart';
+import 'package:mek/src/form/form_utils.dart';
 
 class FieldDropdown<T> extends StatelessWidget {
   final FieldBlocRule<T> fieldBloc;

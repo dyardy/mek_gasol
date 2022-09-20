@@ -1,9 +1,9 @@
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
+import 'package:mek/mek.dart';
 import 'package:mek_gasol/modules/doof/features/orders/dto/product_order_dto.dart';
-import 'package:mek_gasol/modules/doof/shared/blocs.dart';
 import 'package:mek_gasol/modules/doof/shared/doof_transaltions.dart';
-import 'package:mek_gasol/modules/doof/shared/widgets/bloc_widgets.dart';
+import 'package:mek_gasol/shared/data/query_view_builder.dart';
 import 'package:pure_extensions/pure_extensions.dart';
 
 class OrderStatScreen extends StatelessWidget {

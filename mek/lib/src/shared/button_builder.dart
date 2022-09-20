@@ -3,9 +3,10 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:mek_gasol/modules/doof/shared/blocs.dart';
-import 'package:mek_gasol/shared/dart_utils.dart';
-import 'package:mek_gasol/shared/form/form_blocs.dart';
+import 'package:mek/src/data/mutation_bloc.dart';
+import 'package:mek/src/data/query_bloc.dart';
+import 'package:mek/src/form/blocs/field_bloc.dart';
+import 'package:mek/src/shared/bloc_extensions.dart';
 import 'package:rxdart/rxdart.dart';
 
 /// It does not return the [onPressed] callback in the [builder] when the user cannot interact

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mek/mek.dart';
 import 'package:mek_gasol/features/users/dto/user_dto.dart';
 import 'package:mek_gasol/features/users/repositories/users_repo.dart';
 import 'package:mek_gasol/modules/doof/features/additions/dto/addition_dto.dart';
@@ -12,18 +13,10 @@ import 'package:mek_gasol/modules/doof/features/orders/dto/product_order_dto.dar
 import 'package:mek_gasol/modules/doof/features/orders/repositories/order_products_repository.dart';
 import 'package:mek_gasol/modules/doof/features/products/dto/product_dto.dart';
 import 'package:mek_gasol/modules/doof/features/products/repositories/products_repository.dart';
-import 'package:mek_gasol/modules/doof/shared/blocs.dart';
 import 'package:mek_gasol/modules/doof/shared/doof_transaltions.dart';
 import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
-import 'package:mek_gasol/modules/doof/shared/widgets/bloc_widgets.dart';
 import 'package:mek_gasol/modules/doof/shared/widgets/bottom_button_bar.dart';
-import 'package:mek_gasol/modules/doof/shared/widgets/button_builder.dart';
-import 'package:mek_gasol/shared/form/fields/field_chips_input.dart';
-import 'package:mek_gasol/shared/form/fields/field_dropdown.dart';
-import 'package:mek_gasol/shared/form/fields/field_group_builder.dart';
-import 'package:mek_gasol/shared/form/fields/field_slider.dart';
-import 'package:mek_gasol/shared/form/form_blocs.dart';
-import 'package:mek_gasol/shared/form/form_utils.dart';
+import 'package:mek_gasol/shared/data/query_view_builder.dart';
 import 'package:mek_gasol/shared/hub.dart';
 import 'package:pure_extensions/pure_extensions.dart';
 

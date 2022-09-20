@@ -1,8 +1,10 @@
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
-import 'package:mek_gasol/modules/doof/shared/widgets/bloc_widgets.dart';
-import 'package:mek_gasol/shared/form/form_blocs.dart';
-import 'package:mek_gasol/shared/form/form_utils.dart';
+import 'package:flutter/services.dart';
+import 'package:mek/src/bloc/bloc_consumers.dart';
+import 'package:mek/src/form/blocs/field_bloc.dart';
+import 'package:mek/src/form/form_utils.dart';
+import 'package:mek/src/form/shared/text_field_type_data.dart';
 
 class FieldText<T> extends StatefulWidget {
   final FieldBlocRule<T> fieldBloc;
@@ -109,6 +111,33 @@ class FieldTextState<T> extends State<FieldText<T>> {
   }
 }
 
+abstract class FieldConvert<T> {
+  const FieldConvert();
+
+  T? toValue(String text);
+
+  String toText(T? value);
+
+  static const FieldConvert<String> text = _TextFieldConverter();
+  static const FieldConvert<int> integer = _IntFieldConvert();
+  static const FieldConvert<Decimal> decimal = _DecimalFieldConvert();
+}
+
+abstract class TextFieldType {
+  const TextFieldType();
+
+  static const TextFieldType none = _NoneTextFieldType();
+
+  const factory TextFieldType.numeric({bool signed, bool decimal}) = _NumericTextFieldType;
+  const factory TextFieldType.email() = _EmailTextFieldType;
+  const factory TextFieldType.password() = _PasswordTextFieldType;
+  const factory TextFieldType.phone() = _PhoneTextFieldType;
+
+  TextFieldTypeData resolve(BuildContext context);
+
+  TextFieldTypeData? build(BuildContext context) => null;
+}
+
 class TextFieldScope extends InheritedWidget {
   final InputDecoration decoration;
   final TextFieldTypeData typeData;
@@ -128,18 +157,6 @@ class TextFieldScope extends InheritedWidget {
   bool updateShouldNotify(TextFieldScope oldWidget) {
     return decoration != oldWidget.decoration || typeData != oldWidget.typeData;
   }
-}
-
-abstract class FieldConvert<T> {
-  const FieldConvert();
-
-  T? toValue(String text);
-
-  String toText(T? value);
-
-  static const FieldConvert<String> text = _TextFieldConverter();
-  static const FieldConvert<int> integer = _IntFieldConvert();
-  static const FieldConvert<Decimal> decimal = _DecimalFieldConvert();
 }
 
 class _TextFieldConverter extends FieldConvert<String> {
@@ -170,4 +187,113 @@ class _DecimalFieldConvert extends FieldConvert<Decimal> {
 
   @override
   String toText(Decimal? value) => value?.toString() ?? '';
+}
+
+class _NoneTextFieldType extends TextFieldType {
+  const _NoneTextFieldType();
+
+  @override
+  TextFieldTypeData resolve(BuildContext context) => const TextFieldTypeData();
+}
+
+class _NumericTextFieldType extends TextFieldType {
+  final bool signed;
+  final bool decimal;
+
+  const _NumericTextFieldType({
+    this.signed = false,
+    this.decimal = false,
+  });
+
+  @override
+  TextFieldTypeData resolve(BuildContext context) {
+    return TextFieldTypeData(
+      keyboardType: TextInputType.numberWithOptions(signed: signed, decimal: decimal),
+      inputFormatters: [_NumericTextInputFormatter(signed: signed, decimal: decimal)],
+    );
+  }
+}
+
+class _NumericTextInputFormatter implements TextInputFormatter {
+  final bool signed;
+  final bool decimal;
+
+  const _NumericTextInputFormatter({
+    this.signed = false,
+    this.decimal = false,
+  });
+
+  @override
+  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
+    final b = StringBuffer(r'^');
+    if (signed) b.write(r'-?');
+    b.write(r'\d*');
+    if (decimal) b.write(r'\.?\d*');
+    b.write(r'$');
+    final regExp = RegExp(b.toString());
+
+    return regExp.hasMatch(newValue.text) ? newValue : oldValue;
+  }
+}
+
+class _EmailTextFieldType extends TextFieldType {
+  const _EmailTextFieldType();
+
+  @override
+  TextFieldTypeData resolve(BuildContext context) {
+    return TextFieldTypeData(
+      inputFormatters: [
+        FilteringTextInputFormatter.singleLineFormatter,
+        FilteringTextInputFormatter.deny(' ')
+      ],
+    );
+  }
+}
+
+class _PasswordTextFieldType extends TextFieldType {
+  const _PasswordTextFieldType();
+
+  @override
+  TextFieldTypeData resolve(BuildContext context) {
+    return TextFieldTypeData(
+      obscureText: true,
+      enableSuggestions: false,
+      autocorrect: false,
+      inputFormatters: [
+        FilteringTextInputFormatter.singleLineFormatter,
+        FilteringTextInputFormatter.deny(' ')
+      ],
+    );
+  }
+
+  @override
+  TextFieldTypeData build(BuildContext context) {
+    final scope = TextFieldScope.of(context);
+    final typeData = scope.typeData;
+
+    return typeData.copyWith(
+      decoration: scope.decoration.copyWith(
+        suffixIcon: IconButton(
+          onPressed: () => FieldText.of(context).update(typeData.copyWith(
+            obscureText: !typeData.obscureText,
+          )),
+          icon: typeData.obscureText
+              ? const Icon(Icons.visibility)
+              : const Icon(Icons.visibility_off),
+        ),
+      ),
+    );
+  }
+}
+
+class _PhoneTextFieldType extends TextFieldType {
+  const _PhoneTextFieldType();
+
+  @override
+  TextFieldTypeData resolve(BuildContext context) {
+    return TextFieldTypeData(
+      keyboardType: TextInputType.phone,
+      inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[+\d]'))],
+    );
+  }
 }

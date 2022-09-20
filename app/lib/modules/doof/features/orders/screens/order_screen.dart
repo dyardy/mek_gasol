@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:mek/mek.dart';
 import 'package:mek_gasol/modules/doof/features/orders/dto/order_dto.dart';
 import 'package:mek_gasol/modules/doof/features/orders/repositories/order_products_repository.dart';
 import 'package:mek_gasol/modules/doof/features/orders/screens/order_stat_screen.dart';
 import 'package:mek_gasol/modules/doof/features/orders/widgets/send_order_dialog.dart';
 import 'package:mek_gasol/modules/doof/features/products/screens/products_pick_screen.dart';
-import 'package:mek_gasol/modules/doof/shared/blocs.dart';
 import 'package:mek_gasol/modules/doof/shared/doof_transaltions.dart';
 import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
-import 'package:mek_gasol/modules/doof/shared/widgets/bloc_widgets.dart';
+import 'package:mek_gasol/shared/data/query_view_builder.dart';
 import 'package:mek_gasol/shared/hub.dart';
 import 'package:mek_gasol/shared/widgets/text_icon.dart';
 

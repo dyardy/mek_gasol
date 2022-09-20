@@ -1,1 +1,0 @@
-extension CheckDateTime on DateTime {}

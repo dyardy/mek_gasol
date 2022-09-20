@@ -1,12 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:mek/mek.dart';
 import 'package:mek_gasol/features/users/dto/user_dto.dart';
 import 'package:mek_gasol/modules/auth/sign_in_screen.dart';
 import 'package:mek_gasol/modules/auth/sign_up_details_screen.dart';
-import 'package:mek_gasol/modules/doof/shared/blocs.dart';
 import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
-import 'package:mek_gasol/modules/doof/shared/widgets/bloc_widgets.dart';
-import 'package:mek_gasol/modules/doof/shared/widgets/stream_consumer_base.dart';
 
 class AuthGuard extends StatelessWidget {
   final Widget Function(BuildContext context, Widget? child) builder;

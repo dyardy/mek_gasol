@@ -1,15 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mek/mek.dart';
 import 'package:mek_gasol/modules/auth/sign_up_screen.dart';
-import 'package:mek_gasol/modules/doof/shared/blocs.dart';
 import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
-import 'package:mek_gasol/modules/doof/shared/widgets/bloc_widgets.dart';
-import 'package:mek_gasol/modules/doof/shared/widgets/button_builder.dart';
-import 'package:mek_gasol/shared/form/fields/field_text.dart';
-import 'package:mek_gasol/shared/form/form_blocs.dart';
-import 'package:mek_gasol/shared/form/form_utils.dart';
-import 'package:mek_gasol/shared/form/form_validators.dart';
 import 'package:mek_gasol/shared/hub.dart';
 import 'package:mek_gasol/shared/widgets/sign_out_icon_button.dart';
 

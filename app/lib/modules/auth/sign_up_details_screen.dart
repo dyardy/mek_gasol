@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:mek/mek.dart';
 import 'package:mek_gasol/features/users/repositories/users_repo.dart';
-import 'package:mek_gasol/modules/doof/shared/blocs.dart';
 import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
 import 'package:mek_gasol/modules/doof/shared/widgets/bottom_button_bar.dart';
-import 'package:mek_gasol/modules/doof/shared/widgets/button_builder.dart';
-import 'package:mek_gasol/shared/form/fields/field_text.dart';
-import 'package:mek_gasol/shared/form/form_blocs.dart';
-import 'package:mek_gasol/shared/form/form_validators.dart';
 import 'package:mek_gasol/shared/widgets/sign_out_icon_button.dart';
 
 class SignUpDetailsScreen extends StatefulWidget {

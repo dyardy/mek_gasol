@@ -121,7 +121,7 @@ packages:
     source: hosted
     version: "2.0.1"
   chips_input:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: chips_input
       url: "https://pub.dartlang.org"
@@ -466,6 +466,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.5"
+  mek:
+    dependency: "direct main"
+    description:
+      path: "../mek"
+      relative: true
+    source: path
+    version: "0.0.1"
   mek_data_class:
     dependency: "direct main"
     description:
@@ -898,6 +905,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.2"
+  version:
+    dependency: "direct main"
+    description:
+      name: version
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.0.2"
   watcher:
     dependency: transitive
     description:

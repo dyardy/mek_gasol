@@ -1,0 +1,44 @@
+name: mek
+description: Mek Core
+version: 0.0.1
+publish_to: 'none'
+
+environment:
+  sdk: '>=2.18.0 <3.0.0'
+  flutter: ">=3.3.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  mek_data_class: ^0.1.0
+  collection: ^1.16.0
+  pure_extensions: ^4.2.0
+  rxdart: ^0.27.5
+
+  bloc: ^8.1.0
+  decimal: ^2.3.0
+
+  chips_input: ^0.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  mek_lints: ^0.3.0
+
+  # To generate .g files:
+  # flutter packages pub run build_runner build --delete-conflicting-outputs
+  # flutter packages pub run build_runner watch --delete-conflicting-outputs
+  build_runner: ^2.2.1
+  mek_data_class_generator: ^0.1.4
+
+# dart pub global run index_generator
+index_generator:
+  exclude:
+    - '**.g.dart'
+    - '{_,**/_}*.dart'
+  indexes:
+    - path: lib
+
+flutter:
