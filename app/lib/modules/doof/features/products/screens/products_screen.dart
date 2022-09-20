@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mek_gasol/modules/doof/features/products/dto/product_dto.dart';
 import 'package:mek_gasol/modules/doof/features/products/repositories/products_repository.dart';
 import 'package:mek_gasol/modules/doof/features/products/screens/product_screen.dart';
@@ -7,7 +6,6 @@ import 'package:mek_gasol/modules/doof/shared/blocs.dart';
 import 'package:mek_gasol/modules/doof/shared/doof_transaltions.dart';
 import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
 import 'package:mek_gasol/modules/doof/shared/widgets/bloc_widgets.dart';
-import 'package:mek_gasol/shared/data/mek_widgets.dart';
 import 'package:mek_gasol/shared/hub.dart';
 import 'package:mek_gasol/shared/widgets/sign_out_icon_button.dart';
 
@@ -71,17 +69,4 @@ class _ProductsScreenState extends State<ProductsScreen> {
       ),
     );
   }
-}
-
-extension AsyncValueExtensions<T> on AsyncValue<T> {
-  Widget buildView({
-    required Widget Function(T value) data,
-  }) {
-    if (!hasValue) {
-      return const MekProgressIndicator();
-    }
-    return data(requiredValue);
-  }
-
-  T get requiredValue => value as T;
 }

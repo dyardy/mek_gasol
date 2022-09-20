@@ -1,10 +1,10 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:mek_gasol/modules/gasol/features/matches/triggers/matches_trigger.dart';
 import 'package:mek_gasol/modules/gasol/features/matches/widgets/match.dart';
 import 'package:mek_gasol/modules/gasol/features/players/dvo/player_dvo.dart';
-import 'package:mek_gasol/shared/app_list_tile.dart';
+import 'package:mek_gasol/shared/data/mek_widgets.dart';
 import 'package:mek_gasol/shared/hub.dart';
 import 'package:mek_gasol/shared/widgets/sign_out_icon_button.dart';
 
@@ -23,9 +23,9 @@ class MatchesScreen extends StatelessWidget {
       builder: (context, ref, _) {
         final matches = ref.watch(MatchesBloc.all);
         return matches.when(loading: () {
-          return const CupertinoActivityIndicator();
+          return const LoadingView();
         }, error: (error, _) {
-          return const SizedBox.shrink();
+          return ErrorView(error: error);
         }, data: (matches) {
           return ListView.builder(
             itemCount: matches.length,
@@ -36,19 +36,19 @@ class MatchesScreen extends StatelessWidget {
                 return players.map((e) => e.username).join(', ');
               }
 
-              return AppListTile(
+              return ListTile(
                 onTap: () => context.hub.push(MatchScreen(match: match)),
                 title: RichText(
                   text: TextSpan(
                     children: [
                       TextSpan(
                         text: buildUsernames(match.leftPlayers),
-                        style: const TextStyle(color: CupertinoColors.systemRed),
+                        style: const TextStyle(color: Colors.red),
                       ),
                       const TextSpan(text: ' vs '),
                       TextSpan(
                         text: buildUsernames(match.rightPlayers),
-                        style: const TextStyle(color: CupertinoColors.systemBlue),
+                        style: const TextStyle(color: Colors.blue),
                       )
                     ],
                   ),
@@ -62,17 +62,18 @@ class MatchesScreen extends StatelessWidget {
       },
     );
 
-    return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
+    return Scaffold(
+      appBar: AppBar(
         leading: const SignOutIconButton(),
-        middle: const Text('Matches'),
-        trailing: CupertinoButton(
-          padding: EdgeInsets.zero,
-          onPressed: () => context.hub.push(const MatchScreen(match: null)),
-          child: const Text('Add'),
-        ),
+        title: const Text('Matches'),
+        actions: [
+          IconButton(
+            onPressed: () => context.hub.push(const MatchScreen(match: null)),
+            icon: const Icon(Icons.add),
+          ),
+        ],
       ),
-      child: matches,
+      body: matches,
     );
   }
 }

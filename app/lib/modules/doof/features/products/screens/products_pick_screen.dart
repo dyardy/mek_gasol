@@ -20,7 +20,7 @@ import 'package:mek_gasol/modules/doof/shared/widgets/bottom_button_bar.dart';
 import 'package:mek_gasol/modules/doof/shared/widgets/button_builder.dart';
 import 'package:mek_gasol/shared/form/fields/field_chips_input.dart';
 import 'package:mek_gasol/shared/form/fields/field_dropdown.dart';
-import 'package:mek_gasol/shared/form/fields/field_group_checkbox.dart';
+import 'package:mek_gasol/shared/form/fields/field_group_builder.dart';
 import 'package:mek_gasol/shared/form/fields/field_slider.dart';
 import 'package:mek_gasol/shared/form/form_blocs.dart';
 import 'package:mek_gasol/shared/form/form_utils.dart';
@@ -226,12 +226,14 @@ class _ProductOrderScreenState extends State<ProductOrderScreen> {
 
       return FieldGroupBuilder(
         fieldBloc: _additionsFb,
-        values: additions,
+        valuesCount: additions.length,
         style: const GroupStyle.list(),
         decoration: const InputDecoration(
           labelText: 'Additions',
         ),
-        valueBuilder: (state, value) {
+        valueBuilder: (state, index) {
+          final value = additions[index];
+
           return CheckboxListTile(
             value: state.value.contains(value),
             onChanged: state.widgetSelectHandler(_additionsFb, value),

@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mek_gasol/modules/auth/auth_guard.dart';
 import 'package:mek_gasol/modules/eti/features/calendar/screens/calendar_events.dart';
 import 'package:mek_gasol/modules/eti/features/calendar/screens/calendar_rules.dart';
-import 'package:mek_gasol/shared/data/mek_widgets.dart';
+import 'package:mek_gasol/shared/theme.dart';
 
 /// Work Time Tracker App
 class EtiApp extends StatelessWidget {
@@ -20,10 +20,7 @@ class EtiApp extends StatelessWidget {
         supportedLocales: const [Locale.fromSubtags(languageCode: 'it')],
         debugShowCheckedModeBanner: false,
         title: 'Mek Gasol',
-        theme: ThemeData.from(
-          colorScheme: const ColorScheme.highContrastDark(primary: Colors.yellow),
-        ),
-        builder: (context, child) => MaterialMekProvider(child: child!),
+        theme: AppTheme.build(),
         home: child ?? const _AuthenticatedArea(),
       ),
     );

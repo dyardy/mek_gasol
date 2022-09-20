@@ -92,8 +92,8 @@ class WorkEventsScreen extends ConsumerWidget {
             ),
             Expanded(
               child: eventsState.when(
-                loading: () => const MekProgressIndicator(),
-                error: (_, __) => const MekCrashIndicator(),
+                loading: () => const LoadingView(),
+                error: (error, __) => ErrorView(error: error),
                 data: (events) => buildCells(events),
               ),
             ),

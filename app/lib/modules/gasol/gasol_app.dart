@@ -1,8 +1,8 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:mek_gasol/modules/gasol/features/matches/widgets/matches.dart';
 import 'package:mek_gasol/modules/gasol/features/players/widgets/players.dart';
-import 'package:mek_gasol/shared/data/mek_widgets.dart';
+import 'package:mek_gasol/shared/theme.dart';
 
 /// Statistics Foosball table App
 class GasolApp extends StatelessWidget {
@@ -10,36 +10,51 @@ class GasolApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CupertinoApp(
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
       locale: const Locale.fromSubtags(languageCode: 'it'),
-      localizationsDelegates: GlobalCupertinoLocalizations.delegates,
+      localizationsDelegates: GlobalMaterialLocalizations.delegates,
       supportedLocales: const [Locale.fromSubtags(languageCode: 'it')],
       title: 'Mek Gasol',
-      theme: const CupertinoThemeData(
-        primaryColor: CupertinoColors.systemOrange,
-        primaryContrastingColor: CupertinoColors.systemYellow,
-        brightness: Brightness.dark,
-        // textTheme: CupertinoTextThemeData(
-        //   primaryColor: CupertinoColors.systemYellow,
-        // ),
+      theme: AppTheme.build(),
+      home: const _Home(),
+    );
+  }
+}
+
+class _Home extends StatefulWidget {
+  const _Home();
+
+  @override
+  State<_Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<_Home> {
+  var _tabIndex = 0;
+
+  void changeTab(int index) {
+    setState(() {
+      _tabIndex = index;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _tabIndex,
+        onTap: changeTab,
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.account_tree_outlined), label: 'Matches'),
+          BottomNavigationBarItem(icon: Icon(Icons.supervisor_account_outlined), label: 'Players'),
+        ],
       ),
-      builder: (context, child) => CupertinoMekProvider(child: child!),
-      home: CupertinoTabScaffold(
-        tabBar: CupertinoTabBar(
-          items: const [
-            BottomNavigationBarItem(icon: Icon(CupertinoIcons.doc)),
-            BottomNavigationBarItem(icon: Icon(CupertinoIcons.map)),
-          ],
-        ),
-        tabBuilder: (context, index) {
-          switch (index) {
-            case 0:
-              return const MatchesScreen();
-            case 1:
-              return const PlayersScreen();
-          }
-          throw 'Not supported tab: $index';
-        },
+      body: IndexedStack(
+        index: _tabIndex,
+        children: const [
+          MatchesScreen(),
+          PlayersScreen(),
+        ],
       ),
     );
   }

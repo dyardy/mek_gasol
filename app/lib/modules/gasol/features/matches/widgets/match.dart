@@ -1,11 +1,12 @@
 import 'package:collection/collection.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mek_gasol/modules/doof/shared/widgets/bloc_widgets.dart';
 import 'package:mek_gasol/modules/gasol/features/matches/dvo/match_dvo.dart';
 import 'package:mek_gasol/modules/gasol/features/matches/triggers/matches_trigger.dart';
 import 'package:mek_gasol/modules/gasol/features/players/dvo/player_dvo.dart';
 import 'package:mek_gasol/modules/gasol/features/players/widgets/players.dart';
+import 'package:mek_gasol/shared/form/fields/field_group_builder.dart';
 import 'package:mek_gasol/shared/form/fields/field_text.dart';
 import 'package:mek_gasol/shared/form/form_blocs.dart';
 import 'package:mek_gasol/shared/form/form_utils.dart';
@@ -108,14 +109,14 @@ class MatchScreen extends ConsumerWidget {
               child: Text(
                 'RED TEAM',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: CupertinoColors.systemRed),
+                style: TextStyle(color: Colors.red),
               ),
             ),
             Expanded(
               child: Text(
                 'BLUE TEAM',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: CupertinoColors.systemBlue),
+                style: TextStyle(color: Colors.blue),
               ),
             ),
           ],
@@ -163,8 +164,10 @@ class MatchScreen extends ConsumerWidget {
               ],
             );
 
-            final teamsWithError = CupertinoFormRow(
-              error: state.isInvalid ? Text('${state.errors.first}') : null,
+            final teamsWithError = InputDecorator(
+              decoration: InputDecoration(
+                errorText: state.isInvalid ? '${state.errors.first}' : null,
+              ),
               child: Column(
                 children: [
                   teams,
@@ -194,7 +197,7 @@ class MatchScreen extends ConsumerWidget {
         final saveButton = BlocBuilder<ListFieldBlocState<dynamic>>(
           bloc: formBloc,
           builder: (context, state) {
-            return CupertinoButton(
+            return ElevatedButton(
               onPressed: canSave && state.isValid ? () => save(ref) : null,
               child: const Text('Save'),
             );
@@ -208,11 +211,11 @@ class MatchScreen extends ConsumerWidget {
       },
     );
 
-    return CupertinoPageScaffold(
-      navigationBar: const CupertinoNavigationBar(
-        middle: Text('Match'),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Match'),
       ),
-      child: SafeArea(
+      body: SafeArea(
         child: Column(
           children: [
             Expanded(
@@ -277,34 +280,40 @@ class _TeamsScreenState extends ConsumerState<_TeamsScreen> {
     context.hub.pop(result);
   }
 
+  // children: values.entries.map((e) {
+  //   return CupertinoFormRow(
+  //     prefix: Text(e.key.username),
+  //     child: CupertinoSlidingSegmentedControl<Team>(
+  //       groupValue: e.value,
+  //       onValueChanged: (team) =>
+  //           _players.updateValue({...values, e.key: team ?? Team.none}),
+  //       children: const {
+  //         Team.left: Text(
+  //           'RED',
+  //           style: TextStyle(color: CupertinoColors.systemRed),
+  //         ),
+  //         Team.none: Text('None'),
+  //         Team.right: Text(
+  //           'BLUE',
+  //           style: TextStyle(color: CupertinoColors.systemBlue),
+  //         ),
+  //       },
+  //     ),
+  //   );
+  // }).toList(),
+
   @override
   Widget build(BuildContext context) {
     final players = BlocBuilder<FieldBlocState<Map<PlayerDvo, Team>>>(
       bloc: _players,
       builder: (context, state) {
         final values = state.value;
-        return Column(
-          children: values.entries.map((e) {
-            return CupertinoFormRow(
-              prefix: Text(e.key.username),
-              child: CupertinoSlidingSegmentedControl<Team>(
-                groupValue: e.value,
-                onValueChanged: (team) =>
-                    _players.updateValue({...values, e.key: team ?? Team.none}),
-                children: const {
-                  Team.left: Text(
-                    'RED',
-                    style: TextStyle(color: CupertinoColors.systemRed),
-                  ),
-                  Team.none: Text('None'),
-                  Team.right: Text(
-                    'BLUE',
-                    style: TextStyle(color: CupertinoColors.systemBlue),
-                  ),
-                },
-              ),
-            );
-          }).toList(),
+        return FieldGroupBuilder(
+          fieldBloc: _players,
+          valuesCount: values.length,
+          valueBuilder: (state, index) {
+            return Chip(label: Text('$index'));
+          },
         );
       },
     );
@@ -320,7 +329,7 @@ class _TeamsScreenState extends ConsumerState<_TeamsScreen> {
             constraints: const BoxConstraints(minHeight: 24.0),
             child: DefaultTextStyle(
               style: const TextStyle(
-                color: CupertinoColors.destructiveRed,
+                color: Colors.red,
                 fontWeight: FontWeight.w500,
               ),
               child: Text('${state.errors.first}'),
@@ -330,29 +339,26 @@ class _TeamsScreenState extends ConsumerState<_TeamsScreen> {
       },
     );
 
-    final buttonsBar = BlocBuilder<FieldBlocState<Map<PlayerDvo, Team>>>(
+    final checkButton = BlocBuilder<FieldBlocState<Map<PlayerDvo, Team>>>(
       bloc: _players,
       builder: (context, state) {
-        return SizedBox(
-          width: double.infinity,
-          child: CupertinoButton(
-            onPressed: state.isValid ? save : null,
-            child: const Text('Save'),
-          ),
+        return FloatingActionButton(
+          onPressed: state.isValid ? save : null,
+          child: const Icon(Icons.check),
         );
       },
     );
 
-    return CupertinoPageScaffold(
-      navigationBar: const CupertinoNavigationBar(),
-      child: SafeArea(
+    return Scaffold(
+      appBar: AppBar(),
+      floatingActionButton: checkButton,
+      body: SafeArea(
         child: Column(
           children: [
             Expanded(
               child: players,
             ),
             error,
-            buttonsBar,
           ],
         ),
       ),

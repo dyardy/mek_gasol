@@ -7,16 +7,16 @@ import 'package:mek_gasol/shared/form/form_blocs.dart';
 import 'package:mek_gasol/shared/form/form_utils.dart';
 
 class FieldGroupBuilder<T> extends StatelessWidget {
-  final FieldBlocRule<List<T>> fieldBloc;
-  final List<T> values;
+  final FieldBlocRule<T> fieldBloc;
+  final int valuesCount;
   final GroupStyle style;
   final InputDecoration decoration;
-  final Widget Function(FieldBlocStateBase<List<T>> state, T value) valueBuilder;
+  final Widget Function(FieldBlocStateBase<T> state, int index) valueBuilder;
 
   const FieldGroupBuilder({
     Key? key,
     required this.fieldBloc,
-    required this.values,
+    required this.valuesCount,
     this.style = const FlexGroupStyle(),
     this.decoration = const InputDecoration(),
     required this.valueBuilder,
@@ -24,18 +24,16 @@ class FieldGroupBuilder<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder(
+    return BlocBuilder<FieldBlocStateBase<T>>(
       bloc: fieldBloc,
       builder: (context, state) {
         return InputDecorator(
           decoration: decoration.copyWith(errorText: state.widgetError(context)),
           child: GroupView(
             style: style,
-            count: values.length,
+            count: valuesCount,
             builder: (context, index) {
-              final value = values[index];
-
-              return valueBuilder(state, value);
+              return valueBuilder(state, index);
             },
           ),
         );

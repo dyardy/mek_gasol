@@ -5,8 +5,7 @@ import 'package:mek_data_class/mek_data_class.dart';
 
 part 'blocs.g.dart';
 
-@DataClass()
-abstract class MutationState<TData> with _$MutationState<TData> {
+abstract class MutationState<TData> {
   const MutationState._();
 
   bool get isMutating;

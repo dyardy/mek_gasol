@@ -1,7 +1,9 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mek_gasol/modules/gasol/features/players/dvo/player_dvo.dart';
 import 'package:mek_gasol/modules/gasol/features/players/triggers/players_trigger.dart';
+import 'package:mek_gasol/shared/form/fields/field_text.dart';
+import 'package:mek_gasol/shared/form/form_blocs.dart';
 import 'package:mek_gasol/shared/hub.dart';
 import 'package:rivertion/rivertion.dart';
 
@@ -49,24 +51,24 @@ class PlayerScreen extends ConsumerStatefulWidget {
 }
 
 class _PlayerScreenState extends ConsumerState<PlayerScreen> {
-  late final TextEditingController _usernameController;
+  late final FieldBloc<String> _usernameController;
 
   @override
   void initState() {
     super.initState();
-    _usernameController = TextEditingController(text: widget.player?.username);
+    _usernameController = FieldBloc(initialValue: widget.player?.username ?? '');
   }
 
   @override
   void dispose() {
-    _usernameController.dispose();
+    _usernameController.close();
     super.dispose();
   }
 
   void save() {
     final args = _SavePlayerParams(
       playerId: widget.player?.id,
-      username: _usernameController.text,
+      username: _usernameController.state.value,
     );
     ref.read(PlayerBloc.save.bloc).maybeMutate(args);
   }
@@ -96,11 +98,10 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen> {
         builder: (context, ref, _) {
           final canDelete = ref.watch(PlayerBloc.delete.select((state) => !state.isMutating));
 
-          return CupertinoButton(
-            padding: EdgeInsets.zero,
+          return IconButton(
             onPressed:
                 canDelete ? () => ref.read(PlayerBloc.delete.bloc).maybeMutate(player) : null,
-            child: const Text('Delete'),
+            icon: const Icon(Icons.delete),
           );
         },
       );
@@ -111,7 +112,7 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen> {
         final canSave = ref.watch(PlayerBloc.save.select((state) => !state.isMutating));
         return SizedBox(
           width: double.infinity,
-          child: CupertinoButton(
+          child: ElevatedButton(
             onPressed: canSave ? save : null,
             child: const Text('Save'),
           ),
@@ -119,12 +120,14 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen> {
       },
     );
 
-    return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
-        middle: Text(widget.player?.username ?? 'Player'),
-        trailing: player != null ? buildDeleteButton(player) : null,
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.player?.username ?? 'Player'),
+        actions: [
+          if (player != null) buildDeleteButton(player),
+        ],
       ),
-      child: SafeArea(
+      body: SafeArea(
         child: Column(
           children: [
             Expanded(
@@ -132,9 +135,12 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen> {
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   children: [
-                    CupertinoTextField(
-                      controller: _usernameController,
-                      placeholder: 'Username',
+                    FieldText(
+                      fieldBloc: _usernameController,
+                      converter: FieldConvert.text,
+                      decoration: const InputDecoration(
+                        labelText: 'Username',
+                      ),
                     ),
                   ],
                 ),

@@ -8,22 +8,6 @@ part of 'blocs.dart';
 
 // ignore_for_file: annotate_overrides
 
-mixin _$MutationState<TData> {
-  MutationState<TData> get _self => this as MutationState<TData>;
-
-  Iterable<Object?> get _props sync* {}
-
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is _$MutationState<TData> &&
-          runtimeType == other.runtimeType &&
-          DataClass.$equals(_props, other._props);
-
-  int get hashCode => Object.hashAll(_props);
-
-  String toString() => (ClassToString('MutationState', [TData])).toString();
-}
-
 mixin _$IdleMutation<TData> {
   IdleMutation<TData> get _self => this as IdleMutation<TData>;
 

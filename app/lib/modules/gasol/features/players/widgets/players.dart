@@ -1,8 +1,8 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mek_gasol/modules/gasol/features/players/triggers/players_trigger.dart';
 import 'package:mek_gasol/modules/gasol/features/players/widgets/player.dart';
-import 'package:mek_gasol/shared/app_list_tile.dart';
+import 'package:mek_gasol/shared/data/mek_widgets.dart';
 import 'package:mek_gasol/shared/hub.dart';
 import 'package:mek_gasol/shared/widgets/sign_out_icon_button.dart';
 
@@ -20,16 +20,16 @@ class PlayersScreen extends ConsumerWidget {
     final playersState = ref.watch(PlayersBloc.all);
 
     final playersView = playersState.when(loading: () {
-      return const CupertinoActivityIndicator();
+      return const LoadingView();
     }, error: (error, _) {
-      return const SizedBox.shrink();
+      return ErrorView(error: error);
     }, data: (players) {
       return ListView.builder(
         itemCount: players.length,
         itemBuilder: (context, index) {
           final player = players[index];
 
-          return AppListTile(
+          return ListTile(
             onTap: () => context.hub.push(PlayerScreen(player: player)),
             title: Text(player.username),
           );
@@ -37,17 +37,18 @@ class PlayersScreen extends ConsumerWidget {
       );
     });
 
-    return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
+    return Scaffold(
+      appBar: AppBar(
         leading: const SignOutIconButton(),
-        middle: const Text('Players'),
-        trailing: CupertinoButton(
-          padding: EdgeInsets.zero,
-          onPressed: () => context.hub.push(const PlayerScreen(player: null)),
-          child: const Text('Add'),
-        ),
+        title: const Text('Players'),
+        actions: [
+          IconButton(
+            onPressed: () => context.hub.push(const PlayerScreen(player: null)),
+            icon: const Icon(Icons.add),
+          )
+        ],
       ),
-      child: SafeArea(
+      body: SafeArea(
         child: playersView,
       ),
     );

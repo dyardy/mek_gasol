@@ -14,8 +14,8 @@ class ClientsScreen extends ConsumerWidget {
     final clientsState = ref.watch(ClientsTrigger.all);
 
     final clients = clientsState.when(
-      loading: () => const MekProgressIndicator(),
-      error: (error, _) => const MekCrashIndicator(),
+      loading: () => const LoadingView(),
+      error: (error, _) => ErrorView(error: error),
       data: (clients) {
         return ListView.builder(
           itemCount: clients.length,

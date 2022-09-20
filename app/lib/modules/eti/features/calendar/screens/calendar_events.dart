@@ -70,8 +70,8 @@ class CalendarScreen extends ConsumerWidget {
         ],
       ),
       body: eventsState.when(
-        loading: () => const MekProgressIndicator(),
-        error: (_, __) => const MekCrashIndicator(),
+        loading: () => const LoadingView(),
+        error: (error, __) => ErrorView(error: error),
         data: (events) {
           return Column(
             children: [

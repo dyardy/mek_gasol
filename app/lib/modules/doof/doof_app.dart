@@ -5,7 +5,7 @@ import 'package:mek_gasol/modules/auth/auth_guard.dart';
 import 'package:mek_gasol/modules/doof/features/orders/screens/orders_screen.dart';
 import 'package:mek_gasol/modules/doof/features/products/screens/products_screen.dart';
 import 'package:mek_gasol/modules/doof/shared/doof_transaltions.dart';
-import 'package:mek_gasol/shared/data/mek_widgets.dart';
+import 'package:mek_gasol/shared/theme.dart';
 
 /// Food app
 class DoofApp extends StatelessWidget {
@@ -13,8 +13,6 @@ class DoofApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const buttonSize = Size(kMinInteractiveDimension * 3, kMinInteractiveDimension);
-
     return AuthGuard(
       builder: (context, child) => MaterialApp(
         key: ValueKey(child),
@@ -26,26 +24,7 @@ class DoofApp extends StatelessWidget {
         supportedLocales: const [Locale.fromSubtags(languageCode: 'it')],
         debugShowCheckedModeBanner: false,
         title: 'Doof App',
-        theme: ThemeData.from(
-          colorScheme: const ColorScheme.highContrastDark(primary: Colors.yellow),
-        ).copyWith(
-          elevatedButtonTheme: ElevatedButtonThemeData(
-            style: ElevatedButton.styleFrom(
-              minimumSize: buttonSize,
-            ),
-          ),
-          outlinedButtonTheme: OutlinedButtonThemeData(
-            style: OutlinedButton.styleFrom(
-              minimumSize: buttonSize,
-            ),
-          ),
-          textButtonTheme: TextButtonThemeData(
-            style: TextButton.styleFrom(
-              minimumSize: buttonSize,
-            ),
-          ),
-        ),
-        builder: (context, child) => MaterialMekProvider(child: child!),
+        theme: AppTheme.build(),
         home: child ?? const _AuthenticatedArea(),
       ),
     );
