@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mek/mek.dart';
 import 'package:mek_gasol/modules/auth/auth_guard.dart';
 import 'package:mek_gasol/modules/doof/features/orders/screens/orders_screen.dart';
 import 'package:mek_gasol/modules/doof/features/products/screens/products_screen.dart';
@@ -18,8 +19,9 @@ class DoofApp extends StatelessWidget {
         key: ValueKey(child),
         locale: const Locale.fromSubtags(languageCode: 'it'),
         localizationsDelegates: const [
-          DoofTranslations.delegate,
           ...GlobalMaterialLocalizations.delegates,
+          ValidationLocalizations(),
+          DoofTranslations.delegate,
         ],
         supportedLocales: const [Locale.fromSubtags(languageCode: 'it')],
         debugShowCheckedModeBanner: false,

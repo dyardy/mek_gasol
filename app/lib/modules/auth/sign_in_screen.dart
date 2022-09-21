@@ -17,11 +17,11 @@ class SignInScreen extends ConsumerStatefulWidget {
 class _SignInScreenState extends ConsumerState<SignInScreen> {
   final _emailFb = FieldBloc(
     initialValue: '',
-    validators: [const TextValidation(isRequired: true)],
+    validator: Validation.email,
   );
   final _passwordFb = FieldBloc(
     initialValue: '',
-    validators: [const TextValidation(isRequired: true)],
+    validator: const TextValidation(minLength: 1),
   );
 
   late final _form = ListFieldBloc(fieldBlocs: [_emailFb, _passwordFb]);

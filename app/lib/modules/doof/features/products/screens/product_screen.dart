@@ -22,15 +22,14 @@ class ProductScreen extends StatefulWidget {
 class _ProductScreenState extends State<ProductScreen> {
   final _titleControl = FieldBloc<String>(
     initialValue: '',
-    validators: [const TextValidation()],
+    validator: const TextValidation(minLength: 3),
   );
   final _descriptionControl = FieldBloc<String>(
     initialValue: '',
-    validators: [const TextValidation()],
   );
   final _priceControl = FieldBloc<Decimal?>(
     initialValue: null,
-    validators: [const RequiredValidation()],
+    validator: const RequiredValidation(),
   );
 
   late final _formControl = ListFieldBloc(

@@ -17,15 +17,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   final _emailFb = FieldBloc(
     initialValue: '',
-    validators: [const TextValidation(isRequired: true)],
+    validator: Validation.email,
   );
   final _passwordFb = FieldBloc(
     initialValue: '',
-    validators: [const TextValidation(isRequired: true)],
+    validator: Validation.password,
   );
   final _passwordConfirmationFb = FieldBloc(
     initialValue: '',
-    validators: [const TextValidation(isRequired: true)],
+    validator: Validation.password,
   );
 
   late final _form = ListFieldBloc(

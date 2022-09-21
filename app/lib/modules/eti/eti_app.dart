@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mek/mek.dart';
 import 'package:mek_gasol/modules/auth/auth_guard.dart';
 import 'package:mek_gasol/modules/eti/features/calendar/screens/calendar_events.dart';
 import 'package:mek_gasol/modules/eti/features/calendar/screens/calendar_rules.dart';
@@ -16,7 +17,10 @@ class EtiApp extends StatelessWidget {
       builder: (context, child) => MaterialApp(
         key: ValueKey(child),
         locale: const Locale.fromSubtags(languageCode: 'it'),
-        localizationsDelegates: GlobalMaterialLocalizations.delegates,
+        localizationsDelegates: const [
+          ...GlobalMaterialLocalizations.delegates,
+          ValidationLocalizations(),
+        ],
         supportedLocales: const [Locale.fromSubtags(languageCode: 'it')],
         debugShowCheckedModeBanner: false,
         title: 'Mek Gasol',

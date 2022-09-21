@@ -17,7 +17,7 @@ class _SignUpDetailsScreenState extends State<SignUpDetailsScreen> {
 
   final _displayNameFb = FieldBloc(
     initialValue: '',
-    validators: [const TextValidation(isRequired: true)],
+    validator: const TextValidation(minLength: 5),
   );
 
   void _signUp() {

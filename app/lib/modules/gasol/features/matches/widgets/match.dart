@@ -15,16 +15,16 @@ class MatchFormBloc extends ListFieldBloc<dynamic> {
 
   final teamsFB = FieldBloc<Map<Team, List<PlayerDvo>>>(
     initialValue: {},
-    validators: [_validateTeam],
+    validator: _validateTeam,
   );
 
   final leftPointsFB = FieldBloc(
     initialValue: 0,
-    validators: [const IntegerValidator(min: 0)],
+    validator: const NumberValidation(greaterThan: 0),
   );
   final rightPointsFB = FieldBloc(
     initialValue: 0,
-    validators: [const IntegerValidator(min: 0)],
+    validator: const NumberValidation(greaterThan: 0),
   );
 
   MatchFormBloc({required this.match}) {
@@ -38,15 +38,15 @@ class MatchFormBloc extends ListFieldBloc<dynamic> {
     addFieldBlocs([teamsFB, leftPointsFB, rightPointsFB]);
   }
 
-  static List<Object> _validateTeam(Map<Team, List<PlayerDvo>> values) {
+  static Object? _validateTeam(Map<Team, List<PlayerDvo>> values) {
     final leftCount = values[Team.left]?.length ?? 0;
     final rightCount = values[Team.right]?.length ?? 0;
 
-    if (leftCount < 1 && rightCount < 1) return ['Missing Red and Blue'];
-    if (leftCount < 1) return ['Missing Red'];
-    if (rightCount < 1) return ['Missing Blue'];
+    if (leftCount < 1 && rightCount < 1) return 'Missing Red and Blue';
+    if (leftCount < 1) return 'Missing Red';
+    if (rightCount < 1) return 'Missing Blue';
 
-    return [];
+    return null;
   }
 }
 
@@ -236,7 +236,7 @@ class _TeamsScreen extends ConsumerStatefulWidget {
 class _TeamsScreenState extends ConsumerState<_TeamsScreen> {
   final _players = FieldBloc<Map<PlayerDvo, Team>>(
     initialValue: {},
-    validators: [_validate],
+    validator: _validate,
   );
 
   @override
@@ -256,15 +256,15 @@ class _TeamsScreenState extends ConsumerState<_TeamsScreen> {
     super.dispose();
   }
 
-  static List<Object> _validate(Map<PlayerDvo, Team> values) {
+  static Object? _validate(Map<PlayerDvo, Team> values) {
     final leftCount = values.values.fold<int>(0, (count, e) => e == Team.left ? count + 1 : count);
     final rightCount =
         values.values.fold<int>(0, (count, e) => e == Team.right ? count + 1 : count);
 
-    if (leftCount < 1) return ['Missing Red'];
-    if (rightCount < 1) return ['Missing Blue'];
+    if (leftCount < 1) return 'Missing Red';
+    if (rightCount < 1) return 'Missing Blue';
 
-    return [];
+    return null;
   }
 
   void save() {

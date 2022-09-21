@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:mek/mek.dart';
 import 'package:mek_gasol/modules/gasol/features/matches/widgets/matches.dart';
 import 'package:mek_gasol/modules/gasol/features/players/widgets/players.dart';
 import 'package:mek_gasol/shared/theme.dart';
@@ -13,7 +14,10 @@ class GasolApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       locale: const Locale.fromSubtags(languageCode: 'it'),
-      localizationsDelegates: GlobalMaterialLocalizations.delegates,
+      localizationsDelegates: const [
+        ...GlobalMaterialLocalizations.delegates,
+        ValidationLocalizations(),
+      ],
       supportedLocales: const [Locale.fromSubtags(languageCode: 'it')],
       title: 'Mek Gasol',
       theme: AppTheme.build(),

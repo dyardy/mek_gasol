@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:mek/src/form/blocs/field_bloc.dart';
+import 'package:mek/src/form/validation/validation_errors.dart';
+import 'package:mek/src/form/validation/validation_localizations.dart';
 
 extension FieldBlocStateBaseExtensions<TValue> on FieldBlocStateBase<TValue> {
   String? widgetError(BuildContext context) {
-    return isInvalid && isTouched ? '${errors.first}' : null;
+    if (!(isInvalid && isTouched)) return null;
+    final error = errors.first;
+    if (error is! ValidationError) return '$error';
+    return ValidationLocalizations.translate(context, error);
   }
 
   R? ifEnabled<R>(R result) {

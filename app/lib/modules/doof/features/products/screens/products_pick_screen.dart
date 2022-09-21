@@ -100,7 +100,10 @@ class _ProductOrderScreenState extends State<ProductOrderScreen> {
     return get<IngredientsRepository>().watch(widget.product);
   });
 
-  final _buyersFb = FieldBloc<List<PublicUserDto>>(initialValue: []);
+  final _buyersFb = FieldBloc<List<PublicUserDto>>(
+    initialValue: [],
+    validator: const OptionsValidation(minLength: 1),
+  );
   final _quantityFb = FieldBloc<int>(initialValue: 1);
   final _additionsFb = FieldBloc<List<AdditionDto>>(initialValue: []);
   final _ingredientsFb = MapFieldBloc<String, double>();

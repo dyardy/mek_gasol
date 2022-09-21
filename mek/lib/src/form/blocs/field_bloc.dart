@@ -1,5 +1,5 @@
 import 'package:bloc/bloc.dart';
-import 'package:mek/src/form/form_validators.dart';
+import 'package:mek/src/form/validation/validation.dart';
 import 'package:mek_data_class/mek_data_class.dart';
 
 part 'field_bloc.g.dart';
@@ -61,20 +61,22 @@ class FieldBlocState<TValue> extends FieldBlocStateBase<TValue> with _$FieldBloc
   bool get isInitial => initialValue == value;
 }
 
+Object? _validateNothing(dynamic _) => null;
+
 class FieldBloc<TValue> extends FieldBlocBase<FieldBlocState<TValue>, TValue> {
-  final List<Validator<TValue>> _validators;
+  Validator<TValue> _validator;
 
   FieldBloc({
     required TValue initialValue,
-    List<Validator<TValue>> validators = const [],
-  })  : _validators = validators,
+    Validator<TValue> validator = _validateNothing,
+  })  : _validator = validator,
         super(FieldBlocState(
           isEnabled: true,
           isTouched: false,
           initialValue: initialValue,
           value: initialValue,
           // isChanged: false,
-          errors: _validate(validators, initialValue),
+          errors: _validate(validator, initialValue),
         ));
 
   @override
@@ -82,7 +84,7 @@ class FieldBloc<TValue> extends FieldBlocBase<FieldBlocState<TValue>, TValue> {
     emit(state.change((c) => c
       ..value = value
       ..isTouched = true
-      ..errors = _validate(_validators, value)));
+      ..errors = _validate(_validator, value)));
   }
 
   @override
@@ -91,7 +93,7 @@ class FieldBloc<TValue> extends FieldBlocBase<FieldBlocState<TValue>, TValue> {
     emit(state.change((c) => c
       ..value = effectiveValue
       ..isTouched = false
-      ..errors = _validate(_validators, effectiveValue)));
+      ..errors = _validate(_validator, effectiveValue)));
   }
 
   @override
@@ -100,20 +102,17 @@ class FieldBloc<TValue> extends FieldBlocBase<FieldBlocState<TValue>, TValue> {
       ..initialValue = value
       ..value = value
       ..isTouched = false
-      ..errors = _validate(_validators, value)));
+      ..errors = _validate(_validator, value)));
   }
 
-  void addValidators(List<Validator<TValue>> validators) {
-    _validators.addAll(validators);
-    emit(state.change((c) => c..errors = _validate(_validators, state.value)));
+  void updateValidator(Validator<TValue> validator) {
+    _validator = validator;
+    emit(state.change((c) => c..errors = _validate(validator, state.value)));
   }
 
-  static List<Object> _validate<T>(List<Validator<T>> validators, T value) {
-    for (final validator in validators) {
-      final errors = validator(value);
-      if (errors.isNotEmpty) return errors;
-    }
-    return [];
+  static List<Object> _validate<T>(Validator<T> validator, T value) {
+    final error = validator(value);
+    return error == null ? [] : [error];
   }
 
   @override
