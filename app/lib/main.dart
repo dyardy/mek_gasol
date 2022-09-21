@@ -65,9 +65,9 @@ class Modules extends StatefulWidget {
 
 class ModulesState extends State<Modules> {
   var _status = ModulesStatus.loading;
-  late Version _currentVersion;
-  late Version _targetVersion;
   late SharedPreferences _preferences;
+  Version? _currentVersion;
+  Version? _targetVersion;
   Module? _module;
 
   @override
@@ -89,7 +89,7 @@ class ModulesState extends State<Modules> {
 
   void _onAppDoc(DocumentSnapshot<Map<String, dynamic>> snapshot) async {
     _targetVersion = Version.parse(snapshot.data()!['version']);
-    if (_targetVersion.major > _currentVersion.major) {
+    if (_targetVersion!.major > _currentVersion!.major) {
       setState(() {
         _status = ModulesStatus.blocked;
       });
@@ -139,15 +139,49 @@ class ModulesState extends State<Modules> {
       }
     }
 
-    return Directionality(
-      textDirection: TextDirection.ltr,
-      child: GestureDetector(
-        onSecondaryLongPress: () => select(null),
-        child: SizedBox.expand(
-          child: buildProject(_status),
+    return ModulesScope(
+      status: _status,
+      currentVersion: _currentVersion,
+      module: _module,
+      targetVersion: _targetVersion,
+      child: Directionality(
+        textDirection: TextDirection.ltr,
+        child: GestureDetector(
+          onSecondaryLongPress: () => select(null),
+          child: SizedBox.expand(
+            child: buildProject(_status),
+          ),
         ),
       ),
     );
+  }
+}
+
+class ModulesScope extends InheritedWidget {
+  final ModulesStatus status;
+  final Version? currentVersion;
+  final Version? targetVersion;
+  final Module? module;
+
+  const ModulesScope({
+    super.key,
+    required this.status,
+    required this.currentVersion,
+    required this.targetVersion,
+    required this.module,
+    required super.child,
+  });
+
+  static ModulesScope of(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<ModulesScope>()!;
+  }
+
+  @override
+  bool updateShouldNotify(ModulesScope oldWidget) {
+    return status != oldWidget.status ||
+        currentVersion != oldWidget.currentVersion ||
+        targetVersion != oldWidget.targetVersion ||
+        module != oldWidget.module;
   }
 }
 
@@ -157,8 +191,8 @@ class _ModulesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Widget buildBody() {
-      final state = Modules.of(context);
-      if (state._status == ModulesStatus.loading) {
+      final scope = ModulesScope.of(context);
+      if (scope.status == ModulesStatus.loading) {
         return const Center(child: CircularProgressIndicator());
       }
 
@@ -182,7 +216,7 @@ class _ModulesScreen extends StatelessWidget {
               onTap: () => DoofDatabase().migrateOrders(),
               title: const Text('Delete Doof Orders'),
             ),
-          Text('Version: ${state._currentVersion} -> ${state._targetVersion}'),
+          Text('Version: ${scope.currentVersion} -> ${scope.targetVersion}'),
         ],
       );
     }
