@@ -66,6 +66,8 @@ class _AuthenticatedArea extends ConsumerWidget {
       }
     }
 
+    return const OrdersScreen();
+
     return Scaffold(
       body: buildTab(),
       bottomNavigationBar: BottomNavigationBar(

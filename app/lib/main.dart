@@ -1,18 +1,24 @@
 import 'package:bloc/bloc.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collection/collection.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:logging/logging.dart';
 import 'package:mek_gasol/firebase_options.dart';
 import 'package:mek_gasol/modules/doof/doof_app.dart';
-import 'package:mek_gasol/modules/doof/shared/service_locator/init_doof_database.dart';
+import 'package:mek_gasol/modules/doof/shared/doof_migrations.dart';
 import 'package:mek_gasol/modules/doof/shared/service_locator/init_doof_service_locator.dart';
+import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
 import 'package:mek_gasol/modules/eti/eti_app.dart';
 import 'package:mek_gasol/modules/gasol/gasol_app.dart';
 import 'package:mek_gasol/shared/logger.dart';
+import 'package:mek_gasol/shared/theme.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:version/version.dart';
 
 void main() async {
   // ignore: avoid_print
@@ -29,7 +35,6 @@ void main() async {
   Bloc.observer = const _BlocObserver();
 
   await GetIt.instance.initDoofServiceLocator();
-  await GetIt.instance.initDoofDatabase();
 
   runApp(const ProviderScope(
     observers: [_ProviderObserver()],
@@ -37,14 +42,16 @@ void main() async {
   ));
 }
 
+enum ModulesStatus { loading, loaded, blocked }
+
 enum Module {
   gasol('Biliardino App'),
   eti('Time tracker App'),
   doof('Wok Time App');
 
-  final String description;
-
   const Module(this.description);
+
+  final String description;
 }
 
 class Modules extends StatefulWidget {
@@ -57,7 +64,10 @@ class Modules extends StatefulWidget {
 }
 
 class ModulesState extends State<Modules> {
-  var _isLoading = true;
+  var _status = ModulesStatus.loading;
+  late Version _currentVersion;
+  late Version _targetVersion;
+  late SharedPreferences _preferences;
   Module? _module;
 
   @override
@@ -67,29 +77,54 @@ class ModulesState extends State<Modules> {
   }
 
   void _init() async {
-    final preferences = await SharedPreferences.getInstance();
-    final moduleName = preferences.getString('$Module');
+    final packageInfo = await PackageInfo.fromPlatform();
+    _currentVersion = Version.parse(packageInfo.version);
+    _preferences = await SharedPreferences.getInstance();
+
+    final firestore = get<FirebaseFirestore>();
+    final appDoc = firestore.collection('apps').doc('doof');
+
+    appDoc.snapshots().listen(_onAppDoc);
+  }
+
+  void _onAppDoc(DocumentSnapshot<Map<String, dynamic>> snapshot) async {
+    _targetVersion = Version.parse(snapshot.data()!['version']);
+    if (_targetVersion.major > _currentVersion.major) {
+      setState(() {
+        _status = ModulesStatus.blocked;
+      });
+      return;
+    }
+
+    final moduleName = _preferences.getString('$Module');
     final module = Module.values.firstWhereOrNull((e) => e.name == moduleName);
     setState(() {
       _module = module;
-      _isLoading = false;
+      _status = ModulesStatus.loaded;
     });
   }
 
   void select(Module? project) async {
     if (_module == project) return;
-    final preferences = await SharedPreferences.getInstance();
     if (project == null) {
-      await preferences.remove('$Module');
+      await _preferences.remove('$Module');
     } else {
-      await preferences.setString('$Module', project.name);
+      await _preferences.setString('$Module', project.name);
     }
     setState(() => _module = project);
   }
 
   @override
   Widget build(BuildContext context) {
-    Widget buildProject() {
+    Widget? buildProject(ModulesStatus status) {
+      switch (status) {
+        case ModulesStatus.blocked:
+          return const BlockApp();
+        case ModulesStatus.loading:
+        case ModulesStatus.loaded:
+          break;
+      }
+
       switch (_module) {
         case Module.gasol:
           return const GasolApp();
@@ -109,7 +144,7 @@ class ModulesState extends State<Modules> {
       child: GestureDetector(
         onSecondaryLongPress: () => select(null),
         child: SizedBox.expand(
-          child: _isLoading ? null : buildProject(),
+          child: buildProject(_status),
         ),
       ),
     );
@@ -122,16 +157,33 @@ class _ModulesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Widget buildBody() {
-      if (Modules.of(context)._isLoading) return const Center(child: CircularProgressIndicator());
+      final state = Modules.of(context);
+      if (state._status == ModulesStatus.loading) {
+        return const Center(child: CircularProgressIndicator());
+      }
 
       return Column(
-        children: Module.values.map((e) {
-          return ListTile(
-            onTap: () => Modules.of(context).select(e),
-            title: Text(e.name),
-            subtitle: Text(e.description),
-          );
-        }).toList(),
+        children: [
+          ...Module.values.map((e) {
+            return ListTile(
+              onTap: () => Modules.of(context).select(e),
+              title: Text(e.name),
+              subtitle: Text(e.description),
+            );
+          }).toList(),
+          const Spacer(),
+          if (kDebugMode)
+            ListTile(
+              onTap: () => DoofDatabase().migrateMenu(),
+              title: const Text('Migrate Doof Menu'),
+            ),
+          if (kDebugMode)
+            ListTile(
+              onTap: () => DoofDatabase().migrateOrders(),
+              title: const Text('Delete Doof Orders'),
+            ),
+          Text('Version: ${state._currentVersion} -> ${state._targetVersion}'),
+        ],
       );
     }
 
@@ -140,6 +192,32 @@ class _ModulesScreen extends StatelessWidget {
         title: const Text('Modules'),
       ),
       body: buildBody(),
+    );
+  }
+}
+
+class BlockApp extends StatelessWidget {
+  const BlockApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Doof App',
+      theme: AppTheme.build(),
+      home: const BlockScreen(),
+    );
+  }
+}
+
+class BlockScreen extends StatelessWidget {
+  const BlockScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Material(
+      child: Center(
+        child: Text('Cretino! Aggiorna l\'app!'),
+      ),
     );
   }
 }

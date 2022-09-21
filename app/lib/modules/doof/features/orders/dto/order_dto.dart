@@ -7,6 +7,11 @@ part 'order_dto.g.dart';
 
 enum OrderStatus { draft, sent }
 
+extension OrderStatusExtensions on OrderStatus {
+  bool get isDraft => this == OrderStatus.draft;
+  bool get isSent => this == OrderStatus.sent;
+}
+
 @DataClass(changeable: true)
 @DtoSerializable()
 class OrderDto with _$OrderDto {

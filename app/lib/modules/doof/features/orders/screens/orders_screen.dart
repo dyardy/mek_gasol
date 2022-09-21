@@ -62,9 +62,16 @@ class _OrdersScreenState extends State<OrdersScreen> {
         leading: const SignOutIconButton(),
         title: const Text('Orders'),
         actions: [
-          IconButton(
-            onPressed: () => get<OrdersRepository>().create(),
-            icon: const Icon(Icons.add),
+          QueryViewBuilder(
+            bloc: _orders,
+            builder: (context, orders) {
+              if (orders.any((e) => e.status == OrderStatus.draft)) return const SizedBox.shrink();
+
+              return IconButton(
+                onPressed: () => get<OrdersRepository>().create(),
+                icon: const Icon(Icons.add),
+              );
+            },
           ),
         ],
       ),
