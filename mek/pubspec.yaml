@@ -20,6 +20,7 @@ dependencies:
   decimal: ^2.3.0
 
   chips_input: ^0.1.0
+  intl: ^0.17.0
 
 dev_dependencies:
   flutter_test:

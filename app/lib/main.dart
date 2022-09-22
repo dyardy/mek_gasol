@@ -12,7 +12,6 @@ import 'package:mek_gasol/modules/doof/doof_app.dart';
 import 'package:mek_gasol/modules/doof/shared/doof_migrations.dart';
 import 'package:mek_gasol/modules/doof/shared/service_locator/init_doof_service_locator.dart';
 import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
-import 'package:mek_gasol/modules/eti/eti_app.dart';
 import 'package:mek_gasol/modules/gasol/gasol_app.dart';
 import 'package:mek_gasol/shared/logger.dart';
 import 'package:mek_gasol/shared/theme.dart';
@@ -46,7 +45,7 @@ enum ModulesStatus { loading, loaded, blocked }
 
 enum Module {
   gasol('Biliardino App'),
-  eti('Time tracker App'),
+  // eti('Time tracker App'),
   doof('Wok Time App');
 
   const Module(this.description);
@@ -73,17 +72,26 @@ class ModulesState extends State<Modules> {
   @override
   void initState() {
     super.initState();
-    _init();
+    _loadModule();
+    _checkVersion();
   }
 
-  void _init() async {
+  void _loadModule() async {
+    _preferences = await SharedPreferences.getInstance();
+    final moduleName = _preferences.getString('$Module');
+    final module = Module.values.firstWhereOrNull((e) => e.name == moduleName);
+    setState(() {
+      _module = module;
+      _status = _status == ModulesStatus.loading ? ModulesStatus.loaded : _status;
+    });
+  }
+
+  void _checkVersion() async {
     final packageInfo = await PackageInfo.fromPlatform();
     _currentVersion = Version.parse(packageInfo.version);
-    _preferences = await SharedPreferences.getInstance();
 
     final firestore = get<FirebaseFirestore>();
     final appDoc = firestore.collection('apps').doc('doof');
-
     appDoc.snapshots().listen(_onAppDoc);
   }
 
@@ -95,13 +103,6 @@ class ModulesState extends State<Modules> {
       });
       return;
     }
-
-    final moduleName = _preferences.getString('$Module');
-    final module = Module.values.firstWhereOrNull((e) => e.name == moduleName);
-    setState(() {
-      _module = module;
-      _status = ModulesStatus.loaded;
-    });
   }
 
   void select(Module? project) async {
@@ -128,8 +129,8 @@ class ModulesState extends State<Modules> {
       switch (_module) {
         case Module.gasol:
           return const GasolApp();
-        case Module.eti:
-          return const EtiApp();
+        // case Module.eti:
+        //   return const EtiApp();
         case Module.doof:
           return const DoofApp();
         case null:

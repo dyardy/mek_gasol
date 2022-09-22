@@ -14,9 +14,9 @@ import 'package:rxdart/rxdart.dart';
 class ButtonBuilder extends StatefulWidget {
   final VoidCallback? onPressed;
 
-  final Set<StateStreamableSource<QueryState>> queryBlocs;
+  final Iterable<StateStreamableSource<QueryState>> queryBlocs;
 
-  final Set<StateStreamableSource<MutationState>> mutationBlocs;
+  final Iterable<StateStreamableSource<MutationState>> mutationBlocs;
 
   final FieldBlocRule<dynamic>? formBloc;
 
@@ -30,8 +30,8 @@ class ButtonBuilder extends StatefulWidget {
   ButtonBuilder({
     Key? key,
     required this.onPressed,
-    this.queryBlocs = const {},
-    this.mutationBlocs = const {},
+    this.queryBlocs = const [],
+    this.mutationBlocs = const [],
     this.formBloc,
     this.canSubmitInvalidForm = true,
     required this.builder,
@@ -150,4 +150,8 @@ class _ButtonBuilderState extends State<ButtonBuilder> {
 
 extension EqualsSet<T> on Set<T> {
   bool equals(Set<T> other) => const SetEquality().equals(this, other);
+}
+
+extension EqualsIterable<T> on Iterable<T> {
+  bool equals(Iterable<T> other) => const IterableEquality().equals(this, other);
 }

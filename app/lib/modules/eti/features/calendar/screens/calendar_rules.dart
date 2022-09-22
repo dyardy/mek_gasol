@@ -1,111 +1,95 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_form_bloc/flutter_form_bloc.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mek/mek.dart';
+import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
 import 'package:mek_gasol/modules/eti/features/calendar_rules/dto/calendar_rule_dto.dart';
 import 'package:mek_gasol/modules/eti/features/calendar_rules/triggers/rules_calendar_trigger.dart';
 import 'package:mek_gasol/shared/flutter_utils.dart';
 import 'package:mek_gasol/shared/hub.dart';
 import 'package:mek_gasol/shared/widgets/app_floating_action_button.dart';
 import 'package:mek_gasol/shared/widgets/sign_out_icon_button.dart';
-import 'package:riverbloc/riverbloc.dart';
-import 'package:rivertion/rivertion.dart';
 
-final _form = BlocProvider.autoDispose((ref) {
-  return _EventFormBloc(ref: ref);
-});
-
-final _save = MutationProvider.autoDispose((ref) {
-  return MutationBloc((param) async {
-    final trigger = ref.read(RulesCalendarTrigger.instance);
-    final formBloc = ref.read(_form.bloc);
-
-    await trigger.save(WorkRuleCalendarDto(
-      id: '',
-      startAt: formBloc.startAtFB.value!.toDuration(),
-      endAt: formBloc.endAtFB.value!.toDuration(),
-      weekDays: formBloc.weekDays.value,
-    ));
-  });
-});
-
-class _EventFormBloc extends GroupFieldBloc {
-  final startAtFB = InputFieldBloc<TimeOfDay?, void>(
-    initialValue: null,
-  );
-  final endAtFB = InputFieldBloc<TimeOfDay?, void>(
-    initialValue: null,
-  );
-  final weekDays = MultiSelectFieldBloc<WeekDay, void>(
-    validators: [FieldBlocValidators.required],
-    items: WeekDay.values,
-  );
-
-  _EventFormBloc({required Ref ref}) {
-    startAtFB.updateInitialValue(TimeOfDay.now());
-    endAtFB.updateInitialValue(TimeOfDay.now());
-
-    addAll({
-      'startAt': startAtFB,
-      'endAt': endAtFB,
-      'weekDays': weekDays,
-    });
-  }
-}
-
-class CalendarRuleScreen extends ConsumerWidget {
+class CalendarRuleScreen extends StatefulWidget {
   const CalendarRuleScreen({Key? key}) : super(key: key);
 
-  void save(WidgetRef ref) {
-    ref.read(_save.bloc).maybeMutate(null);
+  @override
+  State<CalendarRuleScreen> createState() => _CalendarRuleScreenState();
+}
+
+class _CalendarRuleScreenState extends State<CalendarRuleScreen> {
+  final startAtFB = FieldBloc<TimeOfDay?>(
+    initialValue: null,
+  );
+  final endAtFB = FieldBloc<TimeOfDay?>(
+    initialValue: null,
+  );
+  final weekDays = FieldBloc<List<WeekDay>>(
+    initialValue: [],
+    validator: const RequiredValidation(),
+  );
+
+  final _saveMb = MutationBloc();
+
+  void _save() {
+    _saveMb.handle(() async {
+      await get<RulesCalendarTrigger>().save(WorkRuleCalendarDto(
+        id: '',
+        startAt: startAtFB.state.value!.toDuration(),
+        endAt: endAtFB.state.value!.toDuration(),
+        weekDays: weekDays.state.value,
+      ));
+    });
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final formBloc = ref.watch(_form.bloc);
-
-    ref.listen<MutationState>(_save, (previous, next) {
-      next.whenOrNull(success: (_) {
+  Widget build(BuildContext context) {
+    return BlocListener(
+      bloc: _saveMb,
+      listener: (context, state) => state.whenOrNull(success: (_) {
         context.hub.pop();
-      });
-    });
+      }),
+      child: _build(context),
+    );
+  }
 
+  Widget _build(BuildContext context) {
     List<Widget> buildFields() {
       return [
-        TimeFieldBlocBuilder(
-          timeFieldBloc: formBloc.startAtFB,
-          format: DateFormat.Hm(),
-          initialTime: TimeOfDay.now(),
+        FieldTime(
+          fieldBloc: startAtFB,
           decoration: const InputDecoration(
             labelText: 'Start At',
           ),
         ),
-        TimeFieldBlocBuilder(
-          timeFieldBloc: formBloc.endAtFB,
-          format: DateFormat.Hm(),
-          initialTime: TimeOfDay.now(),
+        FieldTime(
+          fieldBloc: endAtFB,
           decoration: const InputDecoration(
             labelText: 'End At',
           ),
         ),
-        FilterChipFieldBlocBuilder<WeekDay>(
-          multiSelectFieldBloc: formBloc.weekDays,
+        FieldGroupBuilder<List<WeekDay>>(
+          fieldBloc: weekDays,
           decoration: const InputDecoration(
             labelText: 'Week Days',
           ),
-          itemBuilder: (context, value) => ChipFieldItem(label: Text(value.name)),
+          valuesCount: WeekDay.values.length,
+          valueBuilder: (state, index) {
+            final value = WeekDay.values[index];
+
+            return ChoiceChip(
+              selected: state.value.contains(value),
+              onSelected: state.widgetSelectHandler(weekDays, value),
+              label: Text(value.name),
+            );
+          },
         ),
       ];
     }
 
-    final buttonBar = Consumer(
-      builder: (context, ref, _) {
-        final canSave = ref.watch(_save.select((state) => !state.isMutating));
-        final canSubmit = ref.watch(_form.select((state) {
-          return state.isValid && !state.isValidating;
-        }));
-
+    final floatingButton = ButtonBuilder(
+      onPressed: _save,
+      builder: (context, onPressed) {
         return AppFloatingActionButton(
-          onPressed: canSave && canSubmit ? () => save(ref) : null,
+          onPressed: onPressed,
           icon: const Icon(Icons.check),
           label: const Text('Save'),
           // child: const Icon(Icons.check),
@@ -121,14 +105,11 @@ class CalendarRuleScreen extends ConsumerWidget {
       ),
       body: SafeArea(
         minimum: const EdgeInsets.all(16.0),
-        child: FormBlocProvider(
-          formBloc: formBloc,
-          child: Column(
-            children: buildFields(),
-          ),
+        child: Column(
+          children: buildFields(),
         ),
       ),
-      floatingActionButton: buttonBar,
+      floatingActionButton: floatingButton,
     );
   }
 }

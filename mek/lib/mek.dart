@@ -14,6 +14,7 @@ export 'src/form/fields/field_dropdown.dart';
 export 'src/form/fields/field_group_builder.dart';
 export 'src/form/fields/field_slider.dart';
 export 'src/form/fields/field_text.dart';
+export 'src/form/fields/field_time.dart';
 export 'src/form/form_utils.dart';
 export 'src/form/shared/group_style.dart';
 export 'src/form/shared/group_view.dart';
