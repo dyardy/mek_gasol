@@ -3,7 +3,7 @@ import 'package:mek_gasol/modules/doof/features/orders/dto/order_dto.dart';
 import 'package:mek_gasol/modules/doof/features/orders/dto/product_order_dto.dart';
 import 'package:mek_gasol/modules/doof/features/orders/repositories/orders_repository.dart';
 import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
-import 'package:mek_gasol/shared/providers.dart';
+import 'package:mek_gasol/packages/firestore.dart';
 import 'package:pure_extensions/pure_extensions.dart';
 
 class OrderProductsRepository {

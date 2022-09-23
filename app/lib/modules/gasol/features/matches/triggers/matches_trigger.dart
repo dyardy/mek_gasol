@@ -1,22 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
 import 'package:mek_gasol/modules/gasol/features/matches/dto/match_dto.dart';
 import 'package:mek_gasol/modules/gasol/features/matches/dvo/match_dvo.dart';
 import 'package:mek_gasol/modules/gasol/features/players/dvo/player_dvo.dart';
 import 'package:mek_gasol/modules/gasol/features/players/repositories/players_repo.dart';
-import 'package:mek_gasol/shared/providers.dart';
-import 'package:riverpod/riverpod.dart';
+import 'package:mek_gasol/packages/firestore.dart';
 import 'package:rxdart/rxdart.dart';
 
 class MatchesTrigger {
-  static final instance = Provider((ref) {
-    return MatchesTrigger(ref);
-  });
-
-  final Ref _ref;
-
-  FirebaseFirestore get _firestore => _ref.read(Providers.firestore);
-
-  MatchesTrigger(this._ref);
+  FirebaseFirestore get _firestore => get();
 
   CollectionReference<MatchDto> get _collection {
     return _firestore.collection('matches').withJsonConverter(MatchDto.fromJson);
@@ -42,7 +34,7 @@ class MatchesTrigger {
   }
 
   Stream<List<MatchDvo>> watchAll() {
-    final playersStream = _ref.watch(PlayersRepo.instance).watchAll();
+    final playersStream = get<PlayersRepo>().watchAll();
 
     final matchesQuery = _collection.orderBy(MatchDto.createdAtKey, descending: true);
     final matchesStream = matchesQuery.snapshots().map((snapshot) {

@@ -1,14 +1,11 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mek/mek.dart' hide MutationBloc, MutationState;
+import 'package:mek/mek.dart';
+import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
 import 'package:mek_gasol/modules/gasol/features/matches/dvo/match_dvo.dart';
 import 'package:mek_gasol/modules/gasol/features/matches/triggers/matches_trigger.dart';
 import 'package:mek_gasol/modules/gasol/features/players/dvo/player_dvo.dart';
-import 'package:mek_gasol/modules/gasol/features/players/widgets/players.dart';
 import 'package:mek_gasol/shared/hub.dart';
-import 'package:riverbloc/riverbloc.dart';
-import 'package:rivertion/rivertion.dart';
 
 class MatchFormBloc extends ListFieldBloc<dynamic> {
   final MatchDvo? match;
@@ -50,29 +47,7 @@ class MatchFormBloc extends ListFieldBloc<dynamic> {
   }
 }
 
-class MatchBloc {
-  static final form = BlocProvider.family
-      .autoDispose<MatchFormBloc, ListFieldBlocState<dynamic>, MatchDvo?>((ref, match) {
-    return MatchFormBloc(match: match);
-  });
-
-  static final save = MutationProvider.autoDispose<MatchDvo?, void>((ref) {
-    return MutationBloc((match) {
-      final formBloc = ref.read(form(match).bloc);
-      final teams = formBloc.teamsFB.state.value;
-
-      ref.read(MatchesTrigger.instance).save(
-            matchId: formBloc.match?.id,
-            leftPlayers: teams[Team.left]!.toList(),
-            rightPlayers: teams[Team.right]!.toList(),
-            leftPoints: formBloc.leftPointsFB.state.value,
-            rightPoint: formBloc.rightPointsFB.state.value,
-          );
-    });
-  });
-}
-
-class MatchScreen extends ConsumerWidget {
+class MatchScreen extends StatefulWidget {
   final MatchDvo? match;
 
   const MatchScreen({
@@ -80,22 +55,41 @@ class MatchScreen extends ConsumerWidget {
     required this.match,
   }) : super(key: key);
 
-  void save(WidgetRef ref) {
-    ref.read(MatchBloc.save.bloc).maybeMutate(match);
+  @override
+  State<MatchScreen> createState() => _MatchScreenState();
+}
+
+class _MatchScreenState extends State<MatchScreen> {
+  final _saveMb = MutationBloc();
+
+  late final _form = MatchFormBloc(match: widget.match);
+
+  void save() {
+    _saveMb.handle(() async {
+      final teams = _form.teamsFB.state.value;
+
+      await get<MatchesTrigger>().save(
+        matchId: _form.match?.id,
+        leftPlayers: teams[Team.left]!.toList(),
+        rightPlayers: teams[Team.right]!.toList(),
+        leftPoints: _form.leftPointsFB.state.value,
+        rightPoint: _form.rightPointsFB.state.value,
+      );
+    });
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final formBloc = ref.watch(MatchBloc.form(match).bloc);
-
-    ref.listen<MutationState<void>>(MatchBloc.save, (previous, next) {
-      next.maybeMap(success: (_) {
+  Widget build(BuildContext context) {
+    return BlocListener(
+      bloc: _saveMb,
+      listener: (context, state) => state.whenOrNull(success: (_) {
         context.hub.pop();
-      }, orElse: (_) {
-        //
-      });
-    });
+      }),
+      child: _build(context),
+    );
+  }
 
+  Widget _build(BuildContext context) {
     final form = Column(
       children: [
         Row(
@@ -120,14 +114,14 @@ class MatchScreen extends ConsumerWidget {
           children: [
             Expanded(
               child: FieldText(
-                fieldBloc: formBloc.leftPointsFB,
+                fieldBloc: _form.leftPointsFB,
                 converter: FieldConvert.integer,
                 type: const TextFieldType.numeric(),
               ),
             ),
             Expanded(
               child: FieldText(
-                fieldBloc: formBloc.rightPointsFB,
+                fieldBloc: _form.rightPointsFB,
                 converter: FieldConvert.integer,
                 type: const TextFieldType.numeric(),
               ),
@@ -135,7 +129,7 @@ class MatchScreen extends ConsumerWidget {
           ],
         ),
         BlocBuilder<FieldBlocState<Map<Team, List<PlayerDvo>>>>(
-          bloc: formBloc.teamsFB,
+          bloc: _form.teamsFB,
           builder: (context, state) {
             final leftTeam = state.value[Team.left] ?? [];
             final rightTeam = state.value[Team.right] ?? [];
@@ -176,7 +170,7 @@ class MatchScreen extends ConsumerWidget {
                 final teams =
                     await context.hub.push<Map<Team, List<PlayerDvo>>>(const _TeamsScreen());
                 if (teams == null) return;
-                formBloc.teamsFB.updateValue(teams);
+                _form.teamsFB.updateValue(teams);
               },
               child: teamsWithError,
             );
@@ -185,25 +179,19 @@ class MatchScreen extends ConsumerWidget {
       ],
     );
 
-    final buttonBar = Consumer(
-      builder: (context, ref, _) {
-        final canSave = ref.watch(MatchBloc.save.select((state) => !state.isMutating));
-
-        final saveButton = BlocBuilder<ListFieldBlocState<dynamic>>(
-          bloc: formBloc,
-          builder: (context, state) {
-            return ElevatedButton(
-              onPressed: canSave && state.isValid ? () => save(ref) : null,
-              child: const Text('Save'),
-            );
-          },
-        );
-
-        return SizedBox(
-          width: double.infinity,
-          child: saveButton,
-        );
-      },
+    final buttonBar = SizedBox(
+      width: double.infinity,
+      child: ButtonBuilder(
+        onPressed: save,
+        formBloc: _form,
+        mutationBlocs: [_saveMb],
+        builder: (context, onPressed) {
+          return ElevatedButton(
+            onPressed: onPressed,
+            child: const Text('Save'),
+          );
+        },
+      ),
     );
 
     return Scaffold(
@@ -226,29 +214,29 @@ class MatchScreen extends ConsumerWidget {
 
 enum Team { left, none, right }
 
-class _TeamsScreen extends ConsumerStatefulWidget {
+class _TeamsScreen extends StatefulWidget {
   const _TeamsScreen({Key? key}) : super(key: key);
 
   @override
   _TeamsScreenState createState() => _TeamsScreenState();
 }
 
-class _TeamsScreenState extends ConsumerState<_TeamsScreen> {
+class _TeamsScreenState extends State<_TeamsScreen> {
   final _players = FieldBloc<Map<PlayerDvo, Team>>(
     initialValue: {},
     validator: _validate,
   );
 
-  @override
-  void didChangeDependencies() async {
-    super.didChangeDependencies();
-
-    // TODO: Improve it with update by id
-    final players = await ref.watch(PlayersBloc.all.future);
-    _players.updateValue({
-      for (final player in players) player: Team.none,
-    });
-  }
+  // @override
+  // void didChangeDependencies() async {
+  //   super.didChangeDependencies();
+  //
+  //   // TODO: Improve it with update by id
+  //   final players = await ref.watch(PlayersBloc.all.future);
+  //   _players.updateValue({
+  //     for (final player in players) player: Team.none,
+  //   });
+  // }
 
   @override
   void dispose() {

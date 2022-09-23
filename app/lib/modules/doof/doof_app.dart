@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mek/mek.dart';
 import 'package:mek_gasol/modules/auth/auth_guard.dart';
 import 'package:mek_gasol/modules/doof/features/orders/screens/orders_screen.dart';
-import 'package:mek_gasol/modules/doof/features/products/screens/products_screen.dart';
 import 'package:mek_gasol/modules/doof/shared/doof_transaltions.dart';
 import 'package:mek_gasol/shared/theme.dart';
 
@@ -33,50 +31,46 @@ class DoofApp extends StatelessWidget {
   }
 }
 
-enum _Tab { orders, products }
+// enum _Tab { orders, products }
 
-final _tab = StateProvider((ref) => _Tab.orders);
-
-class _AuthenticatedArea extends ConsumerWidget {
+class _AuthenticatedArea extends StatelessWidget {
   const _AuthenticatedArea({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final tab = ref.watch(_tab);
-
-    Widget buildTab() {
-      switch (tab) {
-        case _Tab.orders:
-          return const OrdersScreen();
-        case _Tab.products:
-          return const ProductsScreen();
-      }
-    }
-
-    BottomNavigationBarItem buildBottomBarItem(_Tab tab) {
-      switch (tab) {
-        case _Tab.orders:
-          return const BottomNavigationBarItem(
-            icon: Icon(Icons.library_books_outlined),
-            label: 'Orders',
-          );
-        case _Tab.products:
-          return const BottomNavigationBarItem(
-            icon: Icon(Icons.bug_report_outlined),
-            label: 'Products',
-          );
-      }
-    }
+  Widget build(BuildContext context) {
+    // Widget buildTab() {
+    //   switch (_tab) {
+    //     case _Tab.orders:
+    //       return const OrdersScreen();
+    //     case _Tab.products:
+    //       return const ProductsScreen();
+    //   }
+    // }
+    //
+    // BottomNavigationBarItem buildBottomBarItem(_Tab tab) {
+    //   switch (_tab) {
+    //     case _Tab.orders:
+    //       return const BottomNavigationBarItem(
+    //         icon: Icon(Icons.library_books_outlined),
+    //         label: 'Orders',
+    //       );
+    //     case _Tab.products:
+    //       return const BottomNavigationBarItem(
+    //         icon: Icon(Icons.bug_report_outlined),
+    //         label: 'Products',
+    //       );
+    //   }
+    // }
 
     return const OrdersScreen();
 
-    return Scaffold(
-      body: buildTab(),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: tab.index,
-        onTap: (index) => ref.read(_tab.notifier).state = _Tab.values[index],
-        items: _Tab.values.map(buildBottomBarItem).toList(),
-      ),
-    );
+    // return Scaffold(
+    //   body: buildTab(),
+    //   bottomNavigationBar: BottomNavigationBar(
+    //     currentIndex: tab.index,
+    //     onTap: (index) => ref.read(_tab.notifier).state = _Tab.values[index],
+    //     items: _Tab.values.map(buildBottomBarItem).toList(),
+    //   ),
+    // );
   }
 }

@@ -4,7 +4,6 @@ import 'package:collection/collection.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:logging/logging.dart';
 import 'package:mek_gasol/firebase_options.dart';
@@ -35,10 +34,7 @@ void main() async {
 
   await GetIt.instance.initDoofServiceLocator();
 
-  runApp(const ProviderScope(
-    observers: [_ProviderObserver()],
-    child: Modules(),
-  ));
+  runApp(const Modules());
 }
 
 enum ModulesStatus { loading, loaded, blocked }
@@ -264,25 +260,5 @@ class _BlocObserver with BlocObserver {
   void onError(BlocBase bloc, Object error, StackTrace stackTrace) {
     super.onError(bloc, error, stackTrace);
     debugPrint('bloc:${bloc.runtimeType}:$bloc\n$error\n$stackTrace');
-  }
-}
-
-class _ProviderObserver extends ProviderObserver {
-  const _ProviderObserver();
-
-  @override
-  void didUpdateProvider(
-      ProviderBase provider, Object? previousValue, Object? newValue, ProviderContainer container) {
-    super.didUpdateProvider(provider, previousValue, newValue, container);
-    if (newValue is AsyncError) {
-      debugPrint('riverpod:$provider\n${newValue.error}\n${newValue.stackTrace}');
-    }
-  }
-
-  @override
-  void providerDidFail(
-      ProviderBase provider, Object error, StackTrace stackTrace, ProviderContainer container) {
-    super.providerDidFail(provider, error, stackTrace, container);
-    debugPrint('riverpod:$provider\n$error\n$stackTrace');
   }
 }

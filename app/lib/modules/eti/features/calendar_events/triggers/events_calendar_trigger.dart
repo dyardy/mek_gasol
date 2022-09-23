@@ -3,7 +3,7 @@ import 'package:mek_gasol/modules/eti/features/calendar_events/dvo/calendar_even
 import 'package:mek_gasol/modules/eti/features/calendar_events/repositories/events_calendar_repo.dart';
 import 'package:mek_gasol/modules/eti/features/clients/triggers/clients_trigger.dart';
 import 'package:mek_gasol/modules/eti/features/projects/triggers/projects_trigger.dart';
-import 'package:mek_gasol/shared/providers.dart';
+import 'package:mek_gasol/shared/firestore.dart';
 import 'package:pure_extensions/pure_extensions.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:tuple/tuple.dart';

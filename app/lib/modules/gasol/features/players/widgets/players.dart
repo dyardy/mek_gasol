@@ -1,41 +1,42 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mek/mek.dart';
+import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
 import 'package:mek_gasol/modules/gasol/features/players/triggers/players_trigger.dart';
 import 'package:mek_gasol/modules/gasol/features/players/widgets/player.dart';
-import 'package:mek_gasol/shared/data/mek_widgets.dart';
+import 'package:mek_gasol/shared/data/query_view_builder.dart';
 import 'package:mek_gasol/shared/hub.dart';
 import 'package:mek_gasol/shared/widgets/sign_out_icon_button.dart';
 
-class PlayersBloc {
-  static final all = StreamProvider((ref) {
-    return ref.watch(PlayersTrigger.instance).watchAll();
-  });
-}
-
-class PlayersScreen extends ConsumerWidget {
+class PlayersScreen extends StatefulWidget {
   const PlayersScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final playersState = ref.watch(PlayersBloc.all);
+  State<PlayersScreen> createState() => _PlayersScreenState();
+}
 
-    final playersView = playersState.when(loading: () {
-      return const LoadingView();
-    }, error: (error, _) {
-      return ErrorView(error: error);
-    }, data: (players) {
-      return ListView.builder(
-        itemCount: players.length,
-        itemBuilder: (context, index) {
-          final player = players[index];
+class _PlayersScreenState extends State<PlayersScreen> {
+  final _playersQb = QueryBloc(() {
+    return get<PlayersTrigger>().watchAll();
+  });
 
-          return ListTile(
-            onTap: () => context.hub.push(PlayerScreen(player: player)),
-            title: Text(player.username),
-          );
-        },
-      );
-    });
+  @override
+  Widget build(BuildContext context) {
+    final playersView = QueryViewBuilder(
+      bloc: _playersQb,
+      builder: (context, players) {
+        return ListView.builder(
+          itemCount: players.length,
+          itemBuilder: (context, index) {
+            final player = players[index];
+
+            return ListTile(
+              onTap: () => context.hub.push(PlayerScreen(player: player)),
+              title: Text(player.username),
+            );
+          },
+        );
+      },
+    );
 
     return Scaffold(
       appBar: AppBar(

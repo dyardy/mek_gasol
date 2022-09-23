@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mek_gasol/features/firestore/repositories/firestore_repository.dart';
 import 'package:mek_gasol/modules/eti/features/calendar_events/dto/calendar_event_dto.dart';
 import 'package:mek_gasol/shared/dart_utils.dart';
-import 'package:mek_gasol/shared/providers.dart';
+import 'package:mek_gasol/shared/firestore.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:tuple/tuple.dart';
 

@@ -1,43 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mek/mek.dart' hide MutationBloc, MutationState;
+import 'package:mek/mek.dart';
+import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
 import 'package:mek_gasol/modules/gasol/features/players/dvo/player_dvo.dart';
 import 'package:mek_gasol/modules/gasol/features/players/triggers/players_trigger.dart';
 import 'package:mek_gasol/shared/hub.dart';
-import 'package:rivertion/rivertion.dart';
 
-class _SavePlayerParams {
-  final String? playerId;
-  final String username;
-
-  const _SavePlayerParams({
-    this.playerId,
-    required this.username,
-  });
-}
-
-abstract class PlayerBloc {
-  static final save = MutationProvider.autoDispose<_SavePlayerParams, PlayerDvo>((ref) {
-    return MutationBloc((params) async {
-      return await ref.read(PlayersTrigger.instance).save(
-            playerId: params.playerId,
-            username: params.username,
-          );
-    }, onSuccess: (_, __) async {
-      // await ref.maybeRefresh(PlayersBloc.all.future);
-    });
-  });
-
-  static final delete = MutationProvider.autoDispose<PlayerDvo, void>((ref) {
-    return MutationBloc((player) async {
-      await ref.read(PlayersTrigger.instance).delete(player);
-    }, onSuccess: (_, __) async {
-      // await ref.maybeRefresh(PlayersBloc.all.future);
-    });
-  });
-}
-
-class PlayerScreen extends ConsumerStatefulWidget {
+class PlayerScreen extends StatefulWidget {
   final PlayerDvo? player;
 
   const PlayerScreen({
@@ -46,11 +14,14 @@ class PlayerScreen extends ConsumerStatefulWidget {
   }) : super(key: key);
 
   @override
-  ConsumerState<PlayerScreen> createState() => _PlayerScreenState();
+  State<PlayerScreen> createState() => _PlayerScreenState();
 }
 
-class _PlayerScreenState extends ConsumerState<PlayerScreen> {
+class _PlayerScreenState extends State<PlayerScreen> {
   late final FieldBloc<String> _usernameController;
+
+  final _saveMb = MutationBloc();
+  final _deleteMb = MutationBloc();
 
   @override
   void initState() {
@@ -65,54 +36,64 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen> {
   }
 
   void save() {
-    final args = _SavePlayerParams(
-      playerId: widget.player?.id,
-      username: _usernameController.state.value,
-    );
-    ref.read(PlayerBloc.save.bloc).maybeMutate(args);
+    _saveMb.handle(() async {
+      return await get<PlayersTrigger>().save(
+        playerId: widget.player?.id,
+        username: _usernameController.state.value,
+      );
+    });
+  }
+
+  void _delete(PlayerDvo player) {
+    _deleteMb.handle(() async {
+      await get<PlayersTrigger>().delete(player);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    Widget current = _build(context);
+    current = BlocListener(
+      bloc: _saveMb,
+      listener: (context, state) => state.whenOrNull(success: (_) {
+        context.hub.pop();
+      }),
+      child: current,
+    );
+    current = BlocListener(
+      bloc: _deleteMb,
+      listener: (context, state) => state.whenOrNull(success: (_) {
+        context.hub.pop();
+      }),
+      child: current,
+    );
+    return current;
+  }
+
+  Widget _build(BuildContext context) {
     final player = widget.player;
 
-    ref.listen<MutationState>(PlayerBloc.save, (previous, next) {
-      next.maybeMap(success: (state) {
-        context.hub.pop(state.data);
-      }, orElse: (_) {
-        // nothing
-      });
-    });
-
-    ref.listen<MutationState>(PlayerBloc.delete, (previous, next) {
-      next.maybeMap(success: (state) {
-        context.hub.pop(null);
-      }, orElse: (_) {
-        // nothing
-      });
-    });
-
     Widget buildDeleteButton(PlayerDvo player) {
-      return Consumer(
-        builder: (context, ref, _) {
-          final canDelete = ref.watch(PlayerBloc.delete.select((state) => !state.isMutating));
-
+      return ButtonBuilder(
+        onPressed: () => _delete(player),
+        mutationBlocs: [_saveMb, _deleteMb],
+        builder: (context, onPressed) {
           return IconButton(
-            onPressed:
-                canDelete ? () => ref.read(PlayerBloc.delete.bloc).maybeMutate(player) : null,
+            onPressed: onPressed,
             icon: const Icon(Icons.delete),
           );
         },
       );
     }
 
-    final buttonBar = Consumer(
-      builder: (context, ref, _) {
-        final canSave = ref.watch(PlayerBloc.save.select((state) => !state.isMutating));
+    final buttonBar = ButtonBuilder(
+      onPressed: save,
+      mutationBlocs: [_saveMb, _deleteMb],
+      builder: (context, onPressed) {
         return SizedBox(
           width: double.infinity,
           child: ElevatedButton(
-            onPressed: canSave ? save : null,
+            onPressed: onPressed,
             child: const Text('Save'),
           ),
         );

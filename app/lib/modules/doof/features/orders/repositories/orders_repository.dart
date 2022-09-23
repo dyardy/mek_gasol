@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mek_gasol/modules/doof/features/orders/dto/order_dto.dart';
 import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
-import 'package:mek_gasol/shared/providers.dart';
+import 'package:mek_gasol/packages/firestore.dart';
 
 class OrdersRepository {
   FirebaseFirestore get _firestore => get<FirebaseFirestore>();

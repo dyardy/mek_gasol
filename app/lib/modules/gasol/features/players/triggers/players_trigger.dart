@@ -1,17 +1,9 @@
+import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
 import 'package:mek_gasol/modules/gasol/features/players/dvo/player_dvo.dart';
 import 'package:mek_gasol/modules/gasol/features/players/repositories/players_repo.dart';
-import 'package:riverpod/riverpod.dart';
 
 class PlayersTrigger {
-  static final instance = Provider((ref) {
-    return PlayersTrigger(ref);
-  });
-
-  final Ref _ref;
-
-  PlayersRepo get _playersRepo => _ref.read(PlayersRepo.instance);
-
-  PlayersTrigger(this._ref);
+  PlayersRepo get _playersRepo => get();
 
   Future<List<PlayerDvo>> readAll() async => await _playersRepo.readAll();
 

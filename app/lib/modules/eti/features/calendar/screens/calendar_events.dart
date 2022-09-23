@@ -6,8 +6,8 @@ import 'package:mek_gasol/modules/eti/features/calendar_events/triggers/events_c
 import 'package:mek_gasol/modules/eti/features/clients/screens/clients_screen.dart';
 import 'package:mek_gasol/shared/dart_utils.dart';
 import 'package:mek_gasol/shared/data/mek_widgets.dart';
+import 'package:mek_gasol/shared/firestore.dart';
 import 'package:mek_gasol/shared/hub.dart';
-import 'package:mek_gasol/shared/providers.dart';
 import 'package:mek_gasol/shared/widgets/sign_out_icon_button.dart';
 import 'package:pure_extensions/pure_extensions.dart';
 import 'package:table_calendar/table_calendar.dart';

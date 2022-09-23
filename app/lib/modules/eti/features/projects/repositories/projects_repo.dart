@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mek_gasol/modules/eti/features/projects/dvo/project_dvo.dart';
-import 'package:mek_gasol/shared/providers.dart';
+import 'package:mek_gasol/shared/firestore.dart';
 import 'package:riverpod/riverpod.dart';
 
 class ProjectsRepo {

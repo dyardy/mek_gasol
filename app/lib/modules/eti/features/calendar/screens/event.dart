@@ -12,7 +12,7 @@ import 'package:mek_gasol/modules/eti/features/projects/triggers/projects_trigge
 import 'package:mek_gasol/shared/dart_utils.dart';
 import 'package:mek_gasol/shared/flutter_utils.dart';
 import 'package:mek_gasol/shared/hub.dart';
-import 'package:mek_gasol/shared/providers.dart';
+import 'package:mek_gasol/shared/firestore.dart';
 import 'package:mek_gasol/shared/riverpod_extensions.dart';
 import 'package:mek_gasol/shared/widgets/app_floating_action_button.dart';
 import 'package:pure_extensions/pure_extensions.dart';

@@ -35,15 +35,9 @@ dependencies:
   decimal: ^2.3.0
   version: ^3.0.2
 
-  riverpod: ^2.0.0-dev.9
-  rivertion: ^0.1.0-dev.3
-  riverbloc: ^2.0.0-dev.2
-
   # PRESENTATION
   url_launcher: ^6.1.5
   package_info_plus: ^1.4.3+1
-
-  flutter_riverpod: ^2.0.0-dev.9
 
   table_calendar: ^3.0.7
   date_picker_timeline: ^1.2.3
