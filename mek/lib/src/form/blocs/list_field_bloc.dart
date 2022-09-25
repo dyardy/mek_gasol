@@ -1,7 +1,7 @@
 import 'dart:async';
 
+import 'package:mek/src/bloc/bloc_extensions.dart';
 import 'package:mek/src/form/blocs/field_bloc.dart';
-import 'package:mek/src/shared/bloc_extensions.dart';
 import 'package:mek_data_class/mek_data_class.dart';
 import 'package:rxdart/rxdart.dart';
 

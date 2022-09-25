@@ -22,6 +22,9 @@ abstract class AppTheme {
           minimumSize: buttonSize,
         ),
       ),
+      appBarTheme: const AppBarTheme(
+        centerTitle: true,
+      ),
     );
   }
 }

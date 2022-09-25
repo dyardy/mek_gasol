@@ -7,19 +7,19 @@ import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.da
 import 'package:mek_gasol/modules/doof/shared/widgets/bottom_button_bar.dart';
 import 'package:mek_gasol/shared/hub.dart';
 
-class ProductScreen extends StatefulWidget {
+class AdminProductScreen extends StatefulWidget {
   final ProductDto? product;
 
-  const ProductScreen({
+  const AdminProductScreen({
     super.key,
     this.product,
   });
 
   @override
-  State<ProductScreen> createState() => _ProductScreenState();
+  State<AdminProductScreen> createState() => _AdminProductScreenState();
 }
 
-class _ProductScreenState extends State<ProductScreen> {
+class _AdminProductScreenState extends State<AdminProductScreen> {
   final _titleControl = FieldBloc<String>(
     initialValue: '',
     validator: const TextValidation(minLength: 3),

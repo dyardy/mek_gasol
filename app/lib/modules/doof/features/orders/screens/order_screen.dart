@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mek/mek.dart';
 import 'package:mek_gasol/modules/doof/features/orders/dto/order_dto.dart';
+import 'package:mek_gasol/modules/doof/features/orders/dto/product_order_dto.dart';
 import 'package:mek_gasol/modules/doof/features/orders/repositories/order_products_repository.dart';
 import 'package:mek_gasol/modules/doof/features/orders/screens/order_stat_screen.dart';
 import 'package:mek_gasol/modules/doof/features/orders/widgets/send_order_dialog.dart';
@@ -11,27 +12,70 @@ import 'package:mek_gasol/shared/data/query_view_builder.dart';
 import 'package:mek_gasol/shared/hub.dart';
 import 'package:mek_gasol/shared/widgets/text_icon.dart';
 
-class OrderScreen extends StatefulWidget {
-  final OrderDto order;
+class CartScreen extends StatelessWidget {
+  const CartScreen({super.key});
 
+  @override
+  Widget build(BuildContext context) {
+    return QueryViewBuilder(
+      bloc: get<QueryBloc<OrderDto>>(),
+      builder: (context, cart) => _OrderScaffold(
+        title: const Text('Cart'),
+        order: cart,
+      ),
+    );
+  }
+}
+
+class OrderScreen extends _OrderScaffold {
   const OrderScreen({
     super.key,
+    required super.order,
+  });
+}
+
+class _OrderScaffold extends StatefulWidget {
+  final Widget? title;
+  final OrderDto order;
+
+  const _OrderScaffold({
+    super.key,
+    this.title,
     required this.order,
   });
 
   @override
-  State<OrderScreen> createState() => _OrderScreenState();
+  State<_OrderScaffold> createState() => _OrderScaffoldState();
 }
 
-class _OrderScreenState extends State<OrderScreen> {
-  late final _productsQb = QueryBloc(() {
-    return get<OrderProductsRepository>().watch(widget.order);
-  });
+class _OrderScaffoldState extends State<_OrderScaffold> {
+  late QueryBloc<List<ProductOrderDto>> _productsQb;
+
+  @override
+  void initState() {
+    super.initState();
+    _initProducts();
+  }
+
+  @override
+  void didUpdateWidget(covariant _OrderScaffold oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.order.id != oldWidget.order.id) {
+      _productsQb.close();
+      _initProducts();
+    }
+  }
 
   @override
   void dispose() {
     _productsQb.close();
     super.dispose();
+  }
+
+  void _initProducts() {
+    _productsQb = QueryBloc(() {
+      return get<OrderProductsRepository>().watch(widget.order);
+    });
   }
 
   @override
@@ -94,7 +138,7 @@ class _OrderScreenState extends State<OrderScreen> {
       builder: (context, products) {
         return Scaffold(
           appBar: AppBar(
-            title: Text(t.formatDate(widget.order.createdAt)),
+            title: widget.title ?? Text(t.formatDate(widget.order.createdAt)),
             actions: [
               if (products.isNotEmpty)
                 IconButton(
@@ -111,10 +155,10 @@ class _OrderScreenState extends State<OrderScreen> {
                 onPressed: () => context.hub.push(OrderStatScreen(productsQb: _productsQb)),
                 icon: const Icon(Icons.attach_money),
               ),
-              IconButton(
-                onPressed: () => context.hub.push(ProductsPickScreen(order: widget.order)),
-                icon: const Icon(Icons.add),
-              ),
+              // IconButton(
+              //   onPressed: () => context.hub.push(ProductsPickScreen(order: widget.order)),
+              //   icon: const Icon(Icons.add),
+              // ),
             ],
           ),
           body: body,

@@ -1,39 +1,88 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:mek/mek.dart';
 import 'package:mek_data_class/mek_data_class.dart';
+import 'package:tuple/tuple.dart';
 
 part 'query_bloc.g.dart';
 
-@DataClass(changeable: true)
-class QueryState<T> with _$QueryState<T> {
-  final bool isLoading;
-  final T? dataOrNull;
-
+abstract class QueryState<T> {
+  T? get dataOrNull => null;
   T get data => dataOrNull as T;
 
-  QueryState({
-    required this.isLoading,
-    required this.dataOrNull,
+  bool get hasData => dataOrNull != null;
+  bool get isLoading => this is LoadingQuery<T>;
+
+  R map<R>({
+    required R Function(LoadingQuery<T> state) loading,
+    required R Function(SuccessQuery<T> data) success,
   });
+
+  QueryState<R> mapStateData<R>(QueryState<R> Function(T data) mapper) {
+    return map(loading: (state) {
+      return LoadingQuery();
+    }, success: (state) {
+      return mapper(state.data);
+    });
+  }
+}
+
+@DataClass()
+class LoadingQuery<T> extends QueryState<T> with _$LoadingQuery<T> {
+  @override
+  R map<R>({
+    required R Function(LoadingQuery<T> state) loading,
+    required R Function(SuccessQuery<T> data) success,
+  }) {
+    return loading(this);
+  }
+}
+
+@DataClass()
+class SuccessQuery<T> extends QueryState<T> with _$SuccessQuery<T> {
+  @override
+  final T data;
+
+  SuccessQuery({
+    required this.data,
+  });
+
+  @override
+  T? get dataOrNull => data;
+
+  @override
+  R map<R>({
+    required R Function(LoadingQuery<T> state) loading,
+    required R Function(SuccessQuery<T> data) success,
+  }) {
+    return success(this);
+  }
 }
 
 class QueryBloc<T> extends Cubit<QueryState<T>> {
   late final StreamSubscription _sub;
 
-  QueryBloc(Stream<T> Function() fetcher)
-      : super(QueryState<T>(
-          isLoading: true,
-          dataOrNull: null,
-        )) {
+  QueryBloc(Stream<T> Function() fetcher) : super(LoadingQuery()) {
     _init(fetcher);
+  }
+
+  static StateStreamable<QueryState<Tuple2<Data1, Data2>>> combine2<Data1, Data2, R>(
+    StateStreamable<QueryState<Data1>> bloc1,
+    StateStreamable<QueryState<Data2>> bloc2,
+  ) {
+    return BlocUtils.combine2(bloc1, bloc2, (state1, state2) {
+      return state1.mapStateData((data1) {
+        return state2.mapStateData((data2) {
+          return SuccessQuery(data: Tuple2(data1, data2));
+        });
+      });
+    });
   }
 
   void _init(Stream<T> Function() fetcher) async {
     _sub = fetcher().listen((data) {
-      emit(state.change((c) => c
-        ..isLoading = false
-        ..dataOrNull = data));
+      emit(SuccessQuery(data: data));
     });
   }
 

@@ -209,13 +209,18 @@ class MutationBloc<T> extends Cubit<MutationState<T>> {
 
     try {
       final result = await mutator();
+
       success?.call(result);
       completed?.call(null, result);
+
+      if (isClosed) return;
       emit(state.toSuccess(data: result));
     } catch (error, stackTrace) {
       onError(error, stackTrace);
       failed?.call(error);
       completed?.call(error, null);
+
+      if (isClosed) return;
       emit(state.toFailed(error: error));
     }
   }

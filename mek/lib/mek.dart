@@ -3,6 +3,7 @@
 library mek;
 
 export 'src/bloc/bloc_consumers.dart';
+export 'src/bloc/bloc_extensions.dart';
 export 'src/data/mutation_bloc.dart';
 export 'src/data/query_bloc.dart';
 export 'src/form/blocs/field_bloc.dart';
@@ -26,7 +27,6 @@ export 'src/form/validation/validation_errors.dart';
 export 'src/form/validation/validation_localizations.dart';
 export 'src/form/validation/validation_translations.dart';
 export 'src/form/validation/validation_translator.dart';
-export 'src/shared/bloc_extensions.dart';
 export 'src/shared/button_builder.dart';
 export 'src/shared/core_extensions.dart';
 export 'src/stream/stream_consumer_base.dart';

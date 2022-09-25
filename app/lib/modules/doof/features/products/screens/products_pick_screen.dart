@@ -21,12 +21,7 @@ import 'package:mek_gasol/shared/hub.dart';
 import 'package:pure_extensions/pure_extensions.dart';
 
 class ProductsPickScreen extends StatefulWidget {
-  final OrderDto order;
-
-  const ProductsPickScreen({
-    super.key,
-    required this.order,
-  });
+  const ProductsPickScreen({super.key});
 
   @override
   State<ProductsPickScreen> createState() => _ProductsPickScreenState();
@@ -45,7 +40,7 @@ class _ProductsPickScreenState extends State<ProductsPickScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Widget buildBody(BuildContext context, List<ProductDto> products) {
+    Widget buildBody(BuildContext context, OrderDto order, List<ProductDto> products) {
       return ListView.builder(
         itemCount: products.length,
         itemBuilder: (context, index) {
@@ -53,7 +48,7 @@ class _ProductsPickScreenState extends State<ProductsPickScreen> {
 
           return ListTile(
             onTap: () => context.hub.push(ProductOrderScreen(
-              order: widget.order,
+              order: order,
               product: product,
             )),
             title: Text(
@@ -68,7 +63,10 @@ class _ProductsPickScreenState extends State<ProductsPickScreen> {
       appBar: AppBar(
         title: const Text('Products'),
       ),
-      body: QueryViewBuilder(bloc: _products, builder: buildBody),
+      body: QueryViewBuilder(
+        bloc: QueryBloc.combine2(get<QueryBloc<OrderDto>>(), _products),
+        builder: (context, vls) => buildBody(context, vls.item1, vls.item2),
+      ),
     );
   }
 }

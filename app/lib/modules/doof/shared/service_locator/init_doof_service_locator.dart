@@ -10,6 +10,7 @@ import 'package:mek_gasol/modules/doof/features/ingredients/repositories/ingredi
 import 'package:mek_gasol/modules/doof/features/orders/repositories/order_products_repository.dart';
 import 'package:mek_gasol/modules/doof/features/orders/repositories/orders_repository.dart';
 import 'package:mek_gasol/modules/doof/features/products/repositories/products_repository.dart';
+import 'package:mek_gasol/shared/logger.dart';
 import 'package:rxdart/rxdart.dart';
 
 extension DoofServiceLocator on GetIt {
@@ -28,19 +29,27 @@ extension DoofServiceLocator on GetIt {
     registerFactory(OrdersRepository.new);
     registerFactory(OrderProductsRepository.new);
 
-    registerLazySingleton<QueryBloc<UserDto?>>(() {
+    registerBloc<QueryBloc<UserDto?>, QueryState<UserDto?>>(() {
       return QueryBloc(() {
         return FirebaseAuth.instance.userChanges().switchMap((user) async* {
+          lg.info('AuthUser: ${user?.uid}');
           if (user == null) {
             yield null;
             return;
           }
-          yield* get<UsersRepository>().watch(user.uid);
+          yield* get<UsersRepository>()
+              .watch(user.uid)
+              .doOnData((user) => lg.info('DbUser: ${user?.id}'));
         });
       });
     });
-    registerFactory<StateStreamable<QueryState<UserDto?>>>(() => get<QueryBloc<UserDto?>>());
     registerFactory<UserDto>(() => get<QueryBloc<UserDto?>>().state.data!);
     registerFactory<PublicUserDto>(() => get<QueryBloc<UserDto?>>().state.data!);
+    registerBloc(() => QueryBloc(() => get<OrdersRepository>().watchCart()));
+  }
+
+  void registerBloc<TBloc extends BlocBase<T>, T>(TBloc Function() factory) {
+    registerLazySingleton<TBloc>(factory);
+    registerFactory<StateStreamable<T>>(() => get<TBloc>());
   }
 }

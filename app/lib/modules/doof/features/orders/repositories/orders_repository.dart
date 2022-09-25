@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:collection/collection.dart';
 import 'package:mek_gasol/modules/doof/features/orders/dto/order_dto.dart';
 import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
 import 'package:mek_gasol/packages/firestore.dart';
@@ -39,5 +40,16 @@ class OrdersRepository {
         .orderBy('createdAt', descending: true)
         .snapshots()
         .map((event) => event.docs.map((e) => e.data()).toList());
+  }
+
+  Stream<OrderDto> watchCart() {
+    return _ref().where('status', isEqualTo: OrderStatus.draft.name).snapshots().map((event) {
+      return event.docs.singleOrNull?.data() ??
+          OrderDto(
+            id: '',
+            createdAt: DateTime.now(),
+            status: OrderStatus.draft,
+          );
+    });
   }
 }
