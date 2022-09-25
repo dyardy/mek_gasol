@@ -12,7 +12,6 @@ import 'package:mek_gasol/modules/doof/features/orders/dto/order_dto.dart';
 import 'package:mek_gasol/modules/doof/features/orders/dto/product_order_dto.dart';
 import 'package:mek_gasol/modules/doof/features/orders/repositories/order_products_repository.dart';
 import 'package:mek_gasol/modules/doof/features/products/dto/product_dto.dart';
-import 'package:mek_gasol/modules/doof/features/products/repositories/products_repository.dart';
 import 'package:mek_gasol/modules/doof/shared/doof_transaltions.dart';
 import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
 import 'package:mek_gasol/modules/doof/shared/widgets/bottom_button_bar.dart';
@@ -20,63 +19,12 @@ import 'package:mek_gasol/shared/data/query_view_builder.dart';
 import 'package:mek_gasol/shared/hub.dart';
 import 'package:pure_extensions/pure_extensions.dart';
 
-class ProductsPickScreen extends StatefulWidget {
-  const ProductsPickScreen({super.key});
-
-  @override
-  State<ProductsPickScreen> createState() => _ProductsPickScreenState();
-}
-
-class _ProductsPickScreenState extends State<ProductsPickScreen> {
-  final _products = QueryBloc(() {
-    return get<ProductsRepository>().watch();
-  });
-
-  @override
-  void dispose() {
-    _products.close();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    Widget buildBody(BuildContext context, OrderDto order, List<ProductDto> products) {
-      return ListView.builder(
-        itemCount: products.length,
-        itemBuilder: (context, index) {
-          final product = products[index];
-
-          return ListTile(
-            onTap: () => context.hub.push(ProductOrderScreen(
-              order: order,
-              product: product,
-            )),
-            title: Text(
-                '${DoofTranslations.of(context).formatPrice(product.price)} - ${product.title}'),
-            subtitle: Text(product.description),
-          );
-        },
-      );
-    }
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Products'),
-      ),
-      body: QueryViewBuilder(
-        bloc: QueryBloc.combine2(get<QueryBloc<OrderDto>>(), _products),
-        builder: (context, vls) => buildBody(context, vls.item1, vls.item2),
-      ),
-    );
-  }
-}
-
-class ProductOrderScreen extends StatefulWidget {
+class ProductScreen extends StatefulWidget {
   final OrderDto order;
   final ProductOrderDto? productOrder;
   final ProductDto product;
 
-  const ProductOrderScreen({
+  const ProductScreen({
     super.key,
     required this.order,
     this.productOrder,
@@ -84,10 +32,10 @@ class ProductOrderScreen extends StatefulWidget {
   });
 
   @override
-  State<ProductOrderScreen> createState() => _ProductOrderScreenState();
+  State<ProductScreen> createState() => _ProductScreenState();
 }
 
-class _ProductOrderScreenState extends State<ProductOrderScreen> {
+class _ProductScreenState extends State<ProductScreen> {
   final _usersQb = QueryBloc(() {
     return get<UsersRepository>().watchAll();
   });

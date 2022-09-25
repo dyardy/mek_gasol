@@ -4,7 +4,7 @@ import 'package:mek/mek.dart';
 import 'package:mek_gasol/modules/auth/auth_guard.dart';
 import 'package:mek_gasol/modules/doof/features/orders/screens/order_screen.dart';
 import 'package:mek_gasol/modules/doof/features/orders/screens/orders_screen.dart';
-import 'package:mek_gasol/modules/doof/features/products/screens/products_pick_screen.dart';
+import 'package:mek_gasol/modules/doof/features/products/screens/products_screen.dart';
 import 'package:mek_gasol/modules/doof/shared/doof_transaltions.dart';
 import 'package:mek_gasol/shared/theme.dart';
 
@@ -56,7 +56,7 @@ class _AuthenticatedAreaState extends State<_AuthenticatedArea> {
         case _Tab.orders:
           return const OrdersScreen();
         case _Tab.products:
-          return const ProductsPickScreen();
+          return const ProductsScreen();
         case _Tab.cart:
           return const CartScreen();
       }

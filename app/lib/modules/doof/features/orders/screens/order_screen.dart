@@ -5,7 +5,7 @@ import 'package:mek_gasol/modules/doof/features/orders/dto/product_order_dto.dar
 import 'package:mek_gasol/modules/doof/features/orders/repositories/order_products_repository.dart';
 import 'package:mek_gasol/modules/doof/features/orders/screens/order_stat_screen.dart';
 import 'package:mek_gasol/modules/doof/features/orders/widgets/send_order_dialog.dart';
-import 'package:mek_gasol/modules/doof/features/products/screens/products_pick_screen.dart';
+import 'package:mek_gasol/modules/doof/features/products/screens/product_screen.dart';
 import 'package:mek_gasol/modules/doof/shared/doof_transaltions.dart';
 import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
 import 'package:mek_gasol/shared/data/query_view_builder.dart';
@@ -105,7 +105,7 @@ class _OrderScaffoldState extends State<_OrderScaffold> {
             buffer.write(buyers.map((e) => e.displayName).join(' - '));
 
             return ListTile(
-              onTap: () => context.hub.push(ProductOrderScreen(
+              onTap: () => context.hub.push(ProductScreen(
                 order: widget.order,
                 productOrder: productOrder,
                 product: product,
