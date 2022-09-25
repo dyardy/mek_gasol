@@ -22,7 +22,7 @@ jobs:
       - run: dart pub global activate flutterfire_cli
         working-directory: app
 
-      - run: flutterfire configure --project=mek-gasol --out=lib/packages/firebase_options.dart --platforms=web,macos,android --macos-bundle-id=mek.gasol.mekGasol --android-package-name=mek.gasol.mek_gasol --token=${{ secrets.FIREBASE_SERVICE_ACCOUNT_MEK_GASOL }}
+      - run: flutterfire configure --yes --project=mek-gasol --out=lib/packages/firebase_options.dart --platforms=web,macos,ios,android --macos-bundle-id=mek.gasol.mekGasol --ios-bundle-id=mek.gasol.mekGasol --android-package-name=mek.gasol.mek_gasol --token=${{ secrets.FIREBASE_SERVICE_ACCOUNT_MEK_GASOL }}
         working-directory: app
 
       - run: flutter build web --build-name=${{github.ref_name}}
