@@ -15,12 +15,18 @@ jobs:
         with:
           flutter-version: '3.3.x'
 
+      - run: dart pub global activate flutterfire_cli
+        working-directory: app
+
+      - run: flutterfire configure --project=mek-gasol --out=lib/packages/firebase_options.dart --platforms=web,macos,android --macos-bundle-id=mek.gasol.mekGasol --android-package-name=mek.gasol.mek_gasol --token=${{ secrets.FIREBASE_SERVICE_ACCOUNT_MEK_GASOL }}
+        working-directory: app
+
       - run: flutter build web --build-name=${{github.ref_name}}
         working-directory: app
 
-      - uses: FirebaseExtended/action-hosting-deploy@v0
-        with:
-          repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_MEK_GASOL }}'
-          channelId: live
-          projectId: mek-gasol
+#      - uses: FirebaseExtended/action-hosting-deploy@v0
+#        with:
+#          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+#          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_MEK_GASOL }}'
+#          channelId: live
+#          projectId: mek-gasol
