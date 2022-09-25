@@ -28,7 +28,7 @@ class _SendOrderDialogState extends State<SendOrderDialog> {
   void _send(String message) {
     _sendMb.handle(() async {
       await launchUrl(Uri.https('wa.me', KDoof.woktimePhoneNumber, {'text': message}));
-      await get<OrdersRepository>().update(widget.order, status: OrderStatus.sent);
+      await get<OrdersRepository>().markSent(widget.order);
     });
   }
 

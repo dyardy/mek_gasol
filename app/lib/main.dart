@@ -6,12 +6,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:logging/logging.dart';
-import 'package:mek_gasol/firebase_options.dart';
 import 'package:mek_gasol/modules/doof/doof_app.dart';
 import 'package:mek_gasol/modules/doof/shared/doof_migrations.dart';
 import 'package:mek_gasol/modules/doof/shared/service_locator/init_doof_service_locator.dart';
 import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
 import 'package:mek_gasol/modules/gasol/gasol_app.dart';
+import 'package:mek_gasol/packages/firebase_options.dart';
 import 'package:mek_gasol/shared/logger.dart';
 import 'package:mek_gasol/shared/theme.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -19,6 +19,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:version/version.dart';
 
 void main() async {
+  const isProd = bool.fromEnvironment('name');
+
   // ignore: avoid_print
   print('0: This is a hester egg. Naa, I just have to try the CI. ');
 

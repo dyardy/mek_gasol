@@ -12,9 +12,10 @@ import 'package:mek_gasol/modules/doof/features/orders/dto/order_dto.dart';
 import 'package:mek_gasol/modules/doof/features/orders/dto/product_order_dto.dart';
 import 'package:mek_gasol/modules/doof/features/orders/repositories/order_products_repository.dart';
 import 'package:mek_gasol/modules/doof/features/products/dto/product_dto.dart';
-import 'package:mek_gasol/modules/doof/shared/doof_transaltions.dart';
+import 'package:mek_gasol/modules/doof/shared/doof_formats.dart';
 import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
 import 'package:mek_gasol/modules/doof/shared/widgets/bottom_button_bar.dart';
+import 'package:mek_gasol/modules/doof/shared/widgets/user_area.dart';
 import 'package:mek_gasol/shared/data/query_view_builder.dart';
 import 'package:mek_gasol/shared/hub.dart';
 import 'package:pure_extensions/pure_extensions.dart';
@@ -58,7 +59,7 @@ class _ProductScreenState extends State<ProductScreen> {
     fieldBlocs: [_buyersFb, _quantityFb, _additionsFb, _ingredientsFb],
   );
 
-  final _save = MutationBloc();
+  final _save = MutationBloc<ProductOrderDto>();
 
   @override
   void initState() {
@@ -110,12 +111,14 @@ class _ProductScreenState extends State<ProductScreen> {
       );
 
       await get<OrderProductsRepository>().save(widget.order, productOrder);
+
+      return productOrder;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final t = DoofTranslations.of(context);
+    final t = DoofFormats.of(context);
 
     Widget buildBuyersField(BuildContext context, List<PublicUserDto> users) {
       return FieldChipsInput<PublicUserDto>(
@@ -253,13 +256,18 @@ class _ProductScreenState extends State<ProductScreen> {
     );
     current = BlocListener(
       bloc: _save,
-      listener: (context, state) {
-        state.whenOrNull(failed: (_) {
-          _form.enable();
-        }, success: (_) {
-          context.hub.pop();
-        });
-      },
+      listener: (context, state) => state.whenOrNull(failed: (_) {
+        _form.enable();
+      }, success: (product) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('${product.product.title} has been added to your shopping cart!'),
+          action: SnackBarAction(
+            onPressed: () => get<ValueBloc<UserAreaTab>>().emit(UserAreaTab.cart),
+            label: 'Cart',
+          ),
+        ));
+        context.hub.pop();
+      }),
       child: current,
     );
     return current;

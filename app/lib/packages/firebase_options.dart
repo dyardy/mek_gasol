@@ -23,9 +23,22 @@ class DefaultFirebaseOptions {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        return ios;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for ios - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.macOS:
         return macos;
+      case TargetPlatform.windows:
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for windows - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
+      case TargetPlatform.linux:
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for linux - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       default:
         throw UnsupportedError(
           'DefaultFirebaseOptions are not supported for this platform.',
@@ -48,16 +61,6 @@ class DefaultFirebaseOptions {
     messagingSenderId: '578583198489',
     projectId: 'mek-gasol',
     storageBucket: 'mek-gasol.appspot.com',
-  );
-
-  static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyCFZwJGPSexxv1vaZRWNlfR8k1MgEoxW-A',
-    appId: '1:578583198489:ios:65cc60f332b2495e112388',
-    messagingSenderId: '578583198489',
-    projectId: 'mek-gasol',
-    storageBucket: 'mek-gasol.appspot.com',
-    iosClientId: '578583198489-4mpldnqbk0mjbq9fvkc3petogifq414d.apps.googleusercontent.com',
-    iosBundleId: 'mek.gasol.mekGasol',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(

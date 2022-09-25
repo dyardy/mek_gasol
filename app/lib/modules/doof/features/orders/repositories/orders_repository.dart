@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:collection/collection.dart';
 import 'package:mek_gasol/modules/doof/features/orders/dto/order_dto.dart';
 import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
 import 'package:mek_gasol/packages/firestore.dart';
@@ -21,12 +20,13 @@ class OrdersRepository {
     await _ref().doc().set(draftOrder);
   }
 
-  Future<void> update(OrderDto orderDto, {required OrderStatus status}) async {
-    await _ref().doc(orderDto.id).set(orderDto.change((c) => c..status = status));
+  Future<void> markSent(OrderDto orderDto) async {
+    await create();
+    await _ref().doc(orderDto.id).set(orderDto.change((c) => c..status = OrderStatus.sent));
   }
 
   Future<void> delete(OrderDto order) async {
-    if (order.status != OrderStatus.draft) throw 'Cant delete order';
+    if (order.status != OrderStatus.draft) throw 'Cant delete draft order';
     await _ref().doc(order.id).delete();
   }
 
@@ -37,19 +37,19 @@ class OrdersRepository {
 
   Stream<List<OrderDto>> watch() {
     return _ref()
+        .where('status', isEqualTo: OrderStatus.sent.name)
         .orderBy('createdAt', descending: true)
         .snapshots()
         .map((event) => event.docs.map((e) => e.data()).toList());
   }
 
   Stream<OrderDto> watchCart() {
-    return _ref().where('status', isEqualTo: OrderStatus.draft.name).snapshots().map((event) {
-      return event.docs.singleOrNull?.data() ??
-          OrderDto(
-            id: '',
-            createdAt: DateTime.now(),
-            status: OrderStatus.draft,
-          );
+    return _ref()
+        .where('status', isEqualTo: OrderStatus.draft.name)
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .map((event) {
+      return event.docs.first.data();
     });
   }
 }

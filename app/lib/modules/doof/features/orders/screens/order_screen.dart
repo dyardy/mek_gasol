@@ -6,7 +6,7 @@ import 'package:mek_gasol/modules/doof/features/orders/repositories/order_produc
 import 'package:mek_gasol/modules/doof/features/orders/screens/order_stat_screen.dart';
 import 'package:mek_gasol/modules/doof/features/orders/widgets/send_order_dialog.dart';
 import 'package:mek_gasol/modules/doof/features/products/screens/product_screen.dart';
-import 'package:mek_gasol/modules/doof/shared/doof_transaltions.dart';
+import 'package:mek_gasol/modules/doof/shared/doof_formats.dart';
 import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
 import 'package:mek_gasol/shared/data/query_view_builder.dart';
 import 'package:mek_gasol/shared/hub.dart';
@@ -80,7 +80,7 @@ class _OrderScaffoldState extends State<_OrderScaffold> {
 
   @override
   Widget build(BuildContext context) {
-    final t = DoofTranslations.of(context);
+    final formats = DoofFormats.of(context);
 
     final body = QueryViewBuilder(
       bloc: _productsQb,
@@ -93,14 +93,14 @@ class _OrderScaffoldState extends State<_OrderScaffold> {
             final product = productOrder.product;
 
             final buffer = StringBuffer();
-            buffer.write(productOrder.ingredients
-                .map((e) => "${e.ingredient.title}  ${e.value * e.ingredient.maxLevel}")
-                .join(", "));
-            if (productOrder.additions.isNotEmpty) {
-              buffer.writeln();
+            if (productOrder.ingredients.isNotEmpty) {
+              buffer.writeln(productOrder.ingredients
+                  .map((e) => "${e.ingredient.title}  ${e.value * e.ingredient.maxLevel}")
+                  .join(", "));
             }
-            buffer.write(productOrder.additions.map((e) => e.addition.title).join(" - "));
-            buffer.writeln();
+            if (productOrder.additions.isNotEmpty) {
+              buffer.writeln(productOrder.additions.map((e) => e.addition.title).join(" - "));
+            }
             buffer.write("Ordine di: ");
             buffer.write(buyers.map((e) => e.displayName).join(' - '));
 
@@ -111,7 +111,7 @@ class _OrderScaffoldState extends State<_OrderScaffold> {
                 product: product,
               )),
               leading: TextIcon('${productOrder.quantity}'),
-              title: Text('${t.formatPrice(productOrder.total)} - ${product.title}'),
+              title: Text('${formats.formatPrice(productOrder.total)} - ${product.title}'),
               subtitle: Text(buffer.toString()),
               trailing: PopupMenuButton(
                 itemBuilder: (context) {
@@ -138,7 +138,7 @@ class _OrderScaffoldState extends State<_OrderScaffold> {
       builder: (context, products) {
         return Scaffold(
           appBar: AppBar(
-            title: widget.title ?? Text(t.formatDate(widget.order.createdAt)),
+            title: widget.title ?? Text(formats.formatDate(widget.order.createdAt)),
             actions: [
               if (products.isNotEmpty)
                 IconButton(

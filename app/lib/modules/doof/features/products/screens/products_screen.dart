@@ -4,7 +4,7 @@ import 'package:mek_gasol/modules/doof/features/orders/dto/order_dto.dart';
 import 'package:mek_gasol/modules/doof/features/products/dto/product_dto.dart';
 import 'package:mek_gasol/modules/doof/features/products/repositories/products_repository.dart';
 import 'package:mek_gasol/modules/doof/features/products/screens/product_screen.dart';
-import 'package:mek_gasol/modules/doof/shared/doof_transaltions.dart';
+import 'package:mek_gasol/modules/doof/shared/doof_formats.dart';
 import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
 import 'package:mek_gasol/shared/data/query_view_builder.dart';
 import 'package:mek_gasol/shared/hub.dart';
@@ -40,8 +40,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
               order: order,
               product: product,
             )),
-            title: Text(
-                '${DoofTranslations.of(context).formatPrice(product.price)} - ${product.title}'),
+            title: Text('${DoofFormats.of(context).formatPrice(product.price)} - ${product.title}'),
             subtitle: Text(product.description),
           );
         },

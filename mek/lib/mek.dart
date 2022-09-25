@@ -6,6 +6,7 @@ export 'src/bloc/bloc_consumers.dart';
 export 'src/bloc/bloc_extensions.dart';
 export 'src/data/mutation_bloc.dart';
 export 'src/data/query_bloc.dart';
+export 'src/data/value_bloc.dart';
 export 'src/form/blocs/field_bloc.dart';
 export 'src/form/blocs/list_field_bloc.dart';
 export 'src/form/blocs/map_field_bloc.dart';
