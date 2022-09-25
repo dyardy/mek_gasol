@@ -15,6 +15,10 @@ jobs:
         with:
           flutter-version: '3.3.x'
 
+      - uses: pocket-apps/action-setup-firebase@v2
+        with:
+          firebase-token: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_MEK_GASOL }}'
+
       - run: dart pub global activate flutterfire_cli
         working-directory: app
 
