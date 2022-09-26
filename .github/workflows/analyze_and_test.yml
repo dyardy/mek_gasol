@@ -28,15 +28,38 @@ jobs:
 
       # Resolve dependencies
       - name: Resolve dependencies
+        working-directory: app
         timeout-minutes: 2
         run: flutter pub get
 
       # Analysis code
       - name: Check the format of the code
+        working-directory: app
         run: find ./lib/** -name "*.dart" ! -name "*.g.dart" ! -name "firebase_options.dart" | tr '\n' ' ' | xargs flutter format -l 100 --set-exit-if-changed
       - name: Analyze the code
+        working-directory: app
         run: flutter analyze --no-pub --no-fatal-infos
 
-      # run  flutter widgets tests  and unit tests
-      - name: run  flutter widgets tests and unit tests
-        run: flutter test --no-pub
+#      # run  flutter widgets tests  and unit tests
+#      - name: run  flutter widgets tests and unit tests
+#        working-directory: app
+#        run: flutter test --no-pub
+
+      # Resolve dependencies
+      - name: Resolve dependencies
+        working-directory: mek
+        timeout-minutes: 2
+        run: flutter pub get
+
+      # Analysis code
+      - name: Check the format of the code
+        working-directory: mek
+        run: find ./lib/** -name "*.dart" ! -name "*.g.dart" ! -name "firebase_options.dart" | tr '\n' ' ' | xargs flutter format -l 100 --set-exit-if-changed
+      - name: Analyze the code
+        working-directory: mek
+        run: flutter analyze --no-pub --no-fatal-infos
+
+#      # run  flutter widgets tests  and unit tests
+#      - name: run  flutter widgets tests and unit tests
+#        working-directory: mek
+#        run: flutter test --no-pub
