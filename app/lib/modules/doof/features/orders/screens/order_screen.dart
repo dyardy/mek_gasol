@@ -8,6 +8,8 @@ import 'package:mek_gasol/modules/doof/features/orders/widgets/send_order_dialog
 import 'package:mek_gasol/modules/doof/features/products/screens/product_screen.dart';
 import 'package:mek_gasol/modules/doof/shared/doof_formats.dart';
 import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
+import 'package:mek_gasol/modules/doof/shared/widgets/user_area.dart';
+import 'package:mek_gasol/shared/data/mek_widgets.dart';
 import 'package:mek_gasol/shared/data/query_view_builder.dart';
 import 'package:mek_gasol/shared/hub.dart';
 import 'package:mek_gasol/shared/widgets/text_icon.dart';
@@ -84,11 +86,18 @@ class _OrderScaffoldState extends State<_OrderScaffold> {
 
     final body = QueryViewBuilder(
       bloc: _productsQb,
-      builder: (context, orders) {
+      builder: (context, orderProducts) {
+        if (orderProducts.isEmpty) {
+          return InfoView(
+            onTap: () => get<ValueBloc<UserAreaTab>>().emit(UserAreaTab.products),
+            title: const Text('😱 Non ci sono prodotti nel carello! 😱\n🍾 Vai al menu! 🥙'),
+          );
+        }
+
         return ListView.builder(
-          itemCount: orders.length,
+          itemCount: orderProducts.length,
           itemBuilder: (context, index) {
-            final productOrder = orders[index];
+            final productOrder = orderProducts[index];
             final buyers = productOrder.buyers;
             final product = productOrder.product;
 
@@ -151,14 +160,11 @@ class _OrderScaffoldState extends State<_OrderScaffold> {
                   ),
                   icon: const Icon(Icons.send),
                 ),
-              IconButton(
-                onPressed: () => context.hub.push(OrderStatScreen(productsQb: _productsQb)),
-                icon: const Icon(Icons.attach_money),
-              ),
-              // IconButton(
-              //   onPressed: () => context.hub.push(ProductsPickScreen(order: widget.order)),
-              //   icon: const Icon(Icons.add),
-              // ),
+              if (products.isNotEmpty)
+                IconButton(
+                  onPressed: () => context.hub.push(OrderStatScreen(productsQb: _productsQb)),
+                  icon: const Icon(Icons.attach_money),
+                ),
             ],
           ),
           body: body,

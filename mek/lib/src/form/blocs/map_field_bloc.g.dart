@@ -6,7 +6,7 @@ part of 'map_field_bloc.dart';
 // DataClassGenerator
 // **************************************************************************
 
-// ignore_for_file: annotate_overrides
+// ignore_for_file: annotate_overrides, unused_element
 
 mixin _$MapFieldBlocState<TKey, TValue> {
   MapFieldBlocState<TKey, TValue> get _self => this as MapFieldBlocState<TKey, TValue>;

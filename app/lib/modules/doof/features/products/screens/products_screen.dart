@@ -49,7 +49,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Products'),
+        title: const Text('Menu'),
       ),
       body: QueryViewBuilder(
         bloc: QueryBloc.combine2(get<QueryBloc<OrderDto>>(), _products),

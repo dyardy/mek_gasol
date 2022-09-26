@@ -4,6 +4,7 @@ import 'package:mek_gasol/modules/doof/features/additions/dto/addition_dto.dart'
 import 'package:mek_gasol/modules/doof/features/additions/repositories/additions_repository.dart';
 import 'package:mek_gasol/modules/doof/features/ingredients/dto/ingredient_dto.dart';
 import 'package:mek_gasol/modules/doof/features/ingredients/repositories/ingredients_repository.dart';
+import 'package:mek_gasol/modules/doof/features/orders/repositories/order_products_repository.dart';
 import 'package:mek_gasol/modules/doof/features/orders/repositories/orders_repository.dart';
 import 'package:mek_gasol/modules/doof/features/products/dto/product_dto.dart';
 import 'package:mek_gasol/modules/doof/features/products/repositories/products_repository.dart';
@@ -16,11 +17,12 @@ class DoofDatabase {
   Future<void> migrateMenu() async {
     lg.config('Database Updating!');
 
-    lg.config('Database Cleaning!');
-    await Future.wait([
-      _elaborate('Cleaning: Products', [_cleanCollection(ProductsRepository.collection)]),
-      _elaborate('Cleaning: Additions', [_cleanCollection(AdditionsRepository.collection)]),
-      _elaborate('Cleaning: Ingredients', [_cleanCollection(IngredientsRepository.collection)]),
+    await _elaborate('Database Cleaning!', [
+      _cleanCollections({
+        ProductsRepository.collection: {},
+        AdditionsRepository.collection: {},
+        IngredientsRepository.collection: {},
+      })
     ]);
     lg.config('Database Cleaned!');
 
@@ -183,15 +185,24 @@ class DoofDatabase {
   Future<void> migrateOrders() async {
     // Delete user data database
     lg.config('Database Deleting!');
-    await Future.wait([
-      _elaborate('Deleting: Orders', [_cleanCollection(OrdersRepository.collection)]),
+    await _elaborate('Deleting: Orders', [
+      _cleanCollections({
+        OrdersRepository.collection: {OrderProductsRepository.collection: {}}
+      })
     ]);
+    await _elaborate('Creating: Draft Order', [get<OrdersRepository>().create()]);
     lg.config('Database Deleted!');
   }
 
-  Future _cleanCollection(String id) async {
-    final docs = await get<FirebaseFirestore>().collection(id).get();
-    return await Future.wait(docs.docs.map((e) async => await e.reference.delete()));
+  Future _cleanCollections(Map<String, dynamic> ids) async {
+    return await Future.wait(ids.keys.map((id) async {
+      final children = ids[id];
+      final docs = await firestore.collection(id).get();
+      return await Future.wait([
+        _cleanCollections((children as Map).cast<String, dynamic>()),
+        ...docs.docs.map((e) async => await e.reference.delete()),
+      ]);
+    }));
   }
 
   Future<void> _elaborate(String name, Iterable<Future> futures) async {

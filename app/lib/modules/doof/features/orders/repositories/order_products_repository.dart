@@ -4,12 +4,13 @@ import 'package:mek_gasol/modules/doof/features/orders/dto/product_order_dto.dar
 import 'package:mek_gasol/modules/doof/features/orders/repositories/orders_repository.dart';
 import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
 import 'package:mek_gasol/packages/firestore.dart';
+import 'package:mek_gasol/shared/env.dart';
 import 'package:pure_extensions/pure_extensions.dart';
 
 class OrderProductsRepository {
   FirebaseFirestore get _firestore => get<FirebaseFirestore>();
 
-  static const String collection = 'products';
+  static const String collection = '${Env.prefix}products';
 
   CollectionReference<ProductOrderDto> _ref(String orderId) => _firestore
       .collection(OrdersRepository.collection)

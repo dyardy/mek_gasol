@@ -6,7 +6,7 @@ part of 'ingredient_order_dto.dart';
 // DataClassGenerator
 // **************************************************************************
 
-// ignore_for_file: annotate_overrides
+// ignore_for_file: annotate_overrides, unused_element
 
 mixin _$IngredientOrderDto {
   IngredientOrderDto get _self => this as IngredientOrderDto;

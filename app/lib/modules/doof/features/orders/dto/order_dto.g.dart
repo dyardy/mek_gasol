@@ -6,7 +6,7 @@ part of 'order_dto.dart';
 // DataClassGenerator
 // **************************************************************************
 
-// ignore_for_file: annotate_overrides
+// ignore_for_file: annotate_overrides, unused_element
 
 mixin _$OrderDto {
   OrderDto get _self => this as OrderDto;
@@ -59,6 +59,18 @@ class _OrderDtoChanges {
         createdAt: createdAt,
         status: status,
       );
+}
+
+class OrderDtoFields {
+  final String _path;
+
+  const OrderDtoFields([this._path = '']);
+
+  String get id => '${_path}id';
+  String get createdAt => '${_path}createdAt';
+  String get status => '${_path}status';
+
+  String toString() => _path.isEmpty ? 'OrderDtoFields()' : _path;
 }
 
 // **************************************************************************

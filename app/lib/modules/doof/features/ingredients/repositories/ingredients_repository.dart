@@ -3,12 +3,13 @@ import 'package:mek_gasol/modules/doof/features/ingredients/dto/ingredient_dto.d
 import 'package:mek_gasol/modules/doof/features/products/dto/product_dto.dart';
 import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
 import 'package:mek_gasol/packages/firestore.dart';
+import 'package:mek_gasol/shared/env.dart';
 import 'package:pure_extensions/pure_extensions.dart';
 
 class IngredientsRepository {
   FirebaseFirestore get _firestore => get<FirebaseFirestore>();
 
-  static const String collection = 'ingredients';
+  static const String collection = '${Env.prefix}ingredients';
 
   CollectionReference<IngredientDto> _ref() =>
       _firestore.collection(collection).withJsonConverter(IngredientDto.fromJson);
@@ -22,14 +23,14 @@ class IngredientsRepository {
   }
 
   Future<List<IngredientDto>> fetch() async {
-    final snapshot = await _ref().orderBy('title').get();
+    final snapshot = await _ref().orderBy(IngredientDto.fields.title).get();
     return snapshot.docs.map((e) => e.data()).toList();
   }
 
   Stream<List<IngredientDto>> watch(ProductDto product) {
     return _ref()
-        .where('productIds', arrayContains: product.id)
-        .orderBy('title')
+        .where(IngredientDto.fields.productIds, arrayContains: product.id)
+        .orderBy(IngredientDto.fields.title)
         .snapshots()
         .map((event) => event.docs.map((e) => e.data()).toList());
   }

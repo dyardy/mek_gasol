@@ -4,7 +4,7 @@ import 'package:mek_gasol/modules/doof/shared/serialization.dart';
 
 part 'product_dto.g.dart';
 
-@DataClass()
+@DataClass(createFieldsClass: true)
 @DtoSerializable()
 class ProductDto with _$ProductDto {
   final String id;
@@ -18,6 +18,8 @@ class ProductDto with _$ProductDto {
     required this.description,
     required this.price,
   });
+
+  static const ProductDtoFields fields = ProductDtoFields();
 
   factory ProductDto.fromJson(Map<String, dynamic> map) => _$ProductDtoFromJson(map);
   Map<String, dynamic> toJson() => _$ProductDtoToJson(this);

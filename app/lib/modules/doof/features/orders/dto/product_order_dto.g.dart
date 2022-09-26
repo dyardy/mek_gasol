@@ -6,7 +6,7 @@ part of 'product_order_dto.dart';
 // DataClassGenerator
 // **************************************************************************
 
-// ignore_for_file: annotate_overrides
+// ignore_for_file: annotate_overrides, unused_element
 
 mixin _$ProductOrderDto {
   ProductOrderDto get _self => this as ProductOrderDto;
@@ -74,6 +74,21 @@ class _ProductOrderDtoChanges {
         additions: additions,
         ingredients: ingredients,
       );
+}
+
+class ProductOrderDtoFields {
+  final String _path;
+
+  const ProductOrderDtoFields([this._path = '']);
+
+  String get id => '${_path}id';
+  String get buyers => '${_path}buyers';
+  ProductDtoFields get product => ProductDtoFields('${_path}product.');
+  String get quantity => '${_path}quantity';
+  String get additions => '${_path}additions';
+  String get ingredients => '${_path}ingredients';
+
+  String toString() => _path.isEmpty ? 'ProductOrderDtoFields()' : _path;
 }
 
 // **************************************************************************

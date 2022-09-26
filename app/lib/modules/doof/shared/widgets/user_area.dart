@@ -33,7 +33,7 @@ class UserArea extends StatelessWidget {
         case UserAreaTab.products:
           return const BottomNavigationBarItem(
             icon: Icon(Icons.fastfood_outlined),
-            label: 'Products',
+            label: 'Menu',
           );
         case UserAreaTab.cart:
           return const BottomNavigationBarItem(

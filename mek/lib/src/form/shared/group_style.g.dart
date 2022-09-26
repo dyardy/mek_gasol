@@ -6,7 +6,7 @@ part of 'group_style.dart';
 // DataClassGenerator
 // **************************************************************************
 
-// ignore_for_file: annotate_overrides
+// ignore_for_file: annotate_overrides, unused_element
 
 mixin _$FlexGroupStyle {
   FlexGroupStyle get _self => this as FlexGroupStyle;

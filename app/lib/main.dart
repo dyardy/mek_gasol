@@ -12,6 +12,7 @@ import 'package:mek_gasol/modules/doof/shared/service_locator/init_doof_service_
 import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
 import 'package:mek_gasol/modules/gasol/gasol_app.dart';
 import 'package:mek_gasol/packages/firebase_options.dart';
+import 'package:mek_gasol/shared/env.dart';
 import 'package:mek_gasol/shared/logger.dart';
 import 'package:mek_gasol/shared/theme.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -19,8 +20,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:version/version.dart';
 
 void main() async {
-  const isProd = bool.fromEnvironment('name');
-
   // ignore: avoid_print
   print('0: This is a hester egg. Naa, I just have to try the CI. ');
 
@@ -215,7 +214,7 @@ class _ModulesScreen extends StatelessWidget {
               onTap: () => DoofDatabase().migrateOrders(),
               title: const Text('Delete Doof Orders'),
             ),
-          Text('Version: ${scope.currentVersion} -> ${scope.targetVersion}'),
+          Text('Env: ${Env.name} | Version: ${scope.currentVersion} -> ${scope.targetVersion}'),
         ],
       );
     }

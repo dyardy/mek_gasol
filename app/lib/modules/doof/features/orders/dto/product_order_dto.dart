@@ -8,7 +8,7 @@ import 'package:mek_gasol/modules/doof/shared/serialization.dart';
 
 part 'product_order_dto.g.dart';
 
-@DataClass(changeable: true)
+@DataClass(changeable: true, createFieldsClass: true)
 @DtoSerializable()
 class ProductOrderDto with _$ProductOrderDto {
   final String id;

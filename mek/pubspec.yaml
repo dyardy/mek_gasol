@@ -11,7 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  mek_data_class: ^0.1.0
+  mek_data_class: ^0.2.0
   collection: ^1.16.0
   pure_extensions: ^4.2.0
   rxdart: ^0.27.5
@@ -33,7 +33,7 @@ dev_dependencies:
   # flutter packages pub run build_runner build --delete-conflicting-outputs
   # flutter packages pub run build_runner watch --delete-conflicting-outputs
   build_runner: ^2.2.1
-  mek_data_class_generator: ^0.1.4
+  mek_data_class_generator: ^0.2.0
 
 # dart pub global run index_generator
 index_generator:

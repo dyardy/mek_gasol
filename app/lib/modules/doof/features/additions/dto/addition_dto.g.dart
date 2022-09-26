@@ -6,7 +6,7 @@ part of 'addition_dto.dart';
 // DataClassGenerator
 // **************************************************************************
 
-// ignore_for_file: annotate_overrides
+// ignore_for_file: annotate_overrides, unused_element
 
 mixin _$AdditionDto {
   AdditionDto get _self => this as AdditionDto;
@@ -34,6 +34,20 @@ mixin _$AdditionDto {
         ..add('description', _self.description)
         ..add('price', _self.price))
       .toString();
+}
+
+class AdditionDtoFields {
+  final String _path;
+
+  const AdditionDtoFields([this._path = '']);
+
+  String get id => '${_path}id';
+  String get productIds => '${_path}productIds';
+  String get title => '${_path}title';
+  String get description => '${_path}description';
+  String get price => '${_path}price';
+
+  String toString() => _path.isEmpty ? 'AdditionDtoFields()' : _path;
 }
 
 // **************************************************************************

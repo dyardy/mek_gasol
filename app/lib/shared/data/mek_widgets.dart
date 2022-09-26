@@ -21,3 +21,39 @@ class ErrorView extends StatelessWidget {
     return Container();
   }
 }
+
+class InfoView extends StatelessWidget {
+  final VoidCallback? onTap;
+  final Widget title;
+
+  const InfoView({
+    super.key,
+    this.onTap,
+    required this.title,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+
+    return InkWell(
+      onTap: onTap,
+      child: Center(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.info_outline, size: 48.0),
+            const SizedBox(height: 16.0),
+            DefaultTextStyle.merge(
+              style: textTheme.titleMedium,
+              textAlign: TextAlign.center,
+              child: title,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

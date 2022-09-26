@@ -6,7 +6,7 @@ part of 'mutation_bloc.dart';
 // DataClassGenerator
 // **************************************************************************
 
-// ignore_for_file: annotate_overrides
+// ignore_for_file: annotate_overrides, unused_element
 
 mixin _$IdleMutation<TData> {
   IdleMutation<TData> get _self => this as IdleMutation<TData>;

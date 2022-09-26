@@ -6,7 +6,7 @@ part of 'field_bloc.dart';
 // DataClassGenerator
 // **************************************************************************
 
-// ignore_for_file: annotate_overrides
+// ignore_for_file: annotate_overrides, unused_element
 
 mixin _$FieldBlocState<TValue> {
   FieldBlocState<TValue> get _self => this as FieldBlocState<TValue>;

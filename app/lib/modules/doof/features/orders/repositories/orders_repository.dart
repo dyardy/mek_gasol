@@ -2,11 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mek_gasol/modules/doof/features/orders/dto/order_dto.dart';
 import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
 import 'package:mek_gasol/packages/firestore.dart';
+import 'package:mek_gasol/shared/env.dart';
 
 class OrdersRepository {
   FirebaseFirestore get _firestore => get<FirebaseFirestore>();
 
-  static const String collection = 'orders';
+  static const String collection = '${Env.prefix}orders';
 
   CollectionReference<OrderDto> _ref() =>
       _firestore.collection(collection).withJsonConverter(OrderDto.fromJson);
@@ -31,22 +32,22 @@ class OrdersRepository {
   }
 
   Future<List<OrderDto>> fetch() async {
-    final snapshot = await _ref().orderBy('createdAt', descending: true).get();
+    final snapshot = await _ref().orderBy(OrderDto.fields.createdAt, descending: true).get();
     return snapshot.docs.map((e) => e.data()).toList();
   }
 
   Stream<List<OrderDto>> watch() {
     return _ref()
-        .where('status', isEqualTo: OrderStatus.sent.name)
-        .orderBy('createdAt', descending: true)
+        .where(OrderDto.fields.status, isEqualTo: OrderStatus.sent.name)
+        .orderBy(OrderDto.fields.createdAt, descending: true)
         .snapshots()
         .map((event) => event.docs.map((e) => e.data()).toList());
   }
 
   Stream<OrderDto> watchCart() {
     return _ref()
-        .where('status', isEqualTo: OrderStatus.draft.name)
-        .orderBy('createdAt', descending: true)
+        .where(OrderDto.fields.status, isEqualTo: OrderStatus.draft.name)
+        .orderBy(OrderDto.fields.createdAt, descending: true)
         .snapshots()
         .map((event) {
       return event.docs.first.data();

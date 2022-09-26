@@ -12,7 +12,7 @@ extension OrderStatusExtensions on OrderStatus {
   bool get isSent => this == OrderStatus.sent;
 }
 
-@DataClass(changeable: true)
+@DataClass(changeable: true, createFieldsClass: true)
 @DtoSerializable()
 class OrderDto with _$OrderDto {
   final String id;
@@ -24,6 +24,8 @@ class OrderDto with _$OrderDto {
     required this.createdAt,
     required this.status,
   });
+
+  static const OrderDtoFields fields = OrderDtoFields();
 
   factory OrderDto.fromJson(Map<String, dynamic> map) => _$OrderDtoFromJson(map);
   Map<String, dynamic> toJson() => _$OrderDtoToJson(this);

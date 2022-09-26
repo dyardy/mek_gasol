@@ -3,7 +3,7 @@ import 'package:mek_gasol/modules/doof/shared/serialization.dart';
 
 part 'ingredient_dto.g.dart';
 
-@DataClass()
+@DataClass(createFieldsClass: true)
 @DtoSerializable()
 class IngredientDto with _$IngredientDto {
   final String id;
@@ -21,6 +21,8 @@ class IngredientDto with _$IngredientDto {
     required this.minLevel,
     required this.maxLevel,
   });
+
+  static const IngredientDtoFields fields = IngredientDtoFields();
 
   int get levels => maxLevel - minLevel;
 

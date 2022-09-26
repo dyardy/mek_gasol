@@ -6,7 +6,7 @@ part of 'ingredient_dto.dart';
 // DataClassGenerator
 // **************************************************************************
 
-// ignore_for_file: annotate_overrides
+// ignore_for_file: annotate_overrides, unused_element
 
 mixin _$IngredientDto {
   IngredientDto get _self => this as IngredientDto;
@@ -36,6 +36,21 @@ mixin _$IngredientDto {
         ..add('minLevel', _self.minLevel)
         ..add('maxLevel', _self.maxLevel))
       .toString();
+}
+
+class IngredientDtoFields {
+  final String _path;
+
+  const IngredientDtoFields([this._path = '']);
+
+  String get id => '${_path}id';
+  String get productIds => '${_path}productIds';
+  String get title => '${_path}title';
+  String get description => '${_path}description';
+  String get minLevel => '${_path}minLevel';
+  String get maxLevel => '${_path}maxLevel';
+
+  String toString() => _path.isEmpty ? 'IngredientDtoFields()' : _path;
 }
 
 // **************************************************************************

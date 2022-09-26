@@ -14,17 +14,17 @@ dependencies:
     sdk: flutter
 
 # DATA
-  firebase_core: ^1.22.0
-  firebase_auth: ^3.9.0
-  cloud_firestore: ^3.4.8
+  firebase_core: ^1.23.0
+  firebase_auth: ^3.10.0
+  cloud_firestore: ^3.4.9
   shared_preferences: ^2.0.15
 
 # DOMAIN
-  mek_data_class: ^0.1.0
-  json_annotation: ^4.6.0
+  mek_data_class: ^0.2.0
+  json_annotation: ^4.7.0
 
   collection: ^1.16.0
-  rxdart: ^0.27.4
+  rxdart: ^0.27.5
   pure_extensions: ^4.2.0
   intl: ^0.17.0
   get_it: ^7.2.0
@@ -56,8 +56,8 @@ dev_dependencies:
   # flutter packages pub run build_runner build --delete-conflicting-outputs
   # flutter packages pub run build_runner watch --delete-conflicting-outputs
   build_runner: ^2.2.1
-  mek_data_class_generator: ^0.1.4
-  json_serializable: ^6.3.2
+  mek_data_class_generator: ^0.2.0
+  json_serializable: ^6.4.0
 
 flutter:
   uses-material-design: true

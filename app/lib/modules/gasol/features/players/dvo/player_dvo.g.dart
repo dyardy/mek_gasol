@@ -6,7 +6,7 @@ part of 'player_dvo.dart';
 // DataClassGenerator
 // **************************************************************************
 
-// ignore_for_file: annotate_overrides
+// ignore_for_file: annotate_overrides, unused_element
 
 mixin _$PlayerDvo {
   PlayerDvo get _self => this as PlayerDvo;

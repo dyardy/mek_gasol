@@ -4,6 +4,8 @@ import 'package:mek_gasol/modules/doof/features/orders/dto/order_dto.dart';
 import 'package:mek_gasol/modules/doof/features/orders/repositories/orders_repository.dart';
 import 'package:mek_gasol/modules/doof/features/orders/screens/order_screen.dart';
 import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
+import 'package:mek_gasol/modules/doof/shared/widgets/user_area.dart';
+import 'package:mek_gasol/shared/data/mek_widgets.dart';
 import 'package:mek_gasol/shared/data/query_view_builder.dart';
 import 'package:mek_gasol/shared/hub.dart';
 import 'package:mek_gasol/shared/widgets/sign_out_icon_button.dart';
@@ -29,6 +31,13 @@ class _OrdersScreenState extends State<OrdersScreen> {
   @override
   Widget build(BuildContext context) {
     Widget buildBody(BuildContext context, List<OrderDto> orders) {
+      if (orders.isEmpty) {
+        return InfoView(
+          onTap: () => get<ValueBloc<UserAreaTab>>().emit(UserAreaTab.cart),
+          title: const Text('😰 Non hai ancora fatto nessun ordine! 😰\n🛒 Vai al carello! 🛒'),
+        );
+      }
+
       return ListView.builder(
         itemCount: orders.length,
         itemBuilder: (context, index) {
@@ -61,19 +70,6 @@ class _OrdersScreenState extends State<OrdersScreen> {
       appBar: AppBar(
         leading: const SignOutIconButton(),
         title: const Text('Orders'),
-        actions: [
-          QueryViewBuilder(
-            bloc: _orders,
-            builder: (context, orders) {
-              if (orders.any((e) => e.status == OrderStatus.draft)) return const SizedBox.shrink();
-
-              return IconButton(
-                onPressed: () => get<OrdersRepository>().create(),
-                icon: const Icon(Icons.add),
-              );
-            },
-          ),
-        ],
       ),
       body: QueryViewBuilder(
         bloc: _orders,
