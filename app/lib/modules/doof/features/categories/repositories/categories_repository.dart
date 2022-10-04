@@ -28,7 +28,7 @@ class CategoriesRepository {
 
   Stream<List<CategoryDto>> watch() {
     return _ref()
-        .orderBy(CategoryDto.fields.title)
+        .orderBy(CategoryDto.fields.weight)
         .snapshots()
         .map((event) => event.docs.map((e) => e.data()).toList());
   }

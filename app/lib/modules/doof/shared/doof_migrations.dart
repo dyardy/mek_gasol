@@ -29,9 +29,21 @@ class DoofDatabase {
     ]);
     lg.config('Database Cleaned!');
 
-    const firstCoursesCategory = CategoryDto(id: 'qis6JTiLNl0Cdfz2D0Wh', title: 'Primi Piatti');
-    const ravioliCategory = CategoryDto(id: '1hbbRQVurQwZ7JSAu19Z', title: 'Ravioli');
-    const drinksCategory = CategoryDto(id: 'J5IU4RRi5Dy5EHyfkSNL', title: 'Bevande');
+    const firstCoursesCategory = CategoryDto(
+      id: 'qis6JTiLNl0Cdfz2D0Wh',
+      weight: 0,
+      title: 'Primi Piatti',
+    );
+    const ravioliCategory = CategoryDto(
+      id: '1hbbRQVurQwZ7JSAu19Z',
+      weight: 1,
+      title: 'Ravioli',
+    );
+    const drinksCategory = CategoryDto(
+      id: 'J5IU4RRi5Dy5EHyfkSNL',
+      weight: 2,
+      title: 'Bevande',
+    );
     const categories = [firstCoursesCategory, ravioliCategory, drinksCategory];
 
     final firstCourses = [
@@ -189,6 +201,79 @@ class DoofDatabase {
       ),
     ];
 
+    final drinks = [
+      ProductDto(
+        id: 'vBTp1rEYs444Tj7Rp2pv',
+        categoryId: drinksCategory.id,
+        title: 'Acqua Naturale',
+        description: 'Bottiglietta da 0.5L.',
+        price: Decimal.parse('1.00'),
+      ),
+      ProductDto(
+        id: 'rFrsKjDdzI0HVTGruZKQ',
+        categoryId: drinksCategory.id,
+        title: 'Acqua Frizzante',
+        description: 'Bottiglietta da 0.5L.',
+        price: Decimal.parse('3.50'),
+      ),
+      ProductDto(
+        id: 'Ng4gG1hAu2Be2ws87D9P',
+        categoryId: drinksCategory.id,
+        title: 'Té Al Limone',
+        description: 'Lattina da 33cl.',
+        price: Decimal.parse('1.50'),
+      ),
+      ProductDto(
+        id: '2CRDqwzWc9uDcgGqIyD0',
+        categoryId: drinksCategory.id,
+        title: 'Té Alla Pesca',
+        description: 'Lattina da 33cl.',
+        price: Decimal.parse('1.50'),
+      ),
+      ProductDto(
+        id: 'ymvsXJXFNSaFcirWYrlK',
+        categoryId: drinksCategory.id,
+        title: 'Fanta',
+        description: 'Lattina da 33cl.',
+        price: Decimal.parse('1.50'),
+      ),
+      ProductDto(
+        id: 'ePrNHHRjEulf10QBNo6F',
+        categoryId: drinksCategory.id,
+        title: 'Coca Cola',
+        description: 'Lattina da 33cl.',
+        price: Decimal.parse('1.50'),
+      ),
+      ProductDto(
+        id: 'fnIvuAG2yH50MrT9IL4w',
+        categoryId: drinksCategory.id,
+        title: 'Redbull',
+        description: 'Lattina da 25cl.',
+        price: Decimal.parse('3.00'),
+      ),
+      ProductDto(
+        id: 'LLrvqplltLs85UiGAkSw',
+        categoryId: drinksCategory.id,
+        title: 'Birra Moretti',
+        description: 'Bottiglia da 66cl.',
+        price: Decimal.parse('3.00'),
+      ),
+      ProductDto(
+        id: 'YKMFDOi5dBCQ7NSMM1mF',
+        categoryId: drinksCategory.id,
+        title: 'Birra Ichnusa',
+        description: 'Bottiglia da 50cl.',
+        price: Decimal.parse('3.00'),
+      ),
+      ProductDto(
+        id: '9oik8asfD96W5JMUNzfL',
+        categoryId: drinksCategory.id,
+        title: 'Birra Tsingtao',
+        description: 'Bottiglia da 64cl.',
+        price: Decimal.parse('3.00'),
+      ),
+    ];
+
     // TODO: Add Bevande products
 
     await Future.wait([
@@ -197,6 +282,7 @@ class DoofDatabase {
       _elaborate('Updating: Additions', additions.map(get<AdditionsRepository>().save)),
       _elaborate('Updating: Ingredients', ingredients.map(get<IngredientsRepository>().save)),
       _elaborate('Updating: Ravioli', ravioli.map(get<ProductsRepository>().save)),
+      _elaborate('Updating: Drinks', drinks.map(get<ProductsRepository>().save)),
     ]);
     lg.config('Database Updated!');
   }

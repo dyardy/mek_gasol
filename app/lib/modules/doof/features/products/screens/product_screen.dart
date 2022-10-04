@@ -203,8 +203,9 @@ class _ProductScreenState extends State<ProductScreen> {
               builder: (context, onPressed) {
                 return ElevatedButton.icon(
                   onPressed: onPressed,
-                  icon: const Icon(Icons.check),
-                  label: Text(widget.productOrder == null ? 'Select' : 'Update'),
+                  icon:
+                      widget.productOrder == null ? const Icon(Icons.add) : const Icon(Icons.edit),
+                  label: Text(widget.productOrder == null ? 'Add to Cart' : 'Update Cart Item'),
                 );
               },
             ),

@@ -13,6 +13,7 @@ mixin _$CategoryDto {
 
   Iterable<Object?> get _props sync* {
     yield _self.id;
+    yield _self.weight;
     yield _self.title;
   }
 
@@ -26,6 +27,7 @@ mixin _$CategoryDto {
 
   String toString() => (ClassToString('CategoryDto')
         ..add('id', _self.id)
+        ..add('weight', _self.weight)
         ..add('title', _self.title))
       .toString();
 }
@@ -36,6 +38,7 @@ class CategoryDtoFields {
   const CategoryDtoFields([this._path = '']);
 
   String get id => '${_path}id';
+  String get weight => '${_path}weight';
   String get title => '${_path}title';
 
   String toString() => _path.isEmpty ? 'CategoryDtoFields()' : _path;
@@ -47,11 +50,13 @@ class CategoryDtoFields {
 
 CategoryDto _$CategoryDtoFromJson(Map<String, dynamic> json) => CategoryDto(
       id: json['id'] as String,
+      weight: json['weight'] as int,
       title: json['title'] as String,
     );
 
 Map<String, dynamic> _$CategoryDtoToJson(CategoryDto instance) =>
     <String, dynamic>{
       'id': instance.id,
+      'weight': instance.weight,
       'title': instance.title,
     };

@@ -1,4 +1,3 @@
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:mek/mek.dart';
 import 'package:mek_gasol/modules/doof/features/categories/dto/category_dto.dart';
@@ -8,6 +7,7 @@ import 'package:mek_gasol/modules/doof/features/products/repositories/products_r
 import 'package:mek_gasol/modules/doof/features/products/widgets/products_list.dart';
 import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
 import 'package:mek_gasol/shared/data/query_view_builder.dart';
+import 'package:pure_extensions/pure_extensions.dart';
 import 'package:rxdart/rxdart.dart';
 
 class ProductsScreen extends StatefulWidget {
@@ -21,10 +21,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
   final _categorizedProductsQb = QueryBloc(() {
     return Rx.combineLatest2(get<CategoriesRepository>().watch(), get<ProductsRepository>().watch(),
         (categories, products) {
-      return products.groupListsBy((product) => product.categoryId).map((key, value) {
-        final category = categories.firstWhere((e) => e.id == key);
-        return MapEntry(category, value);
-      });
+      return categories.map((category) {
+        return MapEntry(category, products.where((e) => e.categoryId == category.id).toList());
+      }).toMap();
     });
   });
 

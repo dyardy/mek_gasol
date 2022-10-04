@@ -5,6 +5,7 @@ import 'package:mek_gasol/modules/doof/features/products/dto/product_dto.dart';
 import 'package:mek_gasol/modules/doof/features/products/screens/product_screen.dart';
 import 'package:mek_gasol/modules/doof/shared/doof_formats.dart';
 import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
+import 'package:mek_gasol/shared/data/mek_widgets.dart';
 import 'package:mek_gasol/shared/data/query_view_builder.dart';
 import 'package:mek_gasol/shared/hub.dart';
 
@@ -25,6 +26,12 @@ class ProductsList extends StatelessWidget {
   }
 
   Widget _build(BuildContext context, OrderDto order, List<ProductDto> products) {
+    if (products.isEmpty) {
+      return const InfoView(
+        title: Text('🫑 Non ci sono prodotti... 🫑\n🍽 Beh, cambia categoria! 🍽'),
+      );
+    }
+
     return ListView.builder(
       itemCount: products.length,
       itemBuilder: (context, index) {

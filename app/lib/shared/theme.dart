@@ -5,7 +5,10 @@ abstract class AppTheme {
     const buttonSize = Size(kMinInteractiveDimension * 3, kMinInteractiveDimension);
 
     return ThemeData.from(
-      colorScheme: const ColorScheme.highContrastDark(primary: Colors.yellow),
+      colorScheme: const ColorScheme.highContrastDark(
+        primary: Colors.yellow,
+        secondary: Colors.amber,
+      ),
     ).copyWith(
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(

@@ -7,10 +7,12 @@ part 'category_dto.g.dart';
 @DtoSerializable()
 class CategoryDto with _$CategoryDto {
   final String id;
+  final int weight;
   final String title;
 
   const CategoryDto({
     required this.id,
+    required this.weight,
     required this.title,
   });
 
