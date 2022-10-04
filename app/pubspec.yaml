@@ -59,6 +59,12 @@ dev_dependencies:
   mek_data_class_generator: ^0.2.0
   json_serializable: ^6.4.0
 
+# TOOLS
+  # Dart to typescript
+  analyzer: ^5.1.0
+  path: ^1.8.2
+  glob: ^2.1.0
+
 flutter:
   uses-material-design: true
   # To add assets to your application, add an assets section, like this:
