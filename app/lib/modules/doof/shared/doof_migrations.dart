@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:decimal/decimal.dart';
 import 'package:mek_gasol/modules/doof/features/additions/dto/addition_dto.dart';
 import 'package:mek_gasol/modules/doof/features/additions/repositories/additions_repository.dart';
+import 'package:mek_gasol/modules/doof/features/categories/dto/category_dto.dart';
+import 'package:mek_gasol/modules/doof/features/categories/repositories/categories_repository.dart';
 import 'package:mek_gasol/modules/doof/features/ingredients/dto/ingredient_dto.dart';
 import 'package:mek_gasol/modules/doof/features/ingredients/repositories/ingredients_repository.dart';
 import 'package:mek_gasol/modules/doof/features/orders/repositories/order_products_repository.dart';
@@ -19,6 +21,7 @@ class DoofDatabase {
 
     await _elaborate('Database Cleaning!', [
       _cleanCollections({
+        CategoriesRepository.collection: {},
         ProductsRepository.collection: {},
         AdditionsRepository.collection: {},
         IngredientsRepository.collection: {},
@@ -26,39 +29,50 @@ class DoofDatabase {
     ]);
     lg.config('Database Cleaned!');
 
+    const firstCoursesCategory = CategoryDto(id: 'qis6JTiLNl0Cdfz2D0Wh', title: 'Primi Piatti');
+    const ravioliCategory = CategoryDto(id: '1hbbRQVurQwZ7JSAu19Z', title: 'Ravioli');
+    const drinksCategory = CategoryDto(id: 'J5IU4RRi5Dy5EHyfkSNL', title: 'Bevande');
+    const categories = [firstCoursesCategory, ravioliCategory, drinksCategory];
+
     final firstCourses = [
       ProductDto(
         id: '2CEsGXmUT6GcDMhKHD7C',
+        categoryId: firstCoursesCategory.id,
         title: 'Spaghetti all\'uovo',
         description: 'Spaghetti all\'uovo saltati con uova e verdure di stagione.',
         price: Decimal.parse('4.10'),
       ),
       ProductDto(
         id: 'eCO73liFjEGHEvIaF8QL',
+        categoryId: firstCoursesCategory.id,
         title: 'Spaghetti Udon',
         description: 'Spaghetti udon saltati con uova e verdure di stagione.',
         price: Decimal.parse('4.10'),
       ),
       ProductDto(
         id: 'OU54VLbMSMRnMEIme0nu',
+        categoryId: firstCoursesCategory.id,
         title: 'Gnocchi Di Riso',
         description: 'Gnocchi di riso saltati con uova e verdure di stagione.',
         price: Decimal.parse('4.10'),
       ),
       ProductDto(
         id: 'KFdKDYCv5CrdEkMPlPPY',
+        categoryId: firstCoursesCategory.id,
         title: 'Riso Alla Cantonese',
         description: 'Riso saltato con uova, prosciutto cotto e piselli.',
         price: Decimal.parse('3.60'),
       ),
       ProductDto(
         id: 'eOuccbWyv3hXdaQTCUxm',
+        categoryId: firstCoursesCategory.id,
         title: 'Riso Con Verdure Miste',
         description: 'Riso saltato con uova, carote, zucchine e piselli.',
         price: Decimal.parse('3.60'),
       ),
       ProductDto(
         id: 'tGVLMvzKY8FpgirYVK6P',
+        categoryId: firstCoursesCategory.id,
         title: 'Riso Con Gamberetti',
         description: 'Riso saltato con uova, piselli e gamberetti.',
         price: Decimal.parse('4.40'),
@@ -147,24 +161,28 @@ class DoofDatabase {
     final ravioli = [
       ProductDto(
         id: 'tIGXj4JPigpru7r1HTqT',
+        categoryId: ravioliCategory.id,
         title: 'Ravioli Con Verdure',
         description: 'Ravioli al vapore con ripieno alle verdure (6 pz).',
         price: Decimal.parse('3.50'),
       ),
       ProductDto(
         id: '3ED7ABZLejHEwVx5d9GU',
+        categoryId: ravioliCategory.id,
         title: 'Ravioli Di Carne',
         description: 'Ravioli al vapore con ripieno alla carne di maiale (6 pz).',
         price: Decimal.parse('3.50'),
       ),
       ProductDto(
         id: 'n2MHLI4GfWCfPauCpigP',
+        categoryId: ravioliCategory.id,
         title: 'Xiao Long Bao',
         description: 'Ravioli al vapore con ripieno alla carne di maiale (6 pz).',
         price: Decimal.parse('3.50'),
       ),
       ProductDto(
         id: 'B8paUtP7m1p2LeVI9pAG',
+        categoryId: ravioliCategory.id,
         title: 'Shao Mai',
         description: 'Ravioli al vapore con ripieno ai gamberetti (6 pz).',
         price: Decimal.parse('4.20'),
@@ -174,7 +192,8 @@ class DoofDatabase {
     // TODO: Add Bevande products
 
     await Future.wait([
-      _elaborate('Updating: Firs Courses', firstCourses.map(get<ProductsRepository>().save)),
+      _elaborate('Updating: Categories', categories.map(get<CategoriesRepository>().save)),
+      _elaborate('Updating: First Courses', firstCourses.map(get<ProductsRepository>().save)),
       _elaborate('Updating: Additions', additions.map(get<AdditionsRepository>().save)),
       _elaborate('Updating: Ingredients', ingredients.map(get<IngredientsRepository>().save)),
       _elaborate('Updating: Ravioli', ravioli.map(get<ProductsRepository>().save)),

@@ -80,6 +80,22 @@ class QueryBloc<T> extends Cubit<QueryState<T>> {
     });
   }
 
+  static StateStreamable<QueryState<Tuple3<Data1, Data2, Data3>>> combine3<Data1, Data2, Data3, R>(
+    StateStreamable<QueryState<Data1>> bloc1,
+    StateStreamable<QueryState<Data2>> bloc2,
+    StateStreamable<QueryState<Data3>> bloc3,
+  ) {
+    return BlocUtils.combine3(bloc1, bloc2, bloc3, (state1, state2, state3) {
+      return state1.mapStateData((data1) {
+        return state2.mapStateData((data2) {
+          return state3.mapStateData((data3) {
+            return SuccessQuery(data: Tuple3(data1, data2, data3));
+          });
+        });
+      });
+    });
+  }
+
   void _init(Stream<T> Function() fetcher) async {
     _sub = fetcher().listen((data) {
       emit(SuccessQuery(data: data));

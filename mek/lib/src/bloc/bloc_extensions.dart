@@ -26,6 +26,17 @@ abstract class BlocUtils {
       return combiner(states[0] as State1, states[1] as State2);
     });
   }
+
+  static StateStreamable<R> combine3<State1, State2, State3, R>(
+    StateStreamable<State1> bloc1,
+    StateStreamable<State2> bloc2,
+    StateStreamable<State3> bloc3,
+    R Function(State1 state1, State2 state2, State3 state3) combiner,
+  ) {
+    return _Combiner([bloc1, bloc2], (states) {
+      return combiner(states[0] as State1, states[1] as State2, states[2] as State3);
+    });
+  }
 }
 
 class _Selector<State, R> extends StateStreamable<R> {

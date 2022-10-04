@@ -6,6 +6,7 @@ import 'package:mek/mek.dart';
 import 'package:mek_gasol/features/users/dto/user_dto.dart';
 import 'package:mek_gasol/features/users/repositories/users_repo.dart';
 import 'package:mek_gasol/modules/doof/features/additions/repositories/additions_repository.dart';
+import 'package:mek_gasol/modules/doof/features/categories/repositories/categories_repository.dart';
 import 'package:mek_gasol/modules/doof/features/ingredients/repositories/ingredients_repository.dart';
 import 'package:mek_gasol/modules/doof/features/orders/repositories/order_products_repository.dart';
 import 'package:mek_gasol/modules/doof/features/orders/repositories/orders_repository.dart';
@@ -20,6 +21,8 @@ extension DoofServiceLocator on GetIt {
     registerSingleton(FirebaseFirestore.instance);
 
     registerFactory(UsersRepository.new);
+
+    registerFactory(CategoriesRepository.new);
 
     registerFactory(ProductsRepository.new);
 

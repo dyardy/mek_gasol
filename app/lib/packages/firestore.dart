@@ -1,7 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-extension FirestoreExtensions<T> on CollectionReference<T> {
+extension CollectionReferenceExtensions<T> on CollectionReference<T> {
+  Query<T> asQuery() => this;
+
   CollectionReference<R> withJsonConverter<R extends Object>(
+    R Function(Map<String, dynamic> json) fromFirestore,
+  ) {
+    return asQuery().withJsonConverter(fromFirestore) as CollectionReference<R>;
+  }
+}
+
+extension QueryExtensions<T> on Query<T> {
+  Query<R> withJsonConverter<R extends Object>(
     R Function(Map<String, dynamic> json) fromFirestore,
   ) {
     return withConverter<R>(fromFirestore: (snapshot, _) {
@@ -10,8 +20,4 @@ extension FirestoreExtensions<T> on CollectionReference<T> {
       return {...((value as dynamic).toJson() as Map<String, dynamic>)}..remove('id');
     });
   }
-}
-
-extension AsQueryCollection<T> on CollectionReference<T> {
-  Query<T> asQuery() => this;
 }

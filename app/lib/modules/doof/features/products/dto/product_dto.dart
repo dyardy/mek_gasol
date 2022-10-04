@@ -8,12 +8,15 @@ part 'product_dto.g.dart';
 @DtoSerializable()
 class ProductDto with _$ProductDto {
   final String id;
+  final String categoryId;
+
   final String title;
   final String description;
   final Decimal price;
 
   const ProductDto({
     required this.id,
+    required this.categoryId,
     required this.title,
     required this.description,
     required this.price,

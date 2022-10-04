@@ -13,6 +13,7 @@ mixin _$ProductDto {
 
   Iterable<Object?> get _props sync* {
     yield _self.id;
+    yield _self.categoryId;
     yield _self.title;
     yield _self.description;
     yield _self.price;
@@ -28,6 +29,7 @@ mixin _$ProductDto {
 
   String toString() => (ClassToString('ProductDto')
         ..add('id', _self.id)
+        ..add('categoryId', _self.categoryId)
         ..add('title', _self.title)
         ..add('description', _self.description)
         ..add('price', _self.price))
@@ -40,6 +42,7 @@ class ProductDtoFields {
   const ProductDtoFields([this._path = '']);
 
   String get id => '${_path}id';
+  String get categoryId => '${_path}categoryId';
   String get title => '${_path}title';
   String get description => '${_path}description';
   String get price => '${_path}price';
@@ -53,6 +56,7 @@ class ProductDtoFields {
 
 ProductDto _$ProductDtoFromJson(Map<String, dynamic> json) => ProductDto(
       id: json['id'] as String,
+      categoryId: json['categoryId'] as String,
       title: json['title'] as String,
       description: json['description'] as String,
       price: Decimal.fromJson(json['price'] as String),
@@ -61,6 +65,7 @@ ProductDto _$ProductDtoFromJson(Map<String, dynamic> json) => ProductDto(
 Map<String, dynamic> _$ProductDtoToJson(ProductDto instance) =>
     <String, dynamic>{
       'id': instance.id,
+      'categoryId': instance.categoryId,
       'title': instance.title,
       'description': instance.description,
       'price': instance.price.toJson(),

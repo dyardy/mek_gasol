@@ -10,8 +10,14 @@ class ProductsRepository {
 
   static const String collection = '${Env.prefix}products';
 
-  CollectionReference<ProductDto> _ref() =>
-      _firestore.collection(collection).withJsonConverter(ProductDto.fromJson);
+  CollectionReference<ProductDto> _ref() => _firestore
+      // .collection(CategoriesRepository.collection)
+      // .doc(categoryId)
+      .collection(collection)
+      .withJsonConverter(ProductDto.fromJson);
+
+  // Query<ProductDto> _refGroup() =>
+  //     _firestore.collectionGroup(collection).withJsonConverter(ProductDto.fromJson);
 
   Future<void> save(ProductDto product) async {
     await _ref().doc(product.id.nullIfEmpty()).set(product);
