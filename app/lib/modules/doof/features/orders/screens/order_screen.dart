@@ -1,5 +1,7 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:mek/mek.dart';
+import 'package:mek_gasol/features/users/dto/user_dto.dart';
 import 'package:mek_gasol/modules/doof/features/orders/dto/order_dto.dart';
 import 'package:mek_gasol/modules/doof/features/orders/dto/product_order_dto.dart';
 import 'package:mek_gasol/modules/doof/features/orders/repositories/order_products_repository.dart';
@@ -80,6 +82,74 @@ class _OrderScaffoldState extends State<_OrderScaffold> {
     });
   }
 
+  Widget _buildSectionTitle(String text) {
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+
+    return SliverPadding(
+      padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 8.0),
+      sliver: SliverToBoxAdapter(
+        child: Text(text, style: textTheme.titleLarge),
+      ),
+    );
+  }
+
+  String _buildProductTitle(ProductOrderDto productOrder) {
+    final buyers = productOrder.buyers;
+
+    final buffer = StringBuffer();
+    if (productOrder.ingredients.isNotEmpty) {
+      buffer.writeln(productOrder.ingredients
+          .map((e) => "${e.ingredient.title}  ${e.value * e.ingredient.maxLevel}")
+          .join(", "));
+    }
+    if (productOrder.additions.isNotEmpty) {
+      buffer.writeln(productOrder.additions.map((e) => e.addition.title).join(" - "));
+    }
+    buffer.write("Ordine di: ");
+    buffer.write(buyers.map((e) => e.displayName).join(' - '));
+
+    return buffer.toString();
+  }
+
+  Widget _buildOrderProducts(List<ProductOrderDto> orderProducts) {
+    final formats = DoofFormats.of(context);
+
+    return SliverList(
+      delegate: SliverChildBuilderDelegate(
+        childCount: orderProducts.length,
+        (context, index) {
+          final productOrder = orderProducts[index];
+          final product = productOrder.product;
+
+          return ListTile(
+            onTap: () => context.hub.push(ProductScreen(
+              order: widget.order,
+              productOrder: productOrder,
+              product: product,
+            )),
+            leading: TextIcon('${productOrder.quantity}'),
+            title: Text('${formats.formatPrice(productOrder.total)} - ${product.title}'),
+            subtitle: Text(_buildProductTitle(productOrder)),
+            trailing: PopupMenuButton(
+              itemBuilder: (context) {
+                return [
+                  PopupMenuItem(
+                    onTap: () => get<OrderProductsRepository>().delete(widget.order, productOrder),
+                    child: const ListTile(
+                      title: Text('Delete'),
+                      leading: Icon(Icons.delete),
+                    ),
+                  ),
+                ];
+              },
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final formats = DoofFormats.of(context);
@@ -94,50 +164,24 @@ class _OrderScaffoldState extends State<_OrderScaffold> {
           );
         }
 
-        return ListView.builder(
-          itemCount: orderProducts.length,
-          itemBuilder: (context, index) {
-            final productOrder = orderProducts[index];
-            final buyers = productOrder.buyers;
-            final product = productOrder.product;
+        final dividedOrderProducts = orderProducts.groupListsBy((e) {
+          return e.buyers.any((e) => e.id == get<UserDto>().id);
+        });
+        final myProducts = dividedOrderProducts[true] ?? const [];
+        final theirProducts = dividedOrderProducts[false] ?? const [];
 
-            final buffer = StringBuffer();
-            if (productOrder.ingredients.isNotEmpty) {
-              buffer.writeln(productOrder.ingredients
-                  .map((e) => "${e.ingredient.title}  ${e.value * e.ingredient.maxLevel}")
-                  .join(", "));
-            }
-            if (productOrder.additions.isNotEmpty) {
-              buffer.writeln(productOrder.additions.map((e) => e.addition.title).join(" - "));
-            }
-            buffer.write("Ordine di: ");
-            buffer.write(buyers.map((e) => e.displayName).join(' - '));
-
-            return ListTile(
-              onTap: () => context.hub.push(ProductScreen(
-                order: widget.order,
-                productOrder: productOrder,
-                product: product,
-              )),
-              leading: TextIcon('${productOrder.quantity}'),
-              title: Text('${formats.formatPrice(productOrder.total)} - ${product.title}'),
-              subtitle: Text(buffer.toString()),
-              trailing: PopupMenuButton(
-                itemBuilder: (context) {
-                  return [
-                    PopupMenuItem(
-                      onTap: () =>
-                          get<OrderProductsRepository>().delete(widget.order, productOrder),
-                      child: const ListTile(
-                        title: Text('Delete'),
-                        leading: Icon(Icons.delete),
-                      ),
-                    ),
-                  ];
-                },
-              ),
-            );
-          },
+        return CustomScrollView(
+          slivers: [
+            if (myProducts.isNotEmpty) ...[
+              if (theirProducts.isNotEmpty) _buildSectionTitle('My Products'),
+              _buildOrderProducts(myProducts),
+            ],
+            if (theirProducts.isNotEmpty) ...[
+              if (myProducts.isNotEmpty) const SliverToBoxAdapter(child: Divider()),
+              _buildSectionTitle('Their Products'),
+              _buildOrderProducts(theirProducts),
+            ],
+          ],
         );
       },
     );

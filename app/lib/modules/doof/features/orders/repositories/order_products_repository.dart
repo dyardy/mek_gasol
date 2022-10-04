@@ -34,6 +34,9 @@ class OrderProductsRepository {
   }
 
   Stream<List<ProductOrderDto>> watch(OrderDto order) {
-    return _ref(order.id).snapshots().map((event) => event.docs.map((e) => e.data()).toList());
+    return _ref(order.id)
+        .orderBy(ProductOrderDto.fields.product.title)
+        .snapshots()
+        .map((event) => event.docs.map((e) => e.data()).toList());
   }
 }

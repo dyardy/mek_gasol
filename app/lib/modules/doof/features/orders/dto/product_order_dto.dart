@@ -27,6 +27,8 @@ class ProductOrderDto with _$ProductOrderDto {
     required this.ingredients,
   });
 
+  static const ProductOrderDtoFields fields = ProductOrderDtoFields();
+
   Decimal get total =>
       quantity.toDecimal() * additions.fold(product.price, (total, e) => total + e.addition.price);
   Decimal get buyerTotal => (total / buyers.length.toDecimal()).toDecimal();
