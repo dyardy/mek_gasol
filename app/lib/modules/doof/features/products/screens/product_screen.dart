@@ -172,7 +172,7 @@ class _ProductScreenState extends State<ProductScreen> {
       return FieldGroupBuilder(
         fieldBloc: _additionsFb,
         valuesCount: additions.length,
-        style: const GroupStyle.list(),
+        style: const GroupStyle.flex(),
         decoration: const InputDecoration(
           labelText: 'Additions',
         ),
@@ -212,7 +212,7 @@ class _ProductScreenState extends State<ProductScreen> {
           )
         ],
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Column(
           children: [
@@ -245,11 +245,9 @@ class _ProductScreenState extends State<ProductScreen> {
                 );
               },
             ),
-            Expanded(
-              child: QueryViewBuilder(
-                bloc: _additionsQb,
-                builder: buildAdditionsField,
-              ),
+            QueryViewBuilder(
+              bloc: _additionsQb,
+              builder: buildAdditionsField,
             ),
           ],
         ),

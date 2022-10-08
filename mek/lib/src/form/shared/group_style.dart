@@ -7,7 +7,11 @@ part 'group_style.g.dart';
 class GroupStyle {
   const GroupStyle._();
 
-  const factory GroupStyle.flex() = FlexGroupStyle;
+  const factory GroupStyle.flex({
+    Axis direction,
+    TextDirection? textDirection,
+    VerticalDirection verticalDirection,
+  }) = FlexGroupStyle;
   const factory GroupStyle.table() = TableGroupStyle;
   const factory GroupStyle.wrap() = WrapGroupStyle;
   const factory GroupStyle.list() = ListGroupStyle;

@@ -27,7 +27,7 @@ class FieldChipsInput<T extends Object> extends StatelessWidget {
       child: Material(
         elevation: 4.0,
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxHeight: 300),
+          constraints: const BoxConstraints(maxHeight: 200),
           child: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
