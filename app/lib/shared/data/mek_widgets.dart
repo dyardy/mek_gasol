@@ -18,7 +18,15 @@ class ErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Center(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const Icon(Icons.error_outline),
+          Text('🤖 My n_m_ _s r_b_t! 🤖'),
+        ],
+      ),
+    );
   }
 }
 

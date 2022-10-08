@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mek/mek.dart';
 import 'package:mek_gasol/features/users/dto/user_dto.dart';
-import 'package:mek_gasol/features/users/repositories/users_repo.dart';
+import 'package:mek_gasol/features/users/users_providers.dart';
+import 'package:mek_gasol/modules/doof/features/additions/additions_providers.dart';
 import 'package:mek_gasol/modules/doof/features/additions/dto/addition_dto.dart';
-import 'package:mek_gasol/modules/doof/features/additions/repositories/additions_repository.dart';
 import 'package:mek_gasol/modules/doof/features/ingredients/dto/ingredient_dto.dart';
-import 'package:mek_gasol/modules/doof/features/ingredients/repositories/ingredients_repository.dart';
+import 'package:mek_gasol/modules/doof/features/ingredients/ingredients_providers.dart';
 import 'package:mek_gasol/modules/doof/features/orders/dto/addition_order_dto.dart';
 import 'package:mek_gasol/modules/doof/features/orders/dto/ingredient_order_dto.dart';
 import 'package:mek_gasol/modules/doof/features/orders/dto/order_dto.dart';
@@ -13,14 +14,14 @@ import 'package:mek_gasol/modules/doof/features/orders/dto/product_order_dto.dar
 import 'package:mek_gasol/modules/doof/features/orders/repositories/order_products_repository.dart';
 import 'package:mek_gasol/modules/doof/features/products/dto/product_dto.dart';
 import 'package:mek_gasol/modules/doof/shared/doof_formats.dart';
+import 'package:mek_gasol/modules/doof/shared/riverpod.dart';
 import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
 import 'package:mek_gasol/modules/doof/shared/widgets/bottom_button_bar.dart';
 import 'package:mek_gasol/modules/doof/shared/widgets/user_area.dart';
-import 'package:mek_gasol/shared/data/query_view_builder.dart';
 import 'package:mek_gasol/shared/hub.dart';
 import 'package:pure_extensions/pure_extensions.dart';
 
-class ProductScreen extends StatefulWidget {
+class ProductScreen extends ConsumerStatefulWidget {
   final OrderDto order;
   final ProductOrderDto? productOrder;
   final ProductDto product;
@@ -33,20 +34,10 @@ class ProductScreen extends StatefulWidget {
   });
 
   @override
-  State<ProductScreen> createState() => _ProductScreenState();
+  ConsumerState<ProductScreen> createState() => _ProductScreenState();
 }
 
-class _ProductScreenState extends State<ProductScreen> {
-  final _usersQb = QueryBloc(() {
-    return get<UsersRepository>().watchAll();
-  });
-  late final _additionsQb = QueryBloc(() {
-    return get<AdditionsRepository>().watch(widget.product);
-  });
-  late final _ingredientsQb = QueryBloc(() {
-    return get<IngredientsRepository>().watch(widget.product);
-  });
-
+class _ProductScreenState extends ConsumerState<ProductScreen> {
   final _buyersFb = FieldBloc<List<PublicUserDto>>(
     initialValue: [],
     validator: const OptionsValidation(minLength: 1),
@@ -67,24 +58,26 @@ class _ProductScreenState extends State<ProductScreen> {
     _buyersFb.updateValue(widget.productOrder?.buyers ?? [get()]);
     _quantityFb.updateValue(widget.productOrder?.quantity ?? 1);
     _additionsFb.updateValue(widget.productOrder?.additions.map((e) => e.addition).toList() ?? []);
-    _ingredientsQb.stream.map((state) => state.dataOrNull).whereNotNull().listen((ingredients) {
-      _ingredientsFb.updateFieldBlocs({
-        for (final ingredient in ingredients)
-          ingredient.id: FieldBloc(
-            initialValue: widget.productOrder?.ingredients
-                    .firstWhereOrNull((e) => e.ingredient.id == ingredient.id)
-                    ?.value ??
-                0.0,
-          ),
+
+    ref.listenManual(IngredientsProviders.all(widget.product.id), (previous, next) {
+      next.whenOrNull(data: (ingredients) {
+        _ingredientsFb.updateFieldBlocs({
+          for (final ingredient in ingredients)
+            ingredient.id: FieldBloc(
+              initialValue: widget.productOrder?.ingredients
+                      .firstWhereOrNull((e) => e.ingredient.id == ingredient.id)
+                      ?.value ??
+                  0.0,
+            ),
+        });
       });
     });
   }
 
   @override
   void dispose() {
-    _additionsQb.close();
-    _ingredientsQb.close();
     _form.close();
+    _save.close();
     super.dispose();
   }
 
@@ -104,7 +97,10 @@ class _ProductScreenState extends State<ProductScreen> {
         }).toList(),
         ingredients: _ingredientsFb.state.value.generateIterable((key, value) {
           return IngredientOrderDto(
-            ingredient: _ingredientsQb.state.data.firstWhere((e) => e.id == key),
+            ingredient: ref
+                .read(IngredientsProviders.all(widget.product.id))
+                .requiredValue
+                .firstWhere((e) => e.id == key),
             value: value,
           );
         }).toList(),
@@ -120,7 +116,7 @@ class _ProductScreenState extends State<ProductScreen> {
   Widget build(BuildContext context) {
     final t = DoofFormats.of(context);
 
-    Widget buildBuyersField(BuildContext context, List<PublicUserDto> users) {
+    Widget buildBuyersField(BuildContext context, WidgetRef ref, List<PublicUserDto> users) {
       return FieldChipsInput<PublicUserDto>(
         fieldBloc: _buyersFb,
         decoration: const InputDecoration(
@@ -166,7 +162,7 @@ class _ProductScreenState extends State<ProductScreen> {
       );
     }
 
-    Widget buildAdditionsField(BuildContext context, List<AdditionDto> additions) {
+    Widget buildAdditionsField(BuildContext context, WidgetRef ref, List<AdditionDto> additions) {
       if (additions.isEmpty) return const SizedBox.shrink();
 
       return FieldGroupBuilder(
@@ -197,7 +193,10 @@ class _ProductScreenState extends State<ProductScreen> {
         children: [
           Expanded(
             child: ButtonBuilder(
-              queryBlocs: {_additionsQb, _ingredientsQb},
+              providers: [
+                AdditionsProviders.all(widget.product.id),
+                IngredientsProviders.all(widget.product.id),
+              ],
               formBloc: _form,
               onPressed: _onSubmit,
               builder: (context, onPressed) {
@@ -216,8 +215,8 @@ class _ProductScreenState extends State<ProductScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Column(
           children: [
-            QueryViewBuilder(
-              bloc: _usersQb,
+            AsyncViewBuilder(
+              provider: UsersProviders.all,
               builder: buildBuyersField,
             ),
             FieldDropdown(
@@ -233,9 +232,9 @@ class _ProductScreenState extends State<ProductScreen> {
                   ),
               ],
             ),
-            QueryViewBuilder(
-              bloc: _ingredientsQb,
-              builder: (context, ingredients) {
+            AsyncViewBuilder(
+              provider: IngredientsProviders.all(widget.product.id),
+              builder: (context, ref, ingredients) {
                 return BlocBuilder(
                   bloc: _ingredientsFb,
                   buildWhen: (prev, curr) => !prev.fieldBlocs.equals(curr.fieldBlocs),
@@ -245,8 +244,8 @@ class _ProductScreenState extends State<ProductScreen> {
                 );
               },
             ),
-            QueryViewBuilder(
-              bloc: _additionsQb,
+            AsyncViewBuilder(
+              provider: AdditionsProviders.all(widget.product.id),
               builder: buildAdditionsField,
             ),
           ],
@@ -258,10 +257,12 @@ class _ProductScreenState extends State<ProductScreen> {
       listener: (context, state) => state.whenOrNull(failed: (_) {
         _form.enable();
       }, success: (product) {
+        final tabBloc = ref.read(UserArea.tab.notifier);
+
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('${product.product.title} has been added to your shopping cart!'),
           action: SnackBarAction(
-            onPressed: () => get<ValueBloc<UserAreaTab>>().emit(UserAreaTab.cart),
+            onPressed: () => tabBloc.state = UserAreaTab.cart,
             label: 'Cart',
           ),
         ));

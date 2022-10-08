@@ -10,7 +10,6 @@ import 'package:mek_gasol/modules/doof/doof_app.dart';
 import 'package:mek_gasol/modules/doof/shared/doof_migrations.dart';
 import 'package:mek_gasol/modules/doof/shared/service_locator/init_doof_service_locator.dart';
 import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
-import 'package:mek_gasol/modules/gasol/gasol_app.dart';
 import 'package:mek_gasol/packages/firebase_options.dart';
 import 'package:mek_gasol/shared/env.dart';
 import 'package:mek_gasol/shared/logger.dart';
@@ -41,7 +40,7 @@ void main() async {
 enum ModulesStatus { loading, loaded, blocked }
 
 enum Module {
-  gasol('Biliardino App'),
+  // gasol('Biliardino App'),
   // eti('Time tracker App'),
   doof('Wok Time App');
 
@@ -124,8 +123,8 @@ class ModulesState extends State<Modules> {
       }
 
       switch (_module) {
-        case Module.gasol:
-          return const GasolApp();
+        // case Module.gasol:
+        //   return const GasolApp();
         // case Module.eti:
         //   return const EtiApp();
         case Module.doof:

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mek/mek.dart';
 import 'package:mek_gasol/modules/auth/auth_guard.dart';
 import 'package:mek_gasol/modules/doof/shared/doof_formats.dart';
@@ -12,7 +13,7 @@ class DoofApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AuthGuard(
+    final app = AuthGuard(
       builder: (context, child) => MaterialApp(
         key: ValueKey(child),
         locale: const Locale.fromSubtags(languageCode: 'it'),
@@ -27,6 +28,10 @@ class DoofApp extends StatelessWidget {
         theme: AppTheme.build(),
         home: child ?? const UserArea(),
       ),
+    );
+
+    return ProviderScope(
+      child: app,
     );
   }
 }

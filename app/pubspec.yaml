@@ -36,6 +36,8 @@ dependencies:
   version: ^3.0.2
 
   # PRESENTATION
+  flutter_riverpod: ^2.0.2
+
   url_launcher: ^6.1.6
   package_info_plus: ^1.4.3+1
 

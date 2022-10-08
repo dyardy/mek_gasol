@@ -1,18 +1,19 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:mek/mek.dart';
-import 'package:mek_gasol/features/users/dto/user_dto.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mek_gasol/features/users/users_providers.dart';
 import 'package:mek_gasol/modules/doof/features/orders/dto/order_dto.dart';
 import 'package:mek_gasol/modules/doof/features/orders/dto/product_order_dto.dart';
+import 'package:mek_gasol/modules/doof/features/orders/orders_providers.dart';
 import 'package:mek_gasol/modules/doof/features/orders/repositories/order_products_repository.dart';
 import 'package:mek_gasol/modules/doof/features/orders/screens/order_stat_screen.dart';
 import 'package:mek_gasol/modules/doof/features/orders/widgets/send_order_dialog.dart';
 import 'package:mek_gasol/modules/doof/features/products/screens/product_screen.dart';
 import 'package:mek_gasol/modules/doof/shared/doof_formats.dart';
+import 'package:mek_gasol/modules/doof/shared/riverpod.dart';
 import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
 import 'package:mek_gasol/modules/doof/shared/widgets/user_area.dart';
 import 'package:mek_gasol/shared/data/mek_widgets.dart';
-import 'package:mek_gasol/shared/data/query_view_builder.dart';
 import 'package:mek_gasol/shared/hub.dart';
 import 'package:mek_gasol/shared/widgets/text_icon.dart';
 
@@ -21,9 +22,9 @@ class CartScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return QueryViewBuilder(
-      bloc: get<QueryBloc<OrderDto>>(),
-      builder: (context, cart) => _OrderScaffold(
+    return AsyncViewBuilder(
+      provider: OrdersProviders.cart,
+      builder: (context, ref, cart) => _OrderScaffold(
         title: const Text('Cart'),
         order: cart,
       ),
@@ -38,7 +39,7 @@ class OrderScreen extends _OrderScaffold {
   });
 }
 
-class _OrderScaffold extends StatefulWidget {
+class _OrderScaffold extends StatelessWidget {
   final Widget? title;
   final OrderDto order;
 
@@ -48,41 +49,7 @@ class _OrderScaffold extends StatefulWidget {
     required this.order,
   });
 
-  @override
-  State<_OrderScaffold> createState() => _OrderScaffoldState();
-}
-
-class _OrderScaffoldState extends State<_OrderScaffold> {
-  late QueryBloc<List<ProductOrderDto>> _productsQb;
-
-  @override
-  void initState() {
-    super.initState();
-    _initProducts();
-  }
-
-  @override
-  void didUpdateWidget(covariant _OrderScaffold oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.order.id != oldWidget.order.id) {
-      _productsQb.close();
-      _initProducts();
-    }
-  }
-
-  @override
-  void dispose() {
-    _productsQb.close();
-    super.dispose();
-  }
-
-  void _initProducts() {
-    _productsQb = QueryBloc(() {
-      return get<OrderProductsRepository>().watch(widget.order);
-    });
-  }
-
-  Widget _buildSectionTitle(String text) {
+  Widget _buildSectionTitle(BuildContext context, String text) {
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
 
@@ -112,7 +79,7 @@ class _OrderScaffoldState extends State<_OrderScaffold> {
     return buffer.toString();
   }
 
-  Widget _buildOrderProducts(List<ProductOrderDto> orderProducts) {
+  Widget _buildOrderProducts(BuildContext context, List<ProductOrderDto> orderProducts) {
     final formats = DoofFormats.of(context);
 
     return SliverList(
@@ -124,7 +91,7 @@ class _OrderScaffoldState extends State<_OrderScaffold> {
 
           return ListTile(
             onTap: () => context.hub.push(ProductScreen(
-              order: widget.order,
+              order: order,
               productOrder: productOrder,
               product: product,
             )),
@@ -135,7 +102,7 @@ class _OrderScaffoldState extends State<_OrderScaffold> {
               itemBuilder: (context) {
                 return [
                   PopupMenuItem(
-                    onTap: () => get<OrderProductsRepository>().delete(widget.order, productOrder),
+                    onTap: () => get<OrderProductsRepository>().delete(order, productOrder),
                     child: const ListTile(
                       title: Text('Delete'),
                       leading: Icon(Icons.delete),
@@ -154,18 +121,20 @@ class _OrderScaffoldState extends State<_OrderScaffold> {
   Widget build(BuildContext context) {
     final formats = DoofFormats.of(context);
 
-    final body = QueryViewBuilder(
-      bloc: _productsQb,
-      builder: (context, orderProducts) {
+    final body = AsyncViewBuilder(
+      provider: OrderProductsProviders.all(order.id),
+      builder: (context, ref, orderProducts) {
         if (orderProducts.isEmpty) {
-          return InfoView(
-            onTap: () => get<ValueBloc<UserAreaTab>>().emit(UserAreaTab.products),
-            title: const Text('😱 Non ci sono prodotti nel carello! 😱\n🍾 Vai al menu! 🥙'),
-          );
+          return Consumer(builder: (context, ref, _) {
+            return InfoView(
+              onTap: () => ref.read(UserArea.tab.notifier).state = UserAreaTab.products,
+              title: const Text('😱 Non ci sono prodotti nel carello! 😱\n🍾 Vai al menu! 🥙'),
+            );
+          });
         }
-
+        final user = ref.watch(UsersProviders.current);
         final dividedOrderProducts = orderProducts.groupListsBy((e) {
-          return e.buyers.any((e) => e.id == get<UserDto>().id);
+          return e.buyers.any((e) => e.id == user.id);
         });
         final myProducts = dividedOrderProducts[true] ?? const [];
         final theirProducts = dividedOrderProducts[false] ?? const [];
@@ -173,32 +142,32 @@ class _OrderScaffoldState extends State<_OrderScaffold> {
         return CustomScrollView(
           slivers: [
             if (myProducts.isNotEmpty) ...[
-              if (theirProducts.isNotEmpty) _buildSectionTitle('My Products'),
-              _buildOrderProducts(myProducts),
+              if (theirProducts.isNotEmpty) _buildSectionTitle(context, 'My Products'),
+              _buildOrderProducts(context, myProducts),
             ],
             if (theirProducts.isNotEmpty) ...[
               if (myProducts.isNotEmpty) const SliverToBoxAdapter(child: Divider()),
-              _buildSectionTitle('Their Products'),
-              _buildOrderProducts(theirProducts),
+              _buildSectionTitle(context, 'Their Products'),
+              _buildOrderProducts(context, theirProducts),
             ],
           ],
         );
       },
     );
 
-    return QueryViewBuilder(
-      bloc: _productsQb,
-      builder: (context, products) {
+    return AsyncViewBuilder(
+      provider: OrderProductsProviders.all(order.id),
+      builder: (context, ref, products) {
         return Scaffold(
           appBar: AppBar(
-            title: widget.title ?? Text(formats.formatDate(widget.order.createdAt)),
+            title: title ?? Text(formats.formatDate(order.createdAt)),
             actions: [
               if (products.isNotEmpty)
                 IconButton(
                   onPressed: () => showDialog(
                     context: context,
                     builder: (context) => SendOrderDialog(
-                      order: widget.order,
+                      order: order,
                       products: products,
                     ),
                   ),
@@ -206,7 +175,7 @@ class _OrderScaffoldState extends State<_OrderScaffold> {
                 ),
               if (products.isNotEmpty)
                 IconButton(
-                  onPressed: () => context.hub.push(OrderStatScreen(productsQb: _productsQb)),
+                  onPressed: () => context.hub.push(OrderStatScreen(orderId: order.id)),
                   icon: const Icon(Icons.attach_money),
                 ),
             ],

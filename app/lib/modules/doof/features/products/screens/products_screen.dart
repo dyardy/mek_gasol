@@ -1,43 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:mek/mek.dart';
 import 'package:mek_gasol/modules/doof/features/categories/dto/category_dto.dart';
-import 'package:mek_gasol/modules/doof/features/categories/repositories/categories_repository.dart';
 import 'package:mek_gasol/modules/doof/features/products/dto/product_dto.dart';
-import 'package:mek_gasol/modules/doof/features/products/repositories/products_repository.dart';
+import 'package:mek_gasol/modules/doof/features/products/products_providers.dart';
 import 'package:mek_gasol/modules/doof/features/products/widgets/products_list.dart';
-import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
-import 'package:mek_gasol/shared/data/query_view_builder.dart';
-import 'package:pure_extensions/pure_extensions.dart';
-import 'package:rxdart/rxdart.dart';
+import 'package:mek_gasol/modules/doof/shared/riverpod.dart';
 
-class ProductsScreen extends StatefulWidget {
+class ProductsScreen extends StatelessWidget {
   const ProductsScreen({super.key});
 
   @override
-  State<ProductsScreen> createState() => _ProductsScreenState();
-}
-
-class _ProductsScreenState extends State<ProductsScreen> {
-  final _categorizedProductsQb = QueryBloc(() {
-    return Rx.combineLatest2(get<CategoriesRepository>().watch(), get<ProductsRepository>().watch(),
-        (categories, products) {
-      return categories.map((category) {
-        return MapEntry(category, products.where((e) => e.categoryId == category.id).toList());
-      }).toMap();
-    });
-  });
-
-  @override
-  void dispose() {
-    _categorizedProductsQb.close();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return QueryViewBuilder(
-      bloc: _categorizedProductsQb,
-      builder: (context, categorizedProducts) {
+    return AsyncViewBuilder(
+      provider: ProductsProviders.menu,
+      builder: (context, ref, categorizedProducts) {
         return DefaultTabController(
           length: categorizedProducts.length,
           child: _build(context, categorizedProducts),

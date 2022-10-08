@@ -33,8 +33,8 @@ class OrderProductsRepository {
     return snapshot.docs.map((e) => e.data()).toList();
   }
 
-  Stream<List<ProductOrderDto>> watch(OrderDto order) {
-    return _ref(order.id)
+  Stream<List<ProductOrderDto>> watch(String orderId) {
+    return _ref(orderId)
         .orderBy(ProductOrderDto.fields.product.title)
         .snapshots()
         .map((event) => event.docs.map((e) => e.data()).toList());

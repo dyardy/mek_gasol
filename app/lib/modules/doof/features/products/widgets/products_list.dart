@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:mek/mek.dart';
 import 'package:mek_gasol/modules/doof/features/orders/dto/order_dto.dart';
+import 'package:mek_gasol/modules/doof/features/orders/orders_providers.dart';
 import 'package:mek_gasol/modules/doof/features/products/dto/product_dto.dart';
 import 'package:mek_gasol/modules/doof/features/products/screens/product_screen.dart';
 import 'package:mek_gasol/modules/doof/shared/doof_formats.dart';
-import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
+import 'package:mek_gasol/modules/doof/shared/riverpod.dart';
 import 'package:mek_gasol/shared/data/mek_widgets.dart';
-import 'package:mek_gasol/shared/data/query_view_builder.dart';
 import 'package:mek_gasol/shared/hub.dart';
 
 class ProductsList extends StatelessWidget {
@@ -19,9 +18,9 @@ class ProductsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return QueryViewBuilder(
-      bloc: get<QueryBloc<OrderDto>>(),
-      builder: (context, order) => _build(context, order, products),
+    return AsyncViewBuilder(
+      provider: OrdersProviders.cart,
+      builder: (context, ref, cart) => _build(context, cart, products),
     );
   }
 

@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mek_gasol/modules/doof/features/additions/dto/addition_dto.dart';
-import 'package:mek_gasol/modules/doof/features/products/dto/product_dto.dart';
 import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
 import 'package:mek_gasol/packages/firestore.dart';
 import 'package:mek_gasol/shared/env.dart';
@@ -27,9 +26,9 @@ class AdditionsRepository {
     return snapshot.docs.map((e) => e.data()).toList();
   }
 
-  Stream<List<AdditionDto>> watch(ProductDto productId) {
+  Stream<List<AdditionDto>> watch(String productId) {
     return _ref()
-        .where(AdditionDto.fields.productIds, arrayContains: productId.id)
+        .where(AdditionDto.fields.productIds, arrayContains: productId)
         .orderBy(AdditionDto.fields.title)
         .snapshots()
         .map((event) => event.docs.map((e) => e.data()).toList());

@@ -1,17 +1,16 @@
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
-import 'package:mek/mek.dart';
-import 'package:mek_gasol/modules/doof/features/orders/dto/product_order_dto.dart';
+import 'package:mek_gasol/modules/doof/features/orders/orders_providers.dart';
 import 'package:mek_gasol/modules/doof/shared/doof_formats.dart';
-import 'package:mek_gasol/shared/data/query_view_builder.dart';
+import 'package:mek_gasol/modules/doof/shared/riverpod.dart';
 import 'package:pure_extensions/pure_extensions.dart';
 
 class OrderStatScreen extends StatelessWidget {
-  final QueryBloc<List<ProductOrderDto>> productsQb;
+  final String orderId;
 
   const OrderStatScreen({
     super.key,
-    required this.productsQb,
+    required this.orderId,
   });
 
   @override
@@ -22,9 +21,9 @@ class OrderStatScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Stat'),
       ),
-      body: QueryViewBuilder(
-        bloc: productsQb,
-        builder: (context, products) {
+      body: AsyncViewBuilder(
+        provider: OrderProductsProviders.all(orderId),
+        builder: (context, ref, products) {
           final buyers = products.expand((element) => element.buyers).toSet();
           final buyersOrder = Map.fromEntries(buyers.map((e) {
             return MapEntry(e, products.where((element) => element.buyers.contains(e)));

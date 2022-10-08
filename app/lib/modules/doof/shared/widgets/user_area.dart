@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:mek/mek.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mek_gasol/modules/doof/features/orders/screens/order_screen.dart';
 import 'package:mek_gasol/modules/doof/features/orders/screens/orders_screen.dart';
 import 'package:mek_gasol/modules/doof/features/products/screens/products_screen.dart';
-import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
 
 enum UserAreaTab { orders, cart, products }
 
 class UserArea extends StatelessWidget {
   const UserArea({Key? key}) : super(key: key);
+
+  static final tab = StateProvider((ref) {
+    return UserAreaTab.products;
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -43,13 +46,14 @@ class UserArea extends StatelessWidget {
       }
     }
 
-    return BlocBuilder(
-      bloc: get<ValueBloc<UserAreaTab>>(),
-      builder: (context, tab) {
+    return Consumer(
+      builder: (context, ref, _) {
+        final tab = ref.watch(UserArea.tab);
+
         return Scaffold(
           bottomNavigationBar: BottomNavigationBar(
             currentIndex: tab.index,
-            onTap: (index) => get<ValueBloc<UserAreaTab>>().emit(UserAreaTab.values[index]),
+            onTap: (index) => ref.read(UserArea.tab.notifier).state = UserAreaTab.values[index],
             items: UserAreaTab.values.map(buildBottomBarItem).toList(),
           ),
           body: IndexedStack(

@@ -3,18 +3,19 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mek/src/bloc/bloc_extensions.dart';
 import 'package:mek/src/data/mutation_bloc.dart';
-import 'package:mek/src/data/query_bloc.dart';
 import 'package:mek/src/form/blocs/field_bloc.dart';
+import 'package:mek/src/riverpod/riverpod_extensions.dart';
 import 'package:rxdart/rxdart.dart';
 
 /// It does not return the [onPressed] callback in the [builder] when the user cannot interact
 /// with the [mutationBloc] / [formControl]
-class ButtonBuilder extends StatefulWidget {
+class ButtonBuilder extends ConsumerStatefulWidget {
   final VoidCallback? onPressed;
 
-  final Iterable<StateStreamableSource<QueryState>> queryBlocs;
+  final Iterable<ProviderListenable<AsyncValue<dynamic>>> providers;
 
   final Iterable<StateStreamableSource<MutationState>> mutationBlocs;
 
@@ -30,20 +31,20 @@ class ButtonBuilder extends StatefulWidget {
   ButtonBuilder({
     Key? key,
     required this.onPressed,
-    this.queryBlocs = const [],
+    this.providers = const [],
     this.mutationBlocs = const [],
     this.formBloc,
     this.canSubmitInvalidForm = true,
     required this.builder,
-  })  : assert(queryBlocs.isNotEmpty || mutationBlocs.isNotEmpty || formBloc != null),
+  })  : assert(providers.isNotEmpty || mutationBlocs.isNotEmpty || formBloc != null),
         super(key: key);
 
   @override
-  State<ButtonBuilder> createState() => _ButtonBuilderState();
+  ConsumerState<ButtonBuilder> createState() => _ButtonBuilderState();
 }
 
-class _ButtonBuilderState extends State<ButtonBuilder> {
-  StreamSubscription? _queryBlocSub;
+class _ButtonBuilderState extends ConsumerState<ButtonBuilder> {
+  ProviderSubscription? _providersSub;
   StreamSubscription? _mutationBlocSub;
   StreamSubscription? _formBlocSub;
 
@@ -64,8 +65,8 @@ class _ButtonBuilderState extends State<ButtonBuilder> {
   @override
   void didUpdateWidget(covariant ButtonBuilder oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (!widget.queryBlocs.equals(oldWidget.queryBlocs)) {
-      _queryBlocSub?.cancel();
+    if (!widget.providers.equals(oldWidget.providers)) {
+      _providersSub?.close();
       _listenQueryBloc();
     }
     if (!widget.mutationBlocs.equals(oldWidget.mutationBlocs)) {
@@ -80,7 +81,7 @@ class _ButtonBuilderState extends State<ButtonBuilder> {
 
   @override
   void dispose() {
-    _queryBlocSub?.cancel();
+    _providersSub?.close();
     _mutationBlocSub?.cancel();
     _formBlocSub?.cancel();
     super.dispose();
@@ -94,11 +95,12 @@ class _ButtonBuilderState extends State<ButtonBuilder> {
   }
 
   void _listenQueryBloc() {
-    _canQuery = widget.queryBlocs.every((e) => !e.state.isLoading);
-    _mutationBlocSub = Rx.combineLatestList(widget.queryBlocs.map((e) {
-      return e.hotStream;
-    })).skip(1).listen((states) {
-      _updateState(canQuery: states.every((e) => !e.isLoading));
+    final isLoadingProviders = Provide.combineList(widget.providers, (asyncValues) {
+      return asyncValues.every((e) => !e.isLoading);
+    });
+    _canQuery = ref.read(isLoadingProviders);
+    _providersSub = ref.listenManual(isLoadingProviders, (previous, next) {
+      _updateState(canQuery: next);
     });
   }
 
