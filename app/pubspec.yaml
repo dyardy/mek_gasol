@@ -14,9 +14,9 @@ dependencies:
     sdk: flutter
 
 # DATA
-  firebase_core: ^1.23.0
-  firebase_auth: ^3.10.0
-  cloud_firestore: ^3.4.9
+  firebase_core: ^1.24.0
+  firebase_auth: ^3.11.2
+  cloud_firestore: ^3.5.1
   shared_preferences: ^2.0.15
 
 # DOMAIN
@@ -28,20 +28,16 @@ dependencies:
   pure_extensions: ^4.2.0
   intl: ^0.17.0
   get_it: ^7.2.0
-  logging: ^1.0.2
+  logging: ^1.1.0
 
   bloc: ^8.1.0
-  tuple: ^2.0.0
+  tuple: ^2.0.1
   decimal: ^2.3.0
   version: ^3.0.2
 
   # PRESENTATION
-  url_launcher: ^6.1.5
+  url_launcher: ^6.1.6
   package_info_plus: ^1.4.3+1
-
-  table_calendar: ^3.0.7
-  date_picker_timeline: ^1.2.3
-  calendar_timeline: ^1.0.5
 
   mek:
     path: ../mek
@@ -57,7 +53,7 @@ dev_dependencies:
   # flutter packages pub run build_runner watch --delete-conflicting-outputs
   build_runner: ^2.2.1
   mek_data_class_generator: ^0.2.0
-  json_serializable: ^6.4.0
+  json_serializable: ^6.5.0
 
 # TOOLS
   # Dart to typescript
