@@ -13,5 +13,5 @@ extension LoggerExtension on Logger {
 }
 
 void _onLogRecord(LogRecord record) {
-  log(record.message, name: record.level.name);
+  log(record.message, name: record.level.name, error: record.error, stackTrace: record.stackTrace);
 }

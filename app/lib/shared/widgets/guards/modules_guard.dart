@@ -32,7 +32,7 @@ class ModulesGuard extends StatefulWidget {
 }
 
 class ModulesGuardState extends State<ModulesGuard> {
-  late SharedPreferences _preferences;
+  Future<SharedPreferences> get _preferences => SharedPreferences.getInstance();
   late bool _isLoading;
   Module? _module;
 
@@ -49,8 +49,7 @@ class ModulesGuardState extends State<ModulesGuard> {
   }
 
   void _loadModule() async {
-    _preferences = await SharedPreferences.getInstance();
-    final moduleName = _preferences.getString('$Module');
+    final moduleName = (await _preferences).getString('$Module');
     final module = Module.values.firstWhereOrNull((e) => e.name == moduleName);
     setState(() {
       _isLoading = false;
@@ -61,9 +60,9 @@ class ModulesGuardState extends State<ModulesGuard> {
   void select(Module? project) async {
     if (_module == project) return;
     if (project == null) {
-      await _preferences.remove('$Module');
+      await (await _preferences).remove('$Module');
     } else {
-      await _preferences.setString('$Module', project.name);
+      await (await _preferences).setString('$Module', project.name);
     }
     setState(() => _module = project);
   }

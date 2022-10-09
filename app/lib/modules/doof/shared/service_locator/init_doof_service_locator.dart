@@ -1,4 +1,3 @@
-import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
@@ -27,9 +26,5 @@ extension DoofServiceLocator on GetIt {
 
     registerFactory(OrdersRepository.new);
     registerFactory(OrderProductsRepository.new);
-  }
-
-  void registerBloc<TBloc extends BlocBase>(TBloc Function() factory) {
-    registerLazySingleton<TBloc>(factory);
   }
 }

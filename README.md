@@ -1,6 +1,7 @@
 # mek_gasol
 
-- Run web server: `-d web-server --web-hostname 0.0.0.0 --web-port 8080` 
+- Run web server: `-d web-server --web-hostname 0.0.0.0 --web-port 8080`
+- Generate assets: `dart pub global run mek_assets build`
 
 ## Firebase
 

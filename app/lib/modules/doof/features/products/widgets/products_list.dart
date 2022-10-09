@@ -24,9 +24,11 @@ class ProductsList extends StatelessWidget {
       itemCount: products.length,
       itemBuilder: (context, index) {
         final product = products[index];
+        final imageUrl = product.imageUrl;
 
         return ListTile(
           onTap: () => ProductRoute(product.id).go(context),
+          leading: imageUrl != null ? Image.network(imageUrl) : null,
           title: Text('${DoofFormats.of(context).formatPrice(product.price)} - ${product.title}'),
           subtitle: Text(product.description),
         );

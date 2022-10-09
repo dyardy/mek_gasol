@@ -10,6 +10,7 @@ class ProductDto with _$ProductDto {
   final String id;
   final String categoryId;
 
+  final String? imageUrl;
   final String title;
   final String description;
   final Decimal price;
@@ -17,6 +18,7 @@ class ProductDto with _$ProductDto {
   const ProductDto({
     required this.id,
     required this.categoryId,
+    this.imageUrl,
     required this.title,
     required this.description,
     required this.price,

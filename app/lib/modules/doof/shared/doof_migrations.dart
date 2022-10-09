@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:decimal/decimal.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/services.dart';
 import 'package:mek_gasol/modules/doof/features/additions/dto/addition_dto.dart';
 import 'package:mek_gasol/modules/doof/features/additions/repositories/additions_repository.dart';
 import 'package:mek_gasol/modules/doof/features/categories/dto/category_dto.dart';
@@ -11,10 +13,12 @@ import 'package:mek_gasol/modules/doof/features/orders/repositories/orders_repos
 import 'package:mek_gasol/modules/doof/features/products/dto/product_dto.dart';
 import 'package:mek_gasol/modules/doof/features/products/repositories/products_repository.dart';
 import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
+import 'package:mek_gasol/shared/data/r.dart';
 import 'package:mek_gasol/shared/logger.dart';
 
 class DoofDatabase {
-  FirebaseFirestore get firestore => get();
+  FirebaseFirestore get _firestore => FirebaseFirestore.instance;
+  FirebaseStorage get _storage => FirebaseStorage.instance;
 
   Future<void> migrateMenu() async {
     lg.config('Database Updating!');
@@ -50,6 +54,7 @@ class DoofDatabase {
       ProductDto(
         id: '2CEsGXmUT6GcDMhKHD7C',
         categoryId: firstCoursesCategory.id,
+        imageUrl: await _uploadProductImage('2CEsGXmUT6GcDMhKHD7C', R.firstCoursesSpaghettiUovo),
         title: 'Spaghetti all\'uovo',
         description: 'Spaghetti all\'uovo saltati con uova e verdure di stagione.',
         price: Decimal.parse('4.10'),
@@ -57,6 +62,7 @@ class DoofDatabase {
       ProductDto(
         id: 'eCO73liFjEGHEvIaF8QL',
         categoryId: firstCoursesCategory.id,
+        imageUrl: await _uploadProductImage('eCO73liFjEGHEvIaF8QL', R.firstCoursesSpaghettiUdon),
         title: 'Spaghetti Udon',
         description: 'Spaghetti udon saltati con uova e verdure di stagione.',
         price: Decimal.parse('4.10'),
@@ -64,6 +70,7 @@ class DoofDatabase {
       ProductDto(
         id: 'OU54VLbMSMRnMEIme0nu',
         categoryId: firstCoursesCategory.id,
+        imageUrl: await _uploadProductImage('OU54VLbMSMRnMEIme0nu', R.firstCoursesGnocchiRiso),
         title: 'Gnocchi Di Riso',
         description: 'Gnocchi di riso saltati con uova e verdure di stagione.',
         price: Decimal.parse('4.10'),
@@ -71,6 +78,7 @@ class DoofDatabase {
       ProductDto(
         id: 'KFdKDYCv5CrdEkMPlPPY',
         categoryId: firstCoursesCategory.id,
+        imageUrl: await _uploadProductImage('KFdKDYCv5CrdEkMPlPPY', R.firstCoursesRisoCantonese),
         title: 'Riso Alla Cantonese',
         description: 'Riso saltato con uova, prosciutto cotto e piselli.',
         price: Decimal.parse('3.60'),
@@ -78,6 +86,7 @@ class DoofDatabase {
       ProductDto(
         id: 'eOuccbWyv3hXdaQTCUxm',
         categoryId: firstCoursesCategory.id,
+        imageUrl: await _uploadProductImage('eOuccbWyv3hXdaQTCUxm', R.firstCoursesRisoVerdureMiste),
         title: 'Riso Con Verdure Miste',
         description: 'Riso saltato con uova, carote, zucchine e piselli.',
         price: Decimal.parse('3.60'),
@@ -85,6 +94,7 @@ class DoofDatabase {
       ProductDto(
         id: 'tGVLMvzKY8FpgirYVK6P',
         categoryId: firstCoursesCategory.id,
+        imageUrl: await _uploadProductImage('tGVLMvzKY8FpgirYVK6P', R.firstCoursesRisoGamberetti),
         title: 'Riso Con Gamberetti',
         description: 'Riso saltato con uova, piselli e gamberetti.',
         price: Decimal.parse('4.40'),
@@ -174,6 +184,7 @@ class DoofDatabase {
       ProductDto(
         id: 'tIGXj4JPigpru7r1HTqT',
         categoryId: ravioliCategory.id,
+        imageUrl: await _uploadProductImage('tIGXj4JPigpru7r1HTqT', R.ravioliRavioliVerdure),
         title: 'Ravioli Con Verdure',
         description: 'Ravioli al vapore con ripieno alle verdure (6 pz).',
         price: Decimal.parse('3.50'),
@@ -181,6 +192,7 @@ class DoofDatabase {
       ProductDto(
         id: '3ED7ABZLejHEwVx5d9GU',
         categoryId: ravioliCategory.id,
+        imageUrl: await _uploadProductImage('3ED7ABZLejHEwVx5d9GU', R.ravioliRavioliCarne),
         title: 'Ravioli Di Carne',
         description: 'Ravioli al vapore con ripieno alla carne di maiale (6 pz).',
         price: Decimal.parse('3.50'),
@@ -188,6 +200,7 @@ class DoofDatabase {
       ProductDto(
         id: 'n2MHLI4GfWCfPauCpigP',
         categoryId: ravioliCategory.id,
+        imageUrl: await _uploadProductImage('n2MHLI4GfWCfPauCpigP', R.ravioliRavioliXiaoLongBao),
         title: 'Xiao Long Bao',
         description: 'Ravioli al vapore con ripieno alla carne di maiale (6 pz).',
         price: Decimal.parse('3.50'),
@@ -195,6 +208,7 @@ class DoofDatabase {
       ProductDto(
         id: 'B8paUtP7m1p2LeVI9pAG',
         categoryId: ravioliCategory.id,
+        imageUrl: await _uploadProductImage('B8paUtP7m1p2LeVI9pAG', R.ravioliRavioliGamberi),
         title: 'Shao Mai',
         description: 'Ravioli al vapore con ripieno ai gamberetti (6 pz).',
         price: Decimal.parse('4.20'),
@@ -302,7 +316,7 @@ class DoofDatabase {
   Future _cleanCollections(Map<String, dynamic> ids) async {
     return await Future.wait(ids.keys.map((id) async {
       final children = ids[id];
-      final docs = await firestore.collection(id).get();
+      final docs = await _firestore.collection(id).get();
       return await Future.wait([
         _cleanCollections((children as Map).cast<String, dynamic>()),
         ...docs.docs.map((e) async => await e.reference.delete()),
@@ -313,5 +327,13 @@ class DoofDatabase {
   Future<void> _elaborate(String name, Iterable<Future> futures) async {
     lg.config(name);
     await Future.wait(futures);
+  }
+
+  Future<String> _uploadProductImage(String productId, String assetId) async {
+    final data = await rootBundle.load(assetId);
+    final snapshot = await _storage
+        .ref('products/$productId/${assetId.split('/').last}')
+        .putData(Uint8List.sublistView(data));
+    return await snapshot.ref.getDownloadURL();
   }
 }
