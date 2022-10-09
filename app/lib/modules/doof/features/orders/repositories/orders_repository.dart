@@ -36,9 +36,16 @@ class OrdersRepository {
     return snapshot.docs.map((e) => e.data()).toList();
   }
 
-  Stream<List<OrderDto>> watch() {
+  Stream<List<OrderDto>> watchSent() {
     return _ref()
         .where(OrderDto.fields.status, isEqualTo: OrderStatus.sent.name)
+        .orderBy(OrderDto.fields.createdAt, descending: true)
+        .snapshots()
+        .map((event) => event.docs.map((e) => e.data()).toList());
+  }
+
+  Stream<List<OrderDto>> watchAll() {
+    return _ref()
         .orderBy(OrderDto.fields.createdAt, descending: true)
         .snapshots()
         .map((event) => event.docs.map((e) => e.data()).toList());

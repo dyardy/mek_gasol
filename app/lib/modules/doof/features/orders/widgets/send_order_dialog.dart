@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mek/mek.dart';
 import 'package:mek_gasol/modules/doof/features/orders/dto/order_dto.dart';
 import 'package:mek_gasol/modules/doof/features/orders/dto/product_order_dto.dart';
 import 'package:mek_gasol/modules/doof/features/orders/repositories/orders_repository.dart';
 import 'package:mek_gasol/modules/doof/shared/k_doof.dart';
 import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
-import 'package:mek_gasol/shared/hub.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SendOrderDialog extends StatefulWidget {
@@ -83,7 +83,7 @@ class _SendOrderDialogState extends State<SendOrderDialog> {
       ),
       actions: [
         TextButton(
-          onPressed: () => context.hub.pop(),
+          onPressed: () => context.pop(),
           child: const Text('Anulla'),
         ),
         ButtonBuilder(
@@ -101,7 +101,7 @@ class _SendOrderDialogState extends State<SendOrderDialog> {
     current = BlocListener(
       bloc: _sendMb,
       listener: (context, state) => state.whenOrNull(success: (_) {
-        context.hub
+        context
           ..pop()
           ..pop();
       }),

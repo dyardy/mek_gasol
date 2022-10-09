@@ -2,18 +2,19 @@ targets:
   $default:
     sources:
       exclude:
-        - '**/eti/**'
+        - 'test/**'
     builders:
       source_gen:combining_builder:
         generate_for:
-          - 'lib/**/*_dto.dart'
-          - 'lib/**/*_dvo.dart'
+          - '**/*_dto.dart'
+          - '**/*_dvo.dart'
           - '**/*blocs.dart'
+          - '**/routes.dart'
 
       mek_data_class_generator|data_class:
         generate_for:
-          - 'lib/**/*_dto.dart'
-          - 'lib/**/*_dvo.dart'
+          - '**/*_dto.dart'
+          - '**/*_dvo.dart'
           - '**/*blocs.dart'
         options:
           pageWidth: 100
@@ -25,7 +26,7 @@ targets:
 
       json_serializable:json_serializable:
         generate_for:
-          - 'lib/**/*_dto.dart'
-          - 'lib/**/*_dvo.dart'
+          - '**/*_dto.dart'
+          - '**/*_dvo.dart'
         options:
           explicit_to_json: true

@@ -9,6 +9,11 @@ abstract class ProductsProviders {
     return get<ProductsRepository>().watch();
   });
 
+  static final single = FutureProvider.family((ref, String orderId) async {
+    final orders = await ref.watch(all.future);
+    return orders.firstWhere((order) => order.id == orderId);
+  });
+
   static final menu = FutureProvider((ref) async {
     final categories = await ref.watch(CategoriesProviders.all.future);
     final products = await ref.watch(ProductsProviders.all.future);

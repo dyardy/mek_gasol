@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mek/mek.dart';
 import 'package:mek_gasol/features/users/dto/user_dto.dart';
 import 'package:mek_gasol/features/users/users_providers.dart';
@@ -18,7 +19,6 @@ import 'package:mek_gasol/modules/doof/shared/riverpod.dart';
 import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
 import 'package:mek_gasol/modules/doof/shared/widgets/bottom_button_bar.dart';
 import 'package:mek_gasol/modules/doof/shared/widgets/user_area.dart';
-import 'package:mek_gasol/shared/hub.dart';
 import 'package:pure_extensions/pure_extensions.dart';
 
 class ProductScreen extends ConsumerStatefulWidget {
@@ -55,7 +55,7 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
   @override
   void initState() {
     super.initState();
-    _buyersFb.updateValue(widget.productOrder?.buyers ?? [get()]);
+    _buyersFb.updateValue(widget.productOrder?.buyers ?? [ref.read(UsersProviders.current)]);
     _quantityFb.updateValue(widget.productOrder?.quantity ?? 1);
     _additionsFb.updateValue(widget.productOrder?.additions.map((e) => e.addition).toList() ?? []);
 
@@ -266,7 +266,7 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
             label: 'Cart',
           ),
         ));
-        context.hub.pop();
+        context.pop();
       }),
       child: current,
     );

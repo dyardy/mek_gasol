@@ -3,12 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mek_gasol/modules/doof/features/orders/dto/order_dto.dart';
 import 'package:mek_gasol/modules/doof/features/orders/orders_providers.dart';
 import 'package:mek_gasol/modules/doof/features/orders/repositories/orders_repository.dart';
-import 'package:mek_gasol/modules/doof/features/orders/screens/order_screen.dart';
+import 'package:mek_gasol/modules/doof/shared/navigation/routes.dart';
 import 'package:mek_gasol/modules/doof/shared/riverpod.dart';
 import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
 import 'package:mek_gasol/modules/doof/shared/widgets/user_area.dart';
 import 'package:mek_gasol/shared/data/mek_widgets.dart';
-import 'package:mek_gasol/shared/hub.dart';
 import 'package:mek_gasol/shared/widgets/sign_out_icon_button.dart';
 
 class OrdersScreen extends StatelessWidget {
@@ -32,7 +31,7 @@ class OrdersScreen extends StatelessWidget {
           final order = orders[index];
 
           return ListTile(
-            onTap: () => context.hub.push(OrderScreen(order: order)),
+            onTap: () => OrderRoute(order.id),
             title: Text('${order.createdAt}'),
             subtitle: Text('${order.status}'),
             trailing: PopupMenuButton(
@@ -60,7 +59,7 @@ class OrdersScreen extends StatelessWidget {
         title: const Text('Orders'),
       ),
       body: AsyncViewBuilder(
-        provider: OrdersProviders.all,
+        provider: OrdersProviders.sent,
         builder: buildBody,
       ),
     );

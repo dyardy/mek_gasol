@@ -8,8 +8,8 @@ import 'package:mek_gasol/modules/doof/features/orders/orders_providers.dart';
 import 'package:mek_gasol/modules/doof/features/orders/repositories/order_products_repository.dart';
 import 'package:mek_gasol/modules/doof/features/orders/screens/order_stat_screen.dart';
 import 'package:mek_gasol/modules/doof/features/orders/widgets/send_order_dialog.dart';
-import 'package:mek_gasol/modules/doof/features/products/screens/product_screen.dart';
 import 'package:mek_gasol/modules/doof/shared/doof_formats.dart';
+import 'package:mek_gasol/modules/doof/shared/navigation/routes.dart';
 import 'package:mek_gasol/modules/doof/shared/riverpod.dart';
 import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
 import 'package:mek_gasol/modules/doof/shared/widgets/user_area.dart';
@@ -32,11 +32,23 @@ class CartScreen extends StatelessWidget {
   }
 }
 
-class OrderScreen extends _OrderScaffold {
+class OrderScreen extends StatelessWidget {
+  final String orderId;
+
   const OrderScreen({
     super.key,
-    required super.order,
+    required this.orderId,
   });
+
+  @override
+  Widget build(BuildContext context) {
+    return AsyncViewBuilder(
+      provider: OrdersProviders.single(orderId),
+      builder: (context, ref, order) {
+        return _OrderScaffold(order: order);
+      },
+    );
+  }
 }
 
 class _OrderScaffold extends StatelessWidget {
@@ -44,7 +56,6 @@ class _OrderScaffold extends StatelessWidget {
   final OrderDto order;
 
   const _OrderScaffold({
-    super.key,
     this.title,
     required this.order,
   });
@@ -90,11 +101,7 @@ class _OrderScaffold extends StatelessWidget {
           final product = productOrder.product;
 
           return ListTile(
-            onTap: () => context.hub.push(ProductScreen(
-              order: order,
-              productOrder: productOrder,
-              product: product,
-            )),
+            onTap: () => OrderProductRoute(order.id, product.id).go(context),
             leading: TextIcon('${productOrder.quantity}'),
             title: Text('${formats.formatPrice(productOrder.total)} - ${product.title}'),
             subtitle: Text(_buildProductTitle(productOrder)),

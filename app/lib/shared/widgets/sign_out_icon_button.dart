@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:mek_gasol/main.dart';
+import 'package:mek_gasol/shared/widgets/guards/modules_guard.dart';
 
 class SignOutIconButton extends StatelessWidget {
   const SignOutIconButton({super.key});
@@ -16,7 +16,7 @@ class SignOutIconButton extends StatelessWidget {
             child: const Text('Sign Out'),
           ),
           PopupMenuItem(
-            onTap: () => Modules.of(context).select(null),
+            onTap: () => ModulesGuard.of(context).select(null),
             child: const Text('Change App'),
           ),
         ];
