@@ -333,7 +333,7 @@ class DoofDatabase {
     final data = await rootBundle.load(assetId);
     final snapshot = await _storage
         .ref('products/$productId/${assetId.split('/').last}')
-        .putData(Uint8List.sublistView(data));
+        .putData(data.buffer.asUint8List());
     return await snapshot.ref.getDownloadURL();
   }
 }

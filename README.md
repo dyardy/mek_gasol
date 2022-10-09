@@ -1,7 +1,10 @@
 # mek_gasol
 
-- Run web server: `-d web-server --web-hostname 0.0.0.0 --web-port 8080`
+- Run web app: `--web-renderer html`
+- Run web server: `--web-renderer html -d web-server --web-hostname 0.0.0.0 --web-port 8080`
 - Generate assets: `dart pub global run mek_assets build`
+
+> `--web-renderer html` is necessary because web app cant download image without it
 
 ## Firebase
 
