@@ -31,7 +31,7 @@ class OrdersScreen extends StatelessWidget {
           final order = orders[index];
 
           return ListTile(
-            onTap: () => OrderRoute(order.id),
+            onTap: () => OrderRoute(order.id).go(context),
             title: Text('${order.createdAt}'),
             subtitle: Text('${order.status}'),
             trailing: PopupMenuButton(

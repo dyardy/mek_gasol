@@ -1,10 +1,11 @@
 import 'package:chips_input/chips_input.dart';
 import 'package:flutter/material.dart';
-import 'package:mek/src/bloc/bloc_consumers.dart';
+import 'package:mek/src/consumer/mixed_consumer.dart';
+import 'package:mek/src/consumer/source_extensions.dart';
 import 'package:mek/src/form/blocs/field_bloc.dart';
 import 'package:mek/src/form/form_utils.dart';
 
-class FieldChipsInput<T extends Object> extends StatelessWidget {
+class FieldChipsInput<T extends Object> extends ConsumerWidget {
   final FieldBlocRule<List<T>> fieldBloc;
 
   final InputDecoration decoration;
@@ -60,20 +61,17 @@ class FieldChipsInput<T extends Object> extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return BlocBuilder(
-      bloc: fieldBloc,
-      builder: (context, state) {
-        return ChipsInput<T>(
-          enabled: state.isEnabled,
-          onChanged: fieldBloc.changeValue,
-          decoration: decoration.copyWith(errorText: state.widgetError(context)),
-          initialValue: state.value,
-          findSuggestions: findSuggestions,
-          chipBuilder: _buildChip,
-          optionsViewBuilder: _buildSuggestions,
-        );
-      },
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.react(fieldBloc.toSource());
+
+    return ChipsInput<T>(
+      enabled: state.isEnabled,
+      onChanged: fieldBloc.changeValue,
+      decoration: decoration.copyWith(errorText: state.widgetError(context)),
+      initialValue: state.value,
+      findSuggestions: findSuggestions,
+      chipBuilder: _buildChip,
+      optionsViewBuilder: _buildSuggestions,
     );
   }
 }

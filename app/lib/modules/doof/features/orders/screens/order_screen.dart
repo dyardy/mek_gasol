@@ -1,6 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mek/mek.dart';
 import 'package:mek_gasol/features/users/users_providers.dart';
 import 'package:mek_gasol/modules/doof/features/orders/dto/order_dto.dart';
 import 'package:mek_gasol/modules/doof/features/orders/dto/product_order_dto.dart';
@@ -25,8 +25,9 @@ class CartScreen extends StatelessWidget {
     return AsyncViewBuilder(
       provider: OrdersProviders.cart,
       builder: (context, ref, cart) => _OrderScaffold(
-        title: const Text('Cart'),
         order: cart,
+        onTap: (productOrder) => CartProductRoute(productOrder.id).go(context),
+        title: const Text('Cart'),
       ),
     );
   }
@@ -45,7 +46,10 @@ class OrderScreen extends StatelessWidget {
     return AsyncViewBuilder(
       provider: OrdersProviders.single(orderId),
       builder: (context, ref, order) {
-        return _OrderScaffold(order: order);
+        return _OrderScaffold(
+          order: order,
+          onTap: (productOrder) => OrderProductRoute(order.id, productOrder.id).go(context),
+        );
       },
     );
   }
@@ -54,10 +58,12 @@ class OrderScreen extends StatelessWidget {
 class _OrderScaffold extends StatelessWidget {
   final Widget? title;
   final OrderDto order;
+  final void Function(ProductOrderDto orderProduct) onTap;
 
   const _OrderScaffold({
     this.title,
     required this.order,
+    required this.onTap,
   });
 
   Widget _buildSectionTitle(BuildContext context, String text) {
@@ -101,7 +107,7 @@ class _OrderScaffold extends StatelessWidget {
           final product = productOrder.product;
 
           return ListTile(
-            onTap: () => OrderProductRoute(order.id, product.id).go(context),
+            onTap: () => onTap(productOrder),
             leading: TextIcon('${productOrder.quantity}'),
             title: Text('${formats.formatPrice(productOrder.total)} - ${product.title}'),
             subtitle: Text(_buildProductTitle(productOrder)),

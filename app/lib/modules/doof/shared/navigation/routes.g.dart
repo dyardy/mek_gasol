@@ -78,10 +78,14 @@ GoRoute get $userAreaRoute => GoRouteData.$route(
           factory: $OrderRouteExtension._fromState,
           routes: [
             GoRouteData.$route(
-              path: 'products/:productId',
+              path: 'products/:orderProductId',
               factory: $OrderProductRouteExtension._fromState,
             ),
           ],
+        ),
+        GoRouteData.$route(
+          path: 'cart/:orderProductId',
+          factory: $CartProductRouteExtension._fromState,
         ),
       ],
     );
@@ -129,11 +133,25 @@ extension $OrderRouteExtension on OrderRoute {
 extension $OrderProductRouteExtension on OrderProductRoute {
   static OrderProductRoute _fromState(GoRouterState state) => OrderProductRoute(
         state.params['orderId']!,
-        state.params['productId']!,
+        state.params['orderProductId']!,
       );
 
   String get location => GoRouteData.$location(
-        '/orders/${Uri.encodeComponent(orderId)}/products/${Uri.encodeComponent(productId)}',
+        '/orders/${Uri.encodeComponent(orderId)}/products/${Uri.encodeComponent(orderProductId)}',
+      );
+
+  void go(BuildContext context) => context.go(location, extra: this);
+
+  void push(BuildContext context) => context.push(location, extra: this);
+}
+
+extension $CartProductRouteExtension on CartProductRoute {
+  static CartProductRoute _fromState(GoRouterState state) => CartProductRoute(
+        state.params['orderProductId']!,
+      );
+
+  String get location => GoRouteData.$location(
+        '/cart/${Uri.encodeComponent(orderProductId)}',
       );
 
   void go(BuildContext context) => context.go(location, extra: this);

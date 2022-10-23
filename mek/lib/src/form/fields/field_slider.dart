@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:mek/src/bloc/bloc_consumers.dart';
+import 'package:mek/src/consumer/mixed_consumer.dart';
+import 'package:mek/src/consumer/source_extensions.dart';
 import 'package:mek/src/form/blocs/field_bloc.dart';
 import 'package:mek/src/form/form_utils.dart';
 
-class FieldSlider extends StatelessWidget {
+class FieldSlider extends ConsumerWidget {
   final FieldBlocRule<double> fieldBloc;
   final double min;
   final double max;
@@ -22,22 +23,19 @@ class FieldSlider extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<FieldBlocStateBase<double>>(
-      bloc: fieldBloc,
-      builder: (context, state) {
-        return InputDecorator(
-          decoration: decoration.copyWith(errorText: state.widgetError(context)),
-          child: Slider(
-            value: state.value,
-            onChanged: state.ifEnabled(fieldBloc.changeValue),
-            min: min,
-            max: max,
-            divisions: divisions,
-            label: labelBuilder?.call(state.value),
-          ),
-        );
-      },
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.react(fieldBloc.toSource());
+
+    return InputDecorator(
+      decoration: decoration.copyWith(errorText: state.widgetError(context)),
+      child: Slider(
+        value: state.value,
+        onChanged: state.ifEnabled(fieldBloc.changeValue),
+        min: min,
+        max: max,
+        divisions: divisions,
+        label: labelBuilder?.call(state.value),
+      ),
     );
   }
 }

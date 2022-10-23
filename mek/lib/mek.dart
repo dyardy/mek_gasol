@@ -2,8 +2,21 @@
 
 library mek;
 
+export 'package:flutter_riverpod/flutter_riverpod.dart'
+    hide
+        Consumer,
+        ConsumerWidget,
+        ConsumerStatefulWidget,
+        ConsumerState,
+        ConsumerStatefulElement,
+        WidgetRef;
+
 export 'src/bloc/bloc_consumers.dart';
 export 'src/bloc/bloc_extensions.dart';
+export 'src/consumer/mixed_consumer.dart';
+export 'src/consumer/source.dart';
+export 'src/consumer/source_extensions.dart';
+export 'src/consumer/source_selector.dart';
 export 'src/data/mutation_bloc.dart';
 export 'src/form/blocs/field_bloc.dart';
 export 'src/form/blocs/list_field_bloc.dart';

@@ -45,13 +45,15 @@ class SignUpDetailsRoute extends GoRouteData {
     TypedGoRoute<OrderRoute>(
       path: 'orders/:orderId',
       routes: [
-        TypedGoRoute<OrderProductRoute>(path: 'products/:productId'),
+        TypedGoRoute<OrderProductRoute>(path: 'products/:orderProductId'),
       ],
     ),
+    TypedGoRoute<CartProductRoute>(path: 'cart/:orderProductId'),
   ],
 )
 class UserAreaRoute extends GoRouteData {
   const UserAreaRoute();
+
   @override
   Widget build(BuildContext context) => const UserArea();
 }
@@ -89,23 +91,47 @@ class OrderRoute extends GoRouteData {
 
 class OrderProductRoute extends GoRouteData {
   final String orderId;
-  final String productId;
+  final String orderProductId;
 
-  const OrderProductRoute(this.orderId, this.productId);
+  const OrderProductRoute(this.orderId, this.orderProductId);
 
   @override
   Widget build(BuildContext context) {
     return AsyncViewBuilder(
-      provider: Provide.combineAsync3(
+      provider: Provide.combineAsync2(
         OrdersProviders.single(orderId),
-        ProductsProviders.single(productId),
-        OrderProductsProviders.single(Tuple2(orderId, productId)),
+        OrderProductsProviders.single(Tuple2(orderId, orderProductId)),
       ),
       builder: (context, ref, vls) {
         return ProductScreen(
           order: vls.item1,
-          product: vls.item2,
-          productOrder: vls.item3,
+          productOrder: vls.item2,
+          product: vls.item2.product,
+        );
+      },
+    );
+  }
+}
+
+class CartProductRoute extends GoRouteData {
+  final String orderProductId;
+
+  const CartProductRoute(this.orderProductId);
+
+  @override
+  Widget build(BuildContext context) {
+    return AsyncViewBuilder(
+      provider: OrdersProviders.cart,
+      builder: (context, ref, cart) {
+        return AsyncViewBuilder(
+          provider: OrderProductsProviders.single(Tuple2(cart.id, orderProductId)),
+          builder: (context, ref, orderProduct) {
+            return ProductScreen(
+              order: cart,
+              productOrder: orderProduct,
+              product: orderProduct.product,
+            );
+          },
         );
       },
     );

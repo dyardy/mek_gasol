@@ -1,12 +1,13 @@
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mek/src/bloc/bloc_consumers.dart';
+import 'package:mek/src/consumer/mixed_consumer.dart';
+import 'package:mek/src/consumer/source_extensions.dart';
 import 'package:mek/src/form/blocs/field_bloc.dart';
 import 'package:mek/src/form/form_utils.dart';
 import 'package:mek/src/form/shared/text_field_type_data.dart';
 
-class FieldText<T> extends StatefulWidget {
+class FieldText<T> extends ConsumerStatefulWidget {
   final FieldBlocRule<T> fieldBloc;
   final FieldConvert<T> converter;
   final TextFieldType type;
@@ -31,10 +32,10 @@ class FieldText<T> extends StatefulWidget {
   }
 
   @override
-  State<FieldText<T>> createState() => FieldTextState();
+  ConsumerState<FieldText<T>> createState() => FieldTextState();
 }
 
-class FieldTextState<T> extends State<FieldText<T>> {
+class FieldTextState<T> extends ConsumerState<FieldText<T>> {
   late TextEditingController _controller;
   late TextFieldTypeData _typeData;
 
@@ -73,35 +74,35 @@ class FieldTextState<T> extends State<FieldText<T>> {
 
   @override
   Widget build(BuildContext context) {
-    final field = BlocConsumer<FieldBlocStateBase<T>>(
-      bloc: widget.fieldBloc,
-      listener: (context, state) {
-        final fieldValue = widget.converter.toValue(_controller.text);
-        if (fieldValue == state.value) return;
-        _controller.text = widget.converter.toText(state.value);
-      },
-      builder: (context, state) {
-        final typeData = widget.type.build(context) ?? _typeData;
+    ref.observe(widget.fieldBloc.toSource(), (state) {
+      final fieldValue = widget.converter.toValue(_controller.text);
+      if (fieldValue == state.value) return;
+      _controller.text = widget.converter.toText(state.value);
+    });
 
-        return TextField(
-          controller: _controller,
-          onChanged: (text) {
-            final value = widget.converter.toValue(text);
-            if (value is T) widget.fieldBloc.changeValue(value);
-          },
-          enabled: state.isEnabled,
-          maxLines: widget.maxLines,
-          minLines: widget.minLines,
-          decoration: (typeData.decoration ?? widget.decoration)
-              .copyWith(errorText: state.widgetError(context)),
-          obscureText: typeData.obscureText,
-          enableSuggestions: typeData.enableSuggestions,
-          autocorrect: typeData.autocorrect,
-          keyboardType: typeData.keyboardType,
-          inputFormatters: typeData.inputFormatters,
-        );
-      },
-    );
+    final state = ref.react(widget.fieldBloc.toSource());
+
+    final field = Builder(builder: (context) {
+      final typeData = widget.type.build(context) ?? _typeData;
+
+      return TextField(
+        controller: _controller,
+        onChanged: (text) {
+          final value = widget.converter.toValue(text);
+          if (value is T) widget.fieldBloc.changeValue(value);
+        },
+        enabled: state.isEnabled,
+        maxLines: widget.maxLines,
+        minLines: widget.minLines,
+        decoration: (typeData.decoration ?? widget.decoration)
+            .copyWith(errorText: state.widgetError(context)),
+        obscureText: typeData.obscureText,
+        enableSuggestions: typeData.enableSuggestions,
+        autocorrect: typeData.autocorrect,
+        keyboardType: typeData.keyboardType,
+        inputFormatters: typeData.inputFormatters,
+      );
+    });
 
     return TextFieldScope(
       decoration: widget.decoration,

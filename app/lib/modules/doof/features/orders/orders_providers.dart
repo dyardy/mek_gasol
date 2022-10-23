@@ -1,4 +1,3 @@
-import 'package:collection/collection.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mek_gasol/modules/doof/features/orders/repositories/order_products_repository.dart';
 import 'package:mek_gasol/modules/doof/features/orders/repositories/orders_repository.dart';
@@ -31,6 +30,6 @@ abstract class OrderProductsProviders {
 
   static final single = FutureProvider.family((ref, Tuple2<String, String> ids) async {
     final products = await ref.watch(all(ids.item1).future);
-    return products.firstWhereOrNull((order) => order.id == ids.item2);
+    return products.firstWhere((product) => product.id == ids.item2);
   });
 }

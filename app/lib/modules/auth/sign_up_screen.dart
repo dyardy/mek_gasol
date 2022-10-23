@@ -5,14 +5,14 @@ import 'package:mek_gasol/modules/auth/failures.dart';
 import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
 import 'package:mek_gasol/modules/doof/shared/widgets/bottom_button_bar.dart';
 
-class SignUpScreen extends StatefulWidget {
+class SignUpScreen extends ConsumerStatefulWidget {
   const SignUpScreen({super.key});
 
   @override
-  State<SignUpScreen> createState() => _SignUpScreenState();
+  ConsumerState<SignUpScreen> createState() => _SignUpScreenState();
 }
 
-class _SignUpScreenState extends State<SignUpScreen> {
+class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   final _signUpMb = MutationBloc();
 
   final _emailFb = FieldBloc(
@@ -47,9 +47,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener(
-      bloc: _signUpMb,
-      listener: (context, state) => state.whenOrNull(failed: (error) {
+    ref.observe(_signUpMb.toSource(), (state) {
+      state.whenOrNull(failed: (error) {
         if (error is FirebaseAuthException) {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text(error.message ?? '$error'),
@@ -59,12 +58,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
             content: Text('Passwords not match'),
           ));
         }
-      }),
-      child: _build(context),
-    );
-  }
+      });
+    });
 
-  Widget _build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Sign Up!'),

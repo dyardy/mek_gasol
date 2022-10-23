@@ -1,5 +1,4 @@
 import 'package:flutter/widgets.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mek/mek.dart';
 import 'package:mek_gasol/shared/data/mek_widgets.dart';
 

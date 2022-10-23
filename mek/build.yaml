@@ -6,12 +6,14 @@ targets:
           - '**/*_bloc.dart'
           - '**/*_data.dart'
           - '**/*_style.dart'
+          - '**/*source*.dart'
 
       mek_data_class_generator|data_class:
         generate_for:
           - '**/*_bloc.dart'
           - '**/*_data.dart'
           - '**/*_style.dart'
+          - '**/*source*.dart'
         options:
           pageWidth: 100
           comparable: true

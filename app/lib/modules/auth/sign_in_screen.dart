@@ -6,14 +6,14 @@ import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.da
 import 'package:mek_gasol/shared/hub.dart';
 import 'package:mek_gasol/shared/widgets/sign_out_icon_button.dart';
 
-class SignInScreen extends StatefulWidget {
+class SignInScreen extends ConsumerStatefulWidget {
   const SignInScreen({Key? key}) : super(key: key);
 
   @override
-  State<SignInScreen> createState() => _SignInScreenState();
+  ConsumerState<SignInScreen> createState() => _SignInScreenState();
 }
 
-class _SignInScreenState extends State<SignInScreen> {
+class _SignInScreenState extends ConsumerState<SignInScreen> {
   final _emailFb = FieldBloc(
     initialValue: '',
     validator: Validation.email,
@@ -40,6 +40,15 @@ class _SignInScreenState extends State<SignInScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.observe(_signInMb.toSource(), (state) {
+      state.whenOrNull(failed: (error) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('$error'),
+        ));
+        _form.enable();
+      });
+    });
+
     List<Widget> buildFields() {
       return [
         FieldText(
@@ -57,7 +66,7 @@ class _SignInScreenState extends State<SignInScreen> {
       ];
     }
 
-    Widget current = Scaffold(
+    return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       appBar: AppBar(
         leading: const SignOutIconButton(),
@@ -97,18 +106,5 @@ class _SignInScreenState extends State<SignInScreen> {
         ),
       ),
     );
-    current = BlocListener(
-      bloc: _signInMb,
-      listener: (context, state) {
-        state.whenOrNull(failed: (error) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('$error'),
-          ));
-          _form.enable();
-        });
-      },
-      child: current,
-    );
-    return current;
   }
 }

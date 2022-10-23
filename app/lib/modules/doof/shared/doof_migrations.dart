@@ -14,6 +14,7 @@ import 'package:mek_gasol/modules/doof/features/products/dto/product_dto.dart';
 import 'package:mek_gasol/modules/doof/features/products/repositories/products_repository.dart';
 import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
 import 'package:mek_gasol/shared/data/r.dart';
+import 'package:mek_gasol/shared/env.dart';
 import 'package:mek_gasol/shared/logger.dart';
 
 class DoofDatabase {
@@ -332,7 +333,7 @@ class DoofDatabase {
   Future<String> _uploadProductImage(String productId, String assetId) async {
     final data = await rootBundle.load(assetId);
     final snapshot = await _storage
-        .ref('products/$productId/${assetId.split('/').last}')
+        .ref('${Env.name}/products/$productId/${assetId.split('/').last}')
         .putData(data.buffer.asUint8List());
     return await snapshot.ref.getDownloadURL();
   }

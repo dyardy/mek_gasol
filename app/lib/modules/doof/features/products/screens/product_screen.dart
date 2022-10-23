@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mek/mek.dart';
 import 'package:mek_gasol/features/users/dto/user_dto.dart';
@@ -114,6 +113,23 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.observe(_save.toSource(), (state) {
+      state.whenOrNull(failed: (_) {
+        _form.enable();
+      }, success: (product) {
+        final tabBloc = ref.read(UserArea.tab.notifier);
+
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('${product.product.title} has been added to your shopping cart!'),
+          action: SnackBarAction(
+            onPressed: () => tabBloc.state = UserAreaTab.cart,
+            label: 'Cart',
+          ),
+        ));
+        context.pop();
+      });
+    });
+
     final t = DoofFormats.of(context);
 
     Widget buildBuyersField(BuildContext context, WidgetRef ref, List<PublicUserDto> users) {
@@ -185,7 +201,7 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
       );
     }
 
-    Widget current = Scaffold(
+    return Scaffold(
       appBar: AppBar(
         title: Text(widget.product.title),
       ),
@@ -235,13 +251,10 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
             AsyncViewBuilder(
               provider: IngredientsProviders.all(widget.product.id),
               builder: (context, ref, ingredients) {
-                return BlocBuilder(
-                  bloc: _ingredientsFb,
-                  buildWhen: (prev, curr) => !prev.fieldBlocs.equals(curr.fieldBlocs),
-                  builder: (context, control) {
-                    return buildIngredientsFields(context, ingredients, control.fieldBlocs);
-                  },
-                );
+                final fieldState = ref.react(_ingredientsFb.toSource(), when: (prev, curr) {
+                  return !prev.fieldBlocs.equals(curr.fieldBlocs);
+                });
+                return buildIngredientsFields(context, ingredients, fieldState.fieldBlocs);
               },
             ),
             AsyncViewBuilder(
@@ -252,24 +265,5 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
         ),
       ),
     );
-    current = BlocListener(
-      bloc: _save,
-      listener: (context, state) => state.whenOrNull(failed: (_) {
-        _form.enable();
-      }, success: (product) {
-        final tabBloc = ref.read(UserArea.tab.notifier);
-
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('${product.product.title} has been added to your shopping cart!'),
-          action: SnackBarAction(
-            onPressed: () => tabBloc.state = UserAreaTab.cart,
-            label: 'Cart',
-          ),
-        ));
-        context.pop();
-      }),
-      child: current,
-    );
-    return current;
   }
 }

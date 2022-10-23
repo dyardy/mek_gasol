@@ -34,9 +34,9 @@ dev_dependencies:
   mek_lints: ^0.3.0
 
   # To generate .g files:
-  # flutter packages pub run build_runner build --delete-conflicting-outputs
-  # flutter packages pub run build_runner watch --delete-conflicting-outputs
-  build_runner: ^2.2.1
+  # flutter packages pub run build_runner build -d
+  # flutter packages pub run build_runner watch -d
+  build_runner: ^2.3.2
   mek_data_class_generator: ^0.2.0
 
 # dart pub global run index_generator
@@ -46,5 +46,8 @@ index_generator:
     - '{_,**/_}*.dart'
   indexes:
     - path: lib
+      packages:
+        - name: package:flutter_riverpod/flutter_riverpod.dart
+          hide: [ Consumer, ConsumerWidget, ConsumerStatefulWidget, ConsumerState, ConsumerStatefulElement, WidgetRef ]
 
 flutter:

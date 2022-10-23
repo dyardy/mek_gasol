@@ -8,7 +8,7 @@ import 'package:mek_gasol/modules/doof/shared/k_doof.dart';
 import 'package:mek_gasol/modules/doof/shared/service_locator/service_locator.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class SendOrderDialog extends StatefulWidget {
+class SendOrderDialog extends ConsumerStatefulWidget {
   final OrderDto order;
   final List<ProductOrderDto> products;
 
@@ -19,10 +19,10 @@ class SendOrderDialog extends StatefulWidget {
   });
 
   @override
-  State<SendOrderDialog> createState() => _SendOrderDialogState();
+  ConsumerState<SendOrderDialog> createState() => _SendOrderDialogState();
 }
 
-class _SendOrderDialogState extends State<SendOrderDialog> {
+class _SendOrderDialogState extends ConsumerState<SendOrderDialog> {
   final _sendMb = MutationBloc();
 
   void _send(String message) {
@@ -65,12 +65,20 @@ class _SendOrderDialogState extends State<SendOrderDialog> {
 
   @override
   Widget build(BuildContext context) {
+    ref.observe(_sendMb.toSource(), (state) {
+      state.whenOrNull(success: (_) {
+        context
+          ..pop()
+          ..pop();
+      });
+    });
+
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
 
     final message = _generateMessage();
 
-    Widget current = AlertDialog(
+    return AlertDialog(
       scrollable: true,
       contentPadding: const EdgeInsets.only(left: 24.0, right: 24.0, top: 20.0, bottom: 0.0),
       title: const Text("Conferma invio ordine"),
@@ -98,15 +106,5 @@ class _SendOrderDialogState extends State<SendOrderDialog> {
         ),
       ],
     );
-    current = BlocListener(
-      bloc: _sendMb,
-      listener: (context, state) => state.whenOrNull(success: (_) {
-        context
-          ..pop()
-          ..pop();
-      }),
-      child: current,
-    );
-    return current;
   }
 }
